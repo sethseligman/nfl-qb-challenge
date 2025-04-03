@@ -493,7 +493,7 @@ export const Game: React.FC = () => {
                 </div>
 
                 {showHelpDropdown && availableQBs.length > 0 && (
-                  <div className="fixed z-[9999] w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-16rem)] mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                  <div className="absolute z-[9999] w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
                     {availableQBs.map((qb) => (
                       <button
                         key={qb.name}

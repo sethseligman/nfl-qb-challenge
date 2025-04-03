@@ -39,6 +39,7 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
         picks: newPicks,
         usedQBs: newUsedQBs,
         isGameOver: isOver,
+        currentTeam: state.currentTeam
       };
     }),
   resetGame: () =>

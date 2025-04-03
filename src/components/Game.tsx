@@ -77,11 +77,7 @@ export const Game: React.FC = () => {
   }, [validationState]);
 
   const handleReset = () => {
-    // Set a new random team first
-    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-    setCurrentTeam(randomTeam);
-    
-    // Then reset game state
+    // Reset game state first
     resetGame();
     
     // Clear input and validation states
@@ -89,6 +85,10 @@ export const Game: React.FC = () => {
     setError(null);
     setValidationState('idle');
     setValidationMessage('');
+    
+    // Set a new random team immediately
+    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+    setCurrentTeam(randomTeam);
   };
 
   const validateQB = (input: string): { isValid: boolean; qb: string; wins: number; displayName: string } | null => {

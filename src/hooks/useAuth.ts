@@ -1,61 +1,46 @@
 import { useState, useEffect } from 'react';
+import { auth } from '../firebase';
 import { 
   User,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
+  onAuthStateChanged,
   signOut
 } from 'firebase/auth';
-import { auth } from '../firebase';
 
-export function useAuth() {
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<User>;
+  register: (email: string, password: string) => Promise<User>;
+  logout: () => Promise<void>;
+}
+
+export function useAuth(): AuthContextType {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      return result.user;
-    } catch (error) {
-      throw error;
-    }
+  const login = async (email: string, password: string): Promise<User> => {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
   };
 
-  const register = async (email: string, password: string) => {
-    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      return result.user;
-    } catch (error) {
-      throw error;
-    }
+  const register = async (email: string, password: string): Promise<User> => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
   };
 
-  const loginWithGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      return result.user;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      throw error;
-    }
+  const logout = async (): Promise<void> => {
+    await signOut(auth);
   };
 
   return {
@@ -63,7 +48,6 @@ export function useAuth() {
     loading,
     login,
     register,
-    loginWithGoogle,
     logout
   };
 } 

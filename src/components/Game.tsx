@@ -86,7 +86,7 @@ export const Game: React.FC = () => {
         setShufflingTeam(randomTeam);
       }, 50); // Change every 50ms for rapid shuffling
 
-      // After 1.5 seconds, slow down the changes
+      // After 1 second, slow down the changes
       const slowDownTimeout = setTimeout(() => {
         clearInterval(fastInterval);
         const slowInterval = setInterval(() => {
@@ -105,7 +105,7 @@ export const Game: React.FC = () => {
           clearInterval(slowInterval);
           clearTimeout(finalTimeout);
         };
-      }, 1500);
+      }, 1000); // Changed from 1500 to 1000
 
       return () => {
         clearInterval(fastInterval);

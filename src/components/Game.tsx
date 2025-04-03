@@ -493,7 +493,7 @@ export const Game: React.FC = () => {
                 </div>
 
                 {showHelpDropdown && availableQBs.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                  <div className="absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
                     {availableQBs.map((qb) => (
                       <button
                         key={qb.name}
@@ -528,7 +528,7 @@ export const Game: React.FC = () => {
           </div>
 
           {/* Stats Panel */}
-          <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start">
+          <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start relative z-0">
             <div className="bg-gray-800 rounded-xl shadow-xl p-6">
               {/* Picks History */}
               <div>

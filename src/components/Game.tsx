@@ -72,9 +72,14 @@ export const Game: React.FC = () => {
     // Initialize game state
     initializeGame();
     
-    // Start with a random team
-    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-    setCurrentTeam(randomTeam);
+    // Start shuffling animation
+    setIsShuffling(true);
+    
+    // Set a new random team after animation
+    setTimeout(() => {
+      const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+      setCurrentTeam(randomTeam);
+    }, 1500);
   }, []);
 
   // Add effect for shuffling animation

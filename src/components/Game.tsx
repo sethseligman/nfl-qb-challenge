@@ -33,21 +33,28 @@ export const Game: React.FC = () => {
       return;
     }
 
-    // Check if QB exists in database
-    const qbData = qbDatabase.find(q => q.name.toLowerCase() === qb.toLowerCase());
+    // Check if QB exists in database (case-insensitive)
+    const qbData = qbDatabase.find(q => 
+      q.name.toLowerCase() === qb.toLowerCase()
+    );
+
     if (!qbData) {
       setError('QB not found in database');
       return;
     }
 
-    // Check if QB has played for the current team
-    if (!qbData.teams.includes(currentTeam)) {
+    // Check if QB has played for the current team (case-insensitive)
+    if (!qbData.teams.some(team => 
+      team.toLowerCase() === currentTeam.toLowerCase()
+    )) {
       setError(`${qb} has never played for ${currentTeam}`);
       return;
     }
 
-    // Check if QB has already been used
-    if (picks.some(pick => pick.qb.toLowerCase() === qb.toLowerCase())) {
+    // Check if QB has already been used (case-insensitive)
+    if (picks.some(pick => 
+      pick.qb.toLowerCase() === qb.toLowerCase()
+    )) {
       setError('This QB has already been used');
       return;
     }
@@ -57,7 +64,8 @@ export const Game: React.FC = () => {
     setInputValue('');
     setError('');
 
-    if (picks.length + 1 >= 19) {
+    // Set game over after 20 picks
+    if (picks.length + 1 >= 20) {
       setIsGameOver(true);
     }
   };

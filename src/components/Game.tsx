@@ -61,7 +61,7 @@ export const Game: React.FC = () => {
   const [validationState, setValidationState] = useState<'idle' | 'error' | 'success'>('idle');
   const [validationMessage, setValidationMessage] = useState('');
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
-  const [availableQBs, setAvailableQBs] = useState<string[]>([]);
+  const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -132,7 +132,7 @@ export const Game: React.FC = () => {
             const normalizedQbTeams = data.teams.map(normalizeTeamName);
             return normalizedQbTeams.includes(normalizedCurrentTeam) && !usedQBs.includes(qbName);
           })
-          .map(([name]) => name);
+          .map(([name, data]) => ({ name, wins: data.wins }));
 
         // Randomize the order of QBs
         for (let i = availableQBs.length - 1; i > 0; i--) {
@@ -432,13 +432,16 @@ export const Game: React.FC = () => {
 
                 {showHelpDropdown && availableQBs.length > 0 && (
                   <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                    {availableQBs.map((qbName) => (
+                    {availableQBs.map((qb) => (
                       <button
-                        key={qbName}
-                        onClick={() => handleQBSelect(qbName)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white"
+                        key={qb.name}
+                        onClick={() => handleQBSelect(qb.name)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white flex justify-between items-center"
                       >
-                        {qbName}
+                        <span>{qb.name}</span>
+                        {showScore && (
+                          <span className="text-emerald-500">{qb.wins} wins</span>
+                        )}
                       </button>
                     ))}
                   </div>

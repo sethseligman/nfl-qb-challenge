@@ -62,6 +62,8 @@ export const Game: React.FC = () => {
   const [validationMessage, setValidationMessage] = useState('');
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [shufflingTeam, setShufflingTeam] = useState<string | undefined>(undefined);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -74,6 +76,27 @@ export const Game: React.FC = () => {
     const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
     setCurrentTeam(randomTeam);
   }, []);
+
+  // Add effect for shuffling animation
+  useEffect(() => {
+    if (isShuffling) {
+      const interval = setInterval(() => {
+        const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+        setShufflingTeam(randomTeam);
+      }, 100);
+
+      const timeout = setTimeout(() => {
+        clearInterval(interval);
+        setIsShuffling(false);
+        setShufflingTeam(undefined);
+      }, 1500); // Shuffle for 1.5 seconds
+
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    }
+  }, [isShuffling]);
 
   // Remove any effect that might be resetting showScore
   useEffect(() => {
@@ -100,9 +123,14 @@ export const Game: React.FC = () => {
     // Initialize game state
     initializeGame();
     
-    // Set a new random team
-    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-    setCurrentTeam(randomTeam);
+    // Start shuffling animation
+    setIsShuffling(true);
+    
+    // Set a new random team after animation
+    setTimeout(() => {
+      const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+      setCurrentTeam(randomTeam);
+    }, 1500);
     
     // Clear input and validation states
     setInput('');
@@ -179,9 +207,14 @@ export const Game: React.FC = () => {
       const displayName = formatQBDisplayName(input, name);
       addPick(name, wins, displayName);
       
-      // Set a new random team - completely random without filtering used teams
-      const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-      setCurrentTeam(randomTeam);
+      // Start shuffling animation
+      setIsShuffling(true);
+      
+      // Set a new random team after animation
+      setTimeout(() => {
+        const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+        setCurrentTeam(randomTeam);
+      }, 1500);
       
       setInput('');
       setValidationState('success');
@@ -389,14 +422,24 @@ export const Game: React.FC = () => {
 
             <div className="bg-gray-800 rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
               <div className="flex flex-col items-center gap-4">
-                {currentTeam ? (
+                {(currentTeam || shufflingTeam) ? (
                   <>
                     <img 
-                      src={getTeamLogo(currentTeam)} 
-                      alt={currentTeam} 
-                      className="w-32 h-32 object-contain animate-pulse-slow"
+                      src={getTeamLogo(shufflingTeam || currentTeam)} 
+                      alt={shufflingTeam || currentTeam} 
+                      className={`w-32 h-32 object-contain ${
+                        isShuffling 
+                          ? 'animate-pulse-fast' 
+                          : 'animate-pulse-slow'
+                      }`}
                     />
-                    <h3 className="text-4xl font-bold text-emerald-500 animate-slide-up">{currentTeam}</h3>
+                    <h3 className={`text-4xl font-bold text-emerald-500 ${
+                      isShuffling 
+                        ? 'animate-bounce-fast' 
+                        : 'animate-slide-up'
+                    }`}>
+                      {shufflingTeam || currentTeam}
+                    </h3>
                   </>
                 ) : (
                   <div className="w-32 h-32 bg-gray-700 rounded-lg animate-pulse" />

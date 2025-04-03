@@ -80,7 +80,8 @@ export const useGameStore = create<GameState & GameActions>()(
         isGameOver: false,
         showScore: state.showScore,
         usedQBs: [],
-        totalScore: 0
+        totalScore: 0,
+        scores: state.scores
       })),
       addScore: (score) => 
         set((state) => ({

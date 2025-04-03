@@ -219,8 +219,8 @@ export const Game: React.FC = () => {
   };
 
   const handleNewGame = () => {
-    if (picks.length > 0) {
-      // Save the current game score
+    // Save the current game score if we have a team
+    if (currentTeam && picks.length > 0) {
       const score: Score = {
         id: Date.now().toString(),
         date: new Date().toISOString(),
@@ -230,7 +230,19 @@ export const Game: React.FC = () => {
       };
       addScore(score);
     }
+    
+    // Reset the game state
     resetGame();
+    
+    // Set a new random team
+    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+    setCurrentTeam(randomTeam);
+    
+    // Clear input and validation states
+    setInput('');
+    setError(null);
+    setValidationState('idle');
+    setValidationMessage('');
   };
 
   if (isGameOver) {

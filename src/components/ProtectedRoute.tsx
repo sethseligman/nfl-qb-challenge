@@ -5,6 +5,11 @@ import { useAuth } from '../hooks/useAuth';
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 
+  console.log('ProtectedRoute: Checking auth state:', {
+    loading,
+    user: user ? 'authenticated' : 'anonymous'
+  });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -13,9 +18,12 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
     );
   }
 
+  // Only protect routes that require authentication
   if (!user) {
+    console.log('ProtectedRoute: No authenticated user, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
+  console.log('ProtectedRoute: User authenticated, rendering protected content');
   return <>{children}</>;
 }; 

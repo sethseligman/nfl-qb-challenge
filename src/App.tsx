@@ -13,7 +13,7 @@ const AppContent: React.FC = () => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  console.log('AppContent render:', {
+  console.log('AppContent: Rendering with state:', {
     pathname: location.pathname,
     loading,
     user: user ? 'authenticated' : 'anonymous'
@@ -36,8 +36,15 @@ const AppContent: React.FC = () => {
       <AuthBanner />
       <main className="container mx-auto px-4 py-8">
         <Routes>
+          {/* Public routes - accessible to all users */}
+          <Route path="/" element={<Game />} />
+          <Route path="/nfl-qb-challenge" element={<Game />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/game" element={<Game />} />
+          <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />
+          <Route path="/mlb" element={<div className="text-center p-8">MLB Pitcher Challenge - Coming Soon!</div>} />
+          <Route path="/soccer" element={<div className="text-center p-8">Soccer Goals Challenge - Coming Soon!</div>} />
+
+          {/* Protected routes - require authentication */}
           <Route
             path="/my-games"
             element={
@@ -46,11 +53,8 @@ const AppContent: React.FC = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Game />} />
-          <Route path="/nfl-qb-challenge" element={<Game />} />
-          <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />
-          <Route path="/mlb" element={<div className="text-center p-8">MLB Pitcher Challenge - Coming Soon!</div>} />
-          <Route path="/soccer" element={<div className="text-center p-8">Soccer Goals Challenge - Coming Soon!</div>} />
+
+          {/* Catch-all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -59,7 +63,6 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  console.log('App: Initial render');
   return (
     <Router>
       <AppContent />

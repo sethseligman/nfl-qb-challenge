@@ -137,7 +137,7 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Aaron Rodgers": {
     name: "Aaron Rodgers",
-    wins: 147,
+    wins: 153,
     teams: ["Green Bay Packers", "New York Jets"]
   },
 
@@ -242,7 +242,7 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Matthew Stafford": {
     name: "Matthew Stafford",
-    wins: 89,
+    wins: 108,
     teams: ["Detroit Lions", "Los Angeles Rams"]
   },
   "Kirk Cousins": {
@@ -252,7 +252,7 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Derek Carr": {
     name: "Derek Carr",
-    wins: 63,
+    wins: 77,
     teams: ["New Orleans Saints", "Oakland Raiders", "Las Vegas Raiders"]
   },
   "Dak Prescott": {
@@ -399,7 +399,7 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Y.A. Tittle": {
     name: "Y.A. Tittle",
-    wins: 68,
+    wins: 78,
     teams: ["Baltimore Colts", "San Francisco 49ers", "New York Giants"]
   },
   "Norm Van Brocklin": {
@@ -648,7 +648,7 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "John Hadl": {
     name: "John Hadl",
-    wins: 8,
+    wins: 82,
     teams: ["Green Bay Packers", "San Diego Chargers", "Los Angeles Rams", "Houston Oilers"]
   },
   "David Whitehurst": {
@@ -765,6 +765,71 @@ export const qbDatabase: Record<string, QBData> = {
     name: "Jay Cutler",
     wins: 74,
     teams: ["Denver Broncos", "Chicago Bears", "Miami Dolphins"]
+  },
+  "Joe Theismann": {
+    name: "Joe Theismann",
+    wins: 77,
+    teams: ["Washington Commanders"]
+  },
+  "Cam Newton": {
+    name: "Cam Newton",
+    wins: 75,
+    teams: ["Carolina Panthers", "New England Patriots", "Carolina Panthers"]
+  },
+  "Alex Smith": {
+    name: "Alex Smith",
+    wins: 99,
+    teams: ["San Francisco 49ers", "Kansas City Chiefs", "Washington Commanders"]
+  },
+  "Dave Krieg": {
+    name: "Dave Krieg",
+    wins: 98,
+    teams: ["Seattle Seahawks", "Kansas City Chiefs", "Detroit Lions", "Arizona Cardinals", "Tennessee Titans", "Chicago Bears"]
+  },
+  "Andy Dalton": {
+    name: "Andy Dalton",
+    wins: 84,
+    teams: ["Cincinnati Bengals", "Dallas Cowboys", "Chicago Bears", "Buffalo Bills", "Carolina Panthers"]
+  },
+  "Randall Cunningham": {
+    name: "Randall Cunningham",
+    wins: 82,
+    teams: ["Philadelphia Eagles", "Minnesota Vikings", "Dallas Cowboys", "Baltimore Ravens"]
+  },
+  "Jared Goff": {
+    name: "Jared Goff",
+    wins: 81,
+    teams: ["Los Angeles Rams", "Detroit Lions"]
+  },
+  "Craig Morton": {
+    name: "Craig Morton",
+    wins: 81,
+    teams: ["Dallas Cowboys", "New York Giants", "Denver Broncos", "Oakland Raiders"]
+  },
+  "Ryan Tannehill": {
+    name: "Ryan Tannehill",
+    wins: 81,
+    teams: ["Miami Dolphins", "Tennessee Titans"]
+  },
+  "Joe Ferguson": {
+    name: "Joe Ferguson",
+    wins: 79,
+    teams: ["Buffalo Bills", "Detroit Lions", "Tampa Bay Buccaneers"]
+  },
+  "Ron Jaworski": {
+    name: "Ron Jaworski",
+    wins: 73,
+    teams: ["Philadelphia Eagles", "Miami Dolphins", "Kansas City Chiefs"]
+  },
+  "Brad Johnson": {
+    name: "Brad Johnson",
+    wins: 72,
+    teams: ["Minnesota Vikings", "Tampa Bay Buccaneers", "Dallas Cowboys"]
+  },
+  "Chris Chandler": {
+    name: "Chris Chandler",
+    wins: 67,
+    teams: ["Indianapolis Colts", "Tampa Bay Buccaneers", "Houston Oilers", "Atlanta Falcons", "Chicago Bears", "St. Louis Rams", "Tennessee Titans"]
   }
 };
 

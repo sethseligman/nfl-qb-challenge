@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { qbDatabase, findClosestMatch } from '../data/qbData';
+import { findClosestMatch, formatQBDisplayName, qbDatabase } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
 import LandingScreen from './LandingScreen';
+
+interface QB {
+  qb: string;
+  wins: number;
+  displayName: string;
+  team: string;
+}
 
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
@@ -39,10 +46,11 @@ export const Game: React.FC = () => {
     setShowScore,
     setShowHelp
   } = useGameStore();
-  const [qbInput, setQbInput] = useState('');
+  const [input, setInput] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
-  const [validationState, setValidationState] = useState<'idle' | 'success' | 'error'>('idle');
+  const [validationState, setValidationState] = useState<'idle' | 'error' | 'success'>('idle');
   const [validationMessage, setValidationMessage] = useState('');
 
   // Calculate total score and current round
@@ -64,10 +72,12 @@ export const Game: React.FC = () => {
 
   useEffect(() => {
     if (isGameOver) {
-      setQbInput('');
+      setInput('');
       setShowScore(true);
+    } else {
+      setShowScore(false);
     }
-  }, [isGameOver]);
+  }, [isGameOver, setShowScore]);
 
   // Add timeout cleanup for validation messages
   useEffect(() => {
@@ -93,136 +103,89 @@ export const Game: React.FC = () => {
     }
   }, [showHelp]);
 
-  interface QBData {
-    name: string;
-    wins: number;
-  }
-
-  const validateQB = (input: string, team: string): QBData | null => {
-    if (!team) return null;
-    const matchedName = findClosestMatch(input);
-    if (!matchedName) return null;
-
-    const qb = qbDatabase[matchedName];
-    if (!qb || !qb.teams.includes(team)) return null;
-
-    return {
-      name: qb.name,
-      wins: qb.wins
-    };
+  const handleReset = () => {
+    resetGame();
+    setGameStarted(false);
+    setInput('');
+    setError(null);
+    setValidationState('idle');
+    setValidationMessage('');
   };
 
-  const findHighestScoringQB = (team: string, usedQBs: string[]): { name: string; wins: number } | null => {
-    const teamQBs = Object.entries(qbDatabase)
-      .filter(([_, qb]) => 
-        qb.teams.includes(team) && 
-        !usedQBs.includes(qb.name.toLowerCase())
-      )
-      .map(([_, qb]) => ({ name: qb.name, wins: qb.wins }));
+  const validateQB = (input: string): { isValid: boolean; qb: string; wins: number; displayName: string } | null => {
+    const result = findClosestMatch(input);
+    if (!result) return null;
 
-    if (teamQBs.length === 0) return null;
+    const qbData = qbDatabase[result];
+    if (!qbData) return null;
 
-    return teamQBs.reduce((highest, current) => 
-      current.wins > highest.wins ? current : highest
-    );
-  };
-
-  // Add input validation
-  const validateInput = (input: string) => {
-    const normalizedInput = input.trim();
-    
-    if (!normalizedInput) {
-      setValidationState('error');
-      setValidationMessage('Please enter a quarterback name.');
-      return false;
-    }
-
-    if (normalizedInput.toLowerCase() === 'help') {
-      return true;
-    }
-
-    // Check if QB has been used
-    if (usedQBs.some(qb => qb.toLowerCase() === normalizedInput.toLowerCase())) {
-      setValidationState('error');
-      setValidationMessage('This QB has already been used!');
-      return false;
-    }
-
-    if (!currentTeam) {
-      setValidationState('error');
-      setValidationMessage('No team selected. Please wait for a team to be assigned.');
-      return false;
-    }
-
-    const qbData = validateQB(normalizedInput, currentTeam);
-    if (!qbData) {
-      setValidationState('error');
-      setValidationMessage('This QB either does not exist in our database or did not play for this team.');
-      return false;
-    }
-
-    setValidationState('success');
-    setValidationMessage('✔️ QB Accepted');
-    return true;
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setQbInput(newValue);
-    if (newValue.trim()) {
-      validateInput(newValue);
-    } else {
-      setValidationState('idle');
-      setValidationMessage('');
-    }
+    const displayName = formatQBDisplayName(input, result);
+    return { isValid: true, qb: result, wins: qbData.wins, displayName };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
+    setValidationState('idle');
+    setValidationMessage('');
 
-    const normalizedInput = qbInput.trim();
-    
-    if (!validateInput(normalizedInput)) {
-      setIsLoading(false);
-      return;
-    }
-
-    if (normalizedInput.toLowerCase() === 'help') {
-      if (!currentTeam) {
+    try {
+      const result = validateQB(input);
+      if (!result) {
+        setError('Invalid quarterback name');
         setValidationState('error');
-        setValidationMessage('No team selected. Please wait for a team to be assigned.');
-        setIsLoading(false);
+        setValidationMessage('Invalid quarterback name');
         return;
       }
 
-      const highestQB = findHighestScoringQB(currentTeam, usedQBs);
-      if (!highestQB) {
+      const { qb, wins, displayName } = result;
+      if (usedQBs.includes(qb)) {
+        setError('This quarterback has already been used');
         setValidationState('error');
-        setValidationMessage('No available QBs found for this team.');
-        setIsLoading(false);
+        setValidationMessage('This quarterback has already been used');
         return;
       }
 
-      addPick(highestQB.name, highestQB.wins, highestQB.name);
-      setQbInput('');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!currentTeam) {
+      addPick(qb, wins, displayName);
+      setInput('');
+      setValidationState('success');
+      setValidationMessage('✔️ QB Accepted');
+    } catch (err) {
+      setError('An error occurred. Please try again.');
       setValidationState('error');
-      setValidationMessage('No team selected. Please wait for a team to be assigned.');
+      setValidationMessage('An error occurred. Please try again.');
+    } finally {
       setIsLoading(false);
-      return;
+    }
+  };
+
+  const QBPhoto: React.FC<{ qb: string; size?: 'sm' | 'lg' }> = ({ qb, size = 'sm' }) => {
+    const [showImage, setShowImage] = useState(true);
+    const photoUrl = getQBPhoto(qb);
+
+    if (!showImage || !photoUrl) {
+      return (
+        <div className={`flex items-center justify-center bg-gray-700 rounded-full ${
+          size === 'sm' ? 'w-6 h-6' : 'w-16 h-16'
+        }`}>
+          <span className={`text-gray-400 ${size === 'sm' ? 'text-xs' : 'text-lg'}`}>
+            {qb.split(' ').map(n => n[0]).join('')}
+          </span>
+        </div>
+      );
     }
 
-    const qbData = validateQB(normalizedInput, currentTeam);
-    if (qbData) {
-      addPick(qbData.name, qbData.wins, normalizedInput);
-      setQbInput('');
-      setIsLoading(false);
-    }
+    return (
+      <img
+        src={photoUrl}
+        alt={qb}
+        className={`object-contain rounded-full ${
+          size === 'sm' ? 'w-6 h-6' : 'w-16 h-16'
+        }`}
+        onError={() => setShowImage(false)}
+      />
+    );
   };
 
   if (!gameStarted) {
@@ -237,9 +200,9 @@ export const Game: React.FC = () => {
       <div className="min-h-screen bg-gray-900 text-white">
         <div className="max-w-4xl mx-auto p-6">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-blue-500">StatStack</h1>
+            <h1 className="text-3xl font-bold text-blue-500">NFL QB Challenge</h1>
             <button
-              onClick={resetGame}
+              onClick={handleReset}
               className="bg-emerald-500 text-white px-6 py-2 rounded-lg hover:bg-emerald-600 transition-colors font-medium"
             >
               Play Again
@@ -263,18 +226,10 @@ export const Game: React.FC = () => {
                     />
                   </div>
                   <div className="flex flex-col items-center gap-2">
-                    <img
-                      src={getQBPhoto(pick.qb) || ''}
-                      alt={pick.qb}
-                      className="w-16 h-16 object-contain rounded-full"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
-                    />
+                    <QBPhoto qb={pick.qb} size="lg" />
                     <div className="text-center">
                       <div className="font-semibold text-white">{pick.displayName}</div>
-                      {showScore && <div className="text-sm text-emerald-500">{pick.wins} wins</div>}
+                      <div className="text-sm text-emerald-500">{pick.wins} wins</div>
                     </div>
                   </div>
                 </div>
@@ -293,7 +248,7 @@ export const Game: React.FC = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-blue-500">NFL QB Challenge</h1>
           <button
-            onClick={resetGame}
+            onClick={handleReset}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
           >
             New Game
@@ -336,8 +291,13 @@ export const Game: React.FC = () => {
                     <input
                       type="text"
                       id="qb"
-                      value={qbInput}
-                      onChange={handleInputChange}
+                      value={input}
+                      onChange={(e) => {
+                        setInput(e.target.value);
+                        setError(null);
+                        setValidationState('idle');
+                        setValidationMessage('');
+                      }}
                       className={`flex-1 bg-gray-700/50 text-white border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 transition-colors duration-200 ${
                         validationState === 'error' 
                           ? 'border-red-500 focus:ring-red-500' 
@@ -347,6 +307,7 @@ export const Game: React.FC = () => {
                       }`}
                       placeholder="Enter QB name..."
                       required
+                      disabled={isLoading}
                     />
                     <button
                       type="submit"
@@ -356,7 +317,12 @@ export const Game: React.FC = () => {
                       {isLoading ? 'Submitting...' : 'Submit'}
                     </button>
                   </div>
-                  {validationState !== 'idle' && (
+                  {error && (
+                    <p className="mt-2 text-sm text-red-400 animate-fade-in">
+                      {error}
+                    </p>
+                  )}
+                  {validationState !== 'idle' && !error && (
                     <p className={`mt-2 text-sm animate-fade-in ${
                       validationState === 'error' ? 'text-red-400' : 'text-emerald-400'
                     }`}>

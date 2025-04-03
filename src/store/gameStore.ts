@@ -17,7 +17,7 @@ interface GameState {
 }
 
 interface GameActions {
-  setCurrentTeam: (team: string) => void;
+  setCurrentTeam: (team: string | null) => void;
   addPick: (qb: string, wins: number, displayName: string) => void;
   resetGame: () => void;
   setShowScore: (show: boolean) => void;

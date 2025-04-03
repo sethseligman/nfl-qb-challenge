@@ -42,13 +42,18 @@ const GAME_CARDS: GameCard[] = [
 
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
-const GameCard = ({ game, isActive, onClick, isMobile }: { 
+const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: { 
   game: GameCard, 
   isActive: boolean, 
   onClick: () => void,
-  isMobile: boolean 
+  isMobile: boolean,
+  shouldShowRules: boolean
 }) => {
-  const [showRules, setShowRules] = useState(false);
+  const [showRules, setShowRules] = useState(shouldShowRules);
+
+  React.useEffect(() => {
+    setShowRules(shouldShowRules);
+  }, [shouldShowRules]);
 
   return (
     <>
@@ -93,26 +98,16 @@ const GameCard = ({ game, isActive, onClick, isMobile }: {
               </button>
             )}
           </div>
-          {game.title === 'NFL QB Wins Challenge' && (
-            isMobile ? (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowRules(!showRules);
-                }}
-                className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors"
-              >
-                Rules
-              </button>
-            ) : (
-              <div 
-                className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium cursor-help"
-                onMouseEnter={() => setShowRules(true)}
-                onMouseLeave={() => setShowRules(false)}
-              >
-                Rules
-              </div>
-            )
+          {game.title === 'NFL QB Wins Challenge' && isMobile && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowRules(!showRules);
+              }}
+              className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors"
+            >
+              Rules
+            </button>
           )}
         </div>
       </div>
@@ -170,6 +165,7 @@ export const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState('NFL');
   const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+  const [hoveredGame, setHoveredGame] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -217,13 +213,19 @@ export const LobbyPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGames.map((game, index) => (
-            <GameCard
+            <div
               key={index}
-              game={game}
-              isActive={activeTab === game.sport}
-              onClick={() => navigate(game.path)}
-              isMobile={isMobile}
-            />
+              onMouseEnter={() => game.title === 'NFL QB Wins Challenge' && setHoveredGame(game.title)}
+              onMouseLeave={() => setHoveredGame(null)}
+            >
+              <GameCard
+                game={game}
+                isActive={activeTab === game.sport}
+                onClick={() => navigate(game.path)}
+                isMobile={isMobile}
+                shouldShowRules={hoveredGame === game.title}
+              />
+            </div>
           ))}
         </div>
       </div>

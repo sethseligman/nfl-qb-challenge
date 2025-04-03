@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
@@ -18,10 +19,18 @@ export function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-blue-600">NFL QB Challenge</span>
+              <span className="text-2xl font-bold text-blue-600">StatStack</span>
             </Link>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
+            {user && (
+              <Link
+                to="/my-games"
+                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                My Games
+              </Link>
+            )}
             {user ? (
               <div className="flex items-center space-x-4">
                 <span className="text-gray-700">

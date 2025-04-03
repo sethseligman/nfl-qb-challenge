@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { AuthBanner } from './components/AuthBanner';
 import { Login } from './components/Login';
 import { Game } from './components/Game';
+import { Lobby } from './components/Lobby';
 import { MyGames } from './pages/MyGames';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { useAuth } from './hooks/useAuth';
@@ -37,7 +38,7 @@ const AppContent: React.FC = () => {
       <main className="container mx-auto px-4 py-8">
         <Routes>
           {/* Public routes - accessible to all users */}
-          <Route path="/" element={<Game />} />
+          <Route path="/" element={<Lobby />} />
           <Route path="/nfl-qb-challenge" element={<Game />} />
           <Route path="/login" element={<Login />} />
           <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />

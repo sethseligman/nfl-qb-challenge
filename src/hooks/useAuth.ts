@@ -16,12 +16,12 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-export function useAuth(): AuthContextType {
+export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
       setLoading(false);
     });
@@ -43,11 +43,5 @@ export function useAuth(): AuthContextType {
     await signOut(auth);
   };
 
-  return {
-    user,
-    loading,
-    login,
-    register,
-    logout
-  };
-} 
+  return { user, loading, login, register, logout };
+}; 

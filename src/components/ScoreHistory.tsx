@@ -1,98 +1,136 @@
-import { useState } from 'react';
-import { getTeamLogo } from '../utils/teamLogos';
-import { getQBPhoto } from '../utils/qbPhotos';
+import React, { useState, useEffect } from 'react';
+import { useGameStore } from '../store/gameStore';
+import { getTeamLogo } from '../data/teamLogos';
+import { getQBPhoto } from '../data/qbPhotos';
 
 interface Score {
   id: string;
-  date: Date;
+  date: string;
   totalScore: number;
   tier: string;
-  picks: Array<{
-    team: string;
+  picks: {
     qb: string;
     wins: number;
-  }>;
+    displayName: string;
+    team: string;
+  }[];
 }
 
-interface ScoreHistoryProps {
-  scores: Score[];
-}
+const QBPhoto: React.FC<{ qb: string; size?: 'sm' | 'lg' }> = ({ qb, size = 'sm' }) => {
+  const [showImage, setShowImage] = useState(true);
+  const photoUrl = getQBPhoto(qb);
 
-function QBPhoto({ qb }: { qb: string }) {
-  const photo = getQBPhoto(qb);
-  return (
-    <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-      {photo ? (
-        <img src={photo} alt={qb} className="w-full h-full object-cover" />
-      ) : (
-        <span className="text-sm font-medium text-gray-600">
+  if (!showImage || !photoUrl) {
+    return (
+      <div className={`flex items-center justify-center bg-gray-700 rounded-full ${
+        size === 'sm' ? 'w-6 h-6' : 'w-16 h-16'
+      }`}>
+        <span className={`text-gray-400 ${size === 'sm' ? 'text-xs' : 'text-lg'}`}>
           {qb.split(' ').map(n => n[0]).join('')}
         </span>
-      )}
-    </div>
-  );
-}
-
-export function ScoreHistory({ scores }: ScoreHistoryProps) {
-  const [expandedScores, setExpandedScores] = useState<Set<string>>(new Set());
-
-  const toggleScore = (scoreId: string) => {
-    setExpandedScores(prev => {
-      const next = new Set(prev);
-      if (next.has(scoreId)) {
-        next.delete(scoreId);
-      } else {
-        next.add(scoreId);
-      }
-      return next;
-    });
-  };
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      {scores.length === 0 ? (
-        <p className="text-gray-600">No games played yet.</p>
-      ) : (
-        scores.map(score => (
-          <div
-            key={score.id}
-            className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200"
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-semibold">Score: {score.totalScore}</h3>
-                <p className="text-sm text-gray-600">
-                  {score.date.toLocaleDateString()} at {score.date.toLocaleTimeString()}
-                </p>
-                <p className="text-sm font-medium text-blue-600">Tier: {score.tier}</p>
-              </div>
-              <button
-                onClick={() => toggleScore(score.id)}
-                className="text-blue-500 hover:text-blue-600"
-              >
-                {expandedScores.has(score.id) ? 'Hide Picks' : 'Show Picks'}
-              </button>
-            </div>
-            {expandedScores.has(score.id) && (
-              <div className="mt-4 space-y-2">
-                {score.picks.map((pick, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <img
-                      src={getTeamLogo(pick.team)}
-                      alt={pick.team}
-                      className="w-6 h-6"
-                    />
-                    <QBPhoto qb={pick.qb} />
-                    <span className="text-sm">
-                      {pick.team} - {pick.qb} ({pick.wins} wins)
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+    <img
+      src={photoUrl}
+      alt={qb}
+      className={`object-contain rounded-full ${
+        size === 'sm' ? 'w-6 h-6' : 'w-16 h-16'
+      }`}
+      onError={() => setShowImage(false)}
+    />
+  );
+};
+
+const ScoreEntry: React.FC<{ score: Score }> = ({ score }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const date = new Date(score.date);
+
+  // Reset expanded state when score changes
+  useEffect(() => {
+    setIsExpanded(false);
+  }, [score.id]);
+
+  return (
+    <div className="bg-gray-700/50 backdrop-blur-sm rounded-lg p-4">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex justify-between items-center mb-4 hover:bg-gray-600/50 rounded-lg p-2 transition-colors"
+      >
+        <div className="flex flex-col items-start">
+          <div className="text-lg font-semibold text-white">
+            Score: {score.totalScore}
           </div>
-        ))
+          <div className="text-sm text-gray-400">
+            {date.toLocaleDateString()} at {date.toLocaleTimeString()}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="text-emerald-500">{score.tier}</div>
+          <div className="text-gray-400">
+            {isExpanded ? '▼' : '▶'}
+          </div>
+        </div>
+      </button>
+      
+      {isExpanded && (
+        <div className="mt-4 space-y-4 animate-fade-in">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {score.picks.map((pick, index) => (
+              <div key={index} className="bg-gray-700 rounded-lg p-3 flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <img
+                    src={getTeamLogo(pick.team)}
+                    alt={pick.team}
+                    className="w-8 h-8 object-contain"
+                  />
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <QBPhoto qb={pick.qb} size="lg" />
+                  <div className="text-center">
+                    <div className="font-semibold text-white">{pick.displayName}</div>
+                    <div className="text-sm text-emerald-500">{pick.wins} wins</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
-} 
+};
+
+export const ScoreHistory: React.FC = () => {
+  const { scores, clearScores } = useGameStore();
+
+  if (scores.length === 0) {
+    return (
+      <div className="bg-gray-800 rounded-xl shadow-xl p-6">
+        <h2 className="text-2xl font-bold text-center mb-4 text-blue-500">Score History</h2>
+        <p className="text-gray-400 text-center">No games played yet</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-800 rounded-xl shadow-xl p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-blue-500">Score History</h2>
+        <button
+          onClick={clearScores}
+          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+        >
+          Clear History
+        </button>
+      </div>
+      <div className="space-y-6">
+        {scores.map((score) => (
+          <ScoreEntry key={score.id} score={score} />
+        ))}
+      </div>
+    </div>
+  );
+}; 

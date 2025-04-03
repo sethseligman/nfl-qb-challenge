@@ -77,7 +77,11 @@ export const Game: React.FC = () => {
   }, [validationState]);
 
   const handleReset = () => {
-    // Reset game state first
+    // Set a new random team first
+    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+    setCurrentTeam(randomTeam);
+
+    // Then reset game state
     resetGame();
     
     // Clear input and validation states
@@ -85,10 +89,6 @@ export const Game: React.FC = () => {
     setError(null);
     setValidationState('idle');
     setValidationMessage('');
-    
-    // Set a new random team immediately
-    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-    setCurrentTeam(randomTeam);
   };
 
   const validateQB = (input: string): { isValid: boolean; qb: string; wins: number; displayName: string } | null => {
@@ -323,18 +323,22 @@ export const Game: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main game content */}
           <div className="flex-1">
-            {currentTeam && (
-              <div className="bg-gray-800 rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
-                <div className="flex flex-col items-center gap-4">
-                  <img 
-                    src={getTeamLogo(currentTeam)} 
-                    alt={currentTeam} 
-                    className="w-32 h-32 object-contain animate-pulse-slow"
-                  />
-                  <h3 className="text-4xl font-bold text-emerald-500 animate-slide-up">{currentTeam}</h3>
-                </div>
+            <div className="bg-gray-800 rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
+              <div className="flex flex-col items-center gap-4">
+                {currentTeam ? (
+                  <>
+                    <img 
+                      src={getTeamLogo(currentTeam)} 
+                      alt={currentTeam} 
+                      className="w-32 h-32 object-contain animate-pulse-slow"
+                    />
+                    <h3 className="text-4xl font-bold text-emerald-500 animate-slide-up">{currentTeam}</h3>
+                  </>
+                ) : (
+                  <div className="w-32 h-32 bg-gray-700 rounded-lg animate-pulse" />
+                )}
               </div>
-            )}
+            </div>
 
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
               <form onSubmit={handleSubmit} className="space-y-4">

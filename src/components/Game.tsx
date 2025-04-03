@@ -132,8 +132,13 @@ export const Game: React.FC = () => {
             const normalizedQbTeams = data.teams.map(normalizeTeamName);
             return normalizedQbTeams.includes(normalizedCurrentTeam) && !usedQBs.includes(qbName);
           })
-          .sort((a, b) => b[1].wins - a[1].wins)
           .map(([name]) => name);
+
+        // Randomize the order of QBs
+        for (let i = availableQBs.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [availableQBs[i], availableQBs[j]] = [availableQBs[j], availableQBs[i]];
+        }
 
         console.log('Available QBs:', availableQBs); // Debug log
 

@@ -436,7 +436,7 @@ export const Game: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6 relative">
               <form onSubmit={handleSubmit} className="relative">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -493,7 +493,7 @@ export const Game: React.FC = () => {
                 </div>
 
                 {showHelpDropdown && availableQBs.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                  <div className="fixed z-[100] w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-16rem)] mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
                     {availableQBs.map((qb) => (
                       <button
                         key={qb.name}

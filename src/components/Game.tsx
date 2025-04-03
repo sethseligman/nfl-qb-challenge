@@ -201,6 +201,9 @@ export const Game: React.FC = () => {
       const displayName = formatQBDisplayName(input, name);
       addPick(name, wins, displayName);
       
+      // Clear input immediately
+      setInput('');
+      
       // Start shuffling animation
       setIsShuffling(true);
       
@@ -209,8 +212,6 @@ export const Game: React.FC = () => {
         const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
         setCurrentTeam(randomTeam);
       }, 1500);
-      
-      setInput('');
     } catch (err) {
       console.error('Error in handleSubmit:', err);
       setError('An error occurred. Please try again.');

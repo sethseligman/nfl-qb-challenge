@@ -80,20 +80,36 @@ export const Game: React.FC = () => {
   // Add effect for shuffling animation
   useEffect(() => {
     if (isShuffling) {
-      const interval = setInterval(() => {
+      // Start with a faster interval for more rapid changes
+      const fastInterval = setInterval(() => {
         const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
         setShufflingTeam(randomTeam);
-      }, 100);
+      }, 50); // Change every 50ms for rapid shuffling
 
-      const timeout = setTimeout(() => {
-        clearInterval(interval);
-        setIsShuffling(false);
-        setShufflingTeam(undefined);
-      }, 1500); // Shuffle for 1.5 seconds
+      // After 1.5 seconds, slow down the changes
+      const slowDownTimeout = setTimeout(() => {
+        clearInterval(fastInterval);
+        const slowInterval = setInterval(() => {
+          const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+          setShufflingTeam(randomTeam);
+        }, 200); // Change every 200ms for slower shuffling
+
+        // After 0.5 seconds, stop and show the final team
+        const finalTimeout = setTimeout(() => {
+          clearInterval(slowInterval);
+          setIsShuffling(false);
+          setShufflingTeam(undefined);
+        }, 500);
+
+        return () => {
+          clearInterval(slowInterval);
+          clearTimeout(finalTimeout);
+        };
+      }, 1500);
 
       return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
+        clearInterval(fastInterval);
+        clearTimeout(slowDownTimeout);
       };
     }
   }, [isShuffling]);
@@ -427,15 +443,15 @@ export const Game: React.FC = () => {
                     <img 
                       src={getTeamLogo(shufflingTeam || currentTeam || '')} 
                       alt={shufflingTeam || currentTeam || ''} 
-                      className={`w-32 h-32 object-contain ${
+                      className={`w-32 h-32 object-contain transition-all duration-100 ${
                         isShuffling 
-                          ? 'animate-pulse-fast' 
+                          ? 'animate-pulse-fast scale-110' 
                           : 'animate-pulse-slow'
                       }`}
                     />
-                    <h3 className={`text-4xl font-bold text-emerald-500 ${
+                    <h3 className={`text-4xl font-bold text-emerald-500 transition-all duration-100 ${
                       isShuffling 
-                        ? 'animate-bounce-fast' 
+                        ? 'animate-bounce-fast scale-105' 
                         : 'animate-slide-up'
                     }`}>
                       {shufflingTeam || currentTeam}

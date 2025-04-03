@@ -784,16 +784,12 @@ export function formatQBDisplayName(input: string, fullName: string): string {
   }
   
   // If input is a last name, just show the full name
-  const lastNames = Object.entries(qbDatabase).reduce((acc, [fullName]) => {
+  const lastNameMatch = Object.entries(qbDatabase).find(([fullName]) => {
     const lastName = fullName.split(' ').pop()?.toLowerCase();
-    if (lastName) {
-      acc[lastName] = fullName;
-    }
-    return acc;
-  }, {} as Record<string, string>);
-
-  if (lastNames[normalizedInput]) {
-    return lastNames[normalizedInput];
+    return lastName === normalizedInput;
+  });
+  if (lastNameMatch) {
+    return lastNameMatch[0];
   }
 
   // For exact matches, show full name only

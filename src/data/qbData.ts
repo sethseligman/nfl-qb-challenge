@@ -776,8 +776,11 @@ export function formatQBDisplayName(input: string, fullName: string): string {
   const normalizedInput = input.toLowerCase().trim();
   
   // If input is a recognized nickname, show "Full Name / 'Nickname'"
-  if (QB_NICKNAMES[normalizedInput]) {
-    return `${fullName} / '${input}'`;
+  const nicknameEntry = Object.entries(QB_NICKNAMES).find(([nickname]) => 
+    nickname.toLowerCase() === normalizedInput
+  );
+  if (nicknameEntry) {
+    return `${fullName} / '${nicknameEntry[0]}'`;
   }
   
   // If input is a last name, just show the full name

@@ -16,8 +16,9 @@ const LoginPage: React.FC = () => {
       setError('');
       await signInWithGoogle();
       navigate('/');
-    } catch (err) {
-      setError('Failed to sign in with Google');
+    } catch (err: any) {
+      console.error('Google sign in error:', err);
+      setError(err.message || 'Failed to sign in with Google');
     } finally {
       setIsLoading(false);
     }
@@ -34,8 +35,21 @@ const LoginPage: React.FC = () => {
         await signInWithEmail(email, password);
       }
       navigate('/');
-    } catch (err) {
-      setError(isSignUp ? 'Failed to create account' : 'Failed to sign in');
+    } catch (err: any) {
+      console.error('Email auth error:', err);
+      if (err.code === 'auth/email-already-in-use') {
+        setError('An account with this email already exists');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('Invalid email address');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Password should be at least 6 characters');
+      } else if (err.code === 'auth/user-not-found') {
+        setError('No account found with this email');
+      } else if (err.code === 'auth/wrong-password') {
+        setError('Incorrect password');
+      } else {
+        setError(err.message || (isSignUp ? 'Failed to create account' : 'Failed to sign in'));
+      }
     } finally {
       setIsLoading(false);
     }

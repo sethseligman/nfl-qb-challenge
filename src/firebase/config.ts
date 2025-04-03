@@ -10,54 +10,69 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+console.log('Firebase Config:', { ...firebaseConfig, apiKey: '[HIDDEN]' });
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
+    console.log('Attempting Google sign in...');
     const result = await signInWithPopup(auth, googleProvider);
+    console.log('Google sign in successful:', result.user.email);
     return result.user;
-  } catch (error) {
-    console.error('Error signing in with Google:', error);
+  } catch (error: any) {
+    console.error('Error signing in with Google:', error.code, error.message);
     throw error;
   }
 };
 
 export const signInWithEmail = async (email: string, password: string) => {
   try {
+    console.log('Attempting email sign in...');
     const result = await signInWithEmailAndPassword(auth, email, password);
+    console.log('Email sign in successful:', result.user.email);
     return result.user;
-  } catch (error) {
-    console.error('Error signing in with email:', error);
+  } catch (error: any) {
+    console.error('Error signing in with email:', error.code, error.message);
     throw error;
   }
 };
 
 export const signUpWithEmail = async (email: string, password: string) => {
   try {
+    console.log('Attempting email sign up...');
     const result = await createUserWithEmailAndPassword(auth, email, password);
+    console.log('Email sign up successful:', result.user.email);
     return result.user;
-  } catch (error) {
-    console.error('Error signing up with email:', error);
+  } catch (error: any) {
+    console.error('Error signing up with email:', error.code, error.message);
     throw error;
   }
 };
 
 export const logout = async () => {
   try {
+    console.log('Attempting sign out...');
     await signOut(auth);
-  } catch (error) {
-    console.error('Error signing out:', error);
+    console.log('Sign out successful');
+  } catch (error: any) {
+    console.error('Error signing out:', error.code, error.message);
     throw error;
   }
 };
 
 export const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
+    console.log('Checking current user...');
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
+      console.log('Current user:', user ? user.email : 'none');
       resolve(user);
-    }, reject);
+    }, (error) => {
+      console.error('Error getting current user:', error);
+      reject(error);
+    });
   });
 }; 

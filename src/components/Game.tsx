@@ -145,7 +145,7 @@ export const Game: React.FC = () => {
         return;
       }
 
-      const { qb, wins, displayName } = result;
+      const { qb, wins } = result;
       if (usedQBs.includes(qb)) {
         setError('This quarterback has already been used');
         setValidationState('error');
@@ -153,10 +153,8 @@ export const Game: React.FC = () => {
         return;
       }
 
-      // Get the full QB name from the database
-      const qbData = qbDatabase[qb];
-      const fullDisplayName = formatQBDisplayName(input, qb);
-      addPick(qb, wins, fullDisplayName);
+      // Force display name to be "!!!!" for testing
+      addPick(qb, wins, "!!!!");
       setInput('');
       setValidationState('success');
       setValidationMessage('✔️ QB Accepted');

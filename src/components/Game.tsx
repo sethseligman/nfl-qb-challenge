@@ -368,15 +368,7 @@ export const Game: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <img
-                            src={getQBPhoto(pick.qb) || ''}
-                            alt={pick.qb}
-                            className="w-6 h-6 object-contain rounded-full"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                            }}
-                          />
+                          <QBPhoto qb={pick.qb} size="sm" />
                           <div className="text-sm font-medium text-white truncate">{pick.displayName}</div>
                         </div>
                         <div className="text-xs text-gray-400 truncate">{pick.team}</div>

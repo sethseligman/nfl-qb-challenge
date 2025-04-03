@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface GameCard {
@@ -42,16 +42,15 @@ const GAME_CARDS: GameCard[] = [
 
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
-const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: { 
+const GameCard = ({ game, isActive, onClick, shouldShowRules }: { 
   game: GameCard, 
   isActive: boolean, 
   onClick: () => void,
-  isMobile: boolean,
   shouldShowRules: boolean
 }) => {
   const [showRules, setShowRules] = useState(shouldShowRules);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setShowRules(shouldShowRules);
   }, [shouldShowRules]);
 
@@ -101,7 +100,7 @@ const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: {
               </button>
             )}
           </div>
-          {game.title === 'NFL QB Wins Challenge' && isMobile && (
+          {game.title === 'NFL QB Wins Challenge' && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -152,18 +151,7 @@ const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: {
 
 export const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = React.useState('NFL');
-  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
-  const [hoveredGame, setHoveredGame] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const [activeTab, setActiveTab] = useState('NFL');
 
   const filteredGames = GAME_CARDS.filter(game => game.sport === activeTab);
 
@@ -204,15 +192,12 @@ export const LobbyPage: React.FC = () => {
           {filteredGames.map((game, index) => (
             <div
               key={index}
-              onMouseEnter={() => game.title === 'NFL QB Wins Challenge' && setHoveredGame(game.title)}
-              onMouseLeave={() => setHoveredGame(null)}
             >
               <GameCard
                 game={game}
                 isActive={activeTab === game.sport}
                 onClick={() => navigate(game.path)}
-                isMobile={isMobile}
-                shouldShowRules={hoveredGame === game.title}
+                shouldShowRules={false}
               />
             </div>
           ))}

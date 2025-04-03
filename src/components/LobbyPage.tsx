@@ -87,42 +87,40 @@ const GameCard = ({ game, isActive, onClick, isMobile }: {
               </span>
             </div>
             <p className="text-gray-200 text-sm mb-4">{game.subtitle}</p>
-            <button
-              onClick={onClick}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
-            >
-              Play Now
-            </button>
+            {game.title === 'NFL QB Wins Challenge' && (
+              <button
+                onClick={onClick}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
+              >
+                Play Now
+              </button>
+            )}
           </div>
           {game.title === 'NFL QB Wins Challenge' && (
-            <>
-              {isMobile ? (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowRules(!showRules);
-                  }}
-                  className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors"
-                >
-                  Rules
-                </button>
-              ) : (
-                <div 
-                  className={`absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium cursor-help transition-opacity duration-200 ${
-                    isHovered ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  onMouseEnter={() => setShowRules(true)}
-                  onMouseLeave={() => setShowRules(false)}
-                >
-                  Rules
-                </div>
-              )}
-            </>
+            isMobile ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowRules(!showRules);
+                }}
+                className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors"
+              >
+                Rules
+              </button>
+            ) : (
+              <div 
+                className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium cursor-help"
+                onMouseEnter={() => setShowRules(true)}
+                onMouseLeave={() => setShowRules(false)}
+              >
+                Rules
+              </div>
+            )
           )}
         </div>
       </div>
 
-      {/* Rules Modal - Only for NFL QB Challenge */}
+      {/* Rules Modal - Only for NFL QB game */}
       {showRules && game.title === 'NFL QB Wins Challenge' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
           <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">

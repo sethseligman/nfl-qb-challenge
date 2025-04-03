@@ -407,10 +407,12 @@ export const Game: React.FC = () => {
                     value={input}
                     onChange={(e) => {
                       setInput(e.target.value);
-                      setShowHelpDropdown(false);
-                      setAvailableQBs([]);
+                      if (e.target.value.toLowerCase().trim() !== 'help') {
+                        setShowHelpDropdown(false);
+                        setAvailableQBs([]);
+                      }
                     }}
-                    placeholder="Enter quarterback name or type 'help'"
+                    placeholder="Enter a Quarterback's Name"
                     className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     disabled={isLoading}
                   />

@@ -1,149 +1,149 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { db } from '../firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { useGameStore } from '../stores/gameStore';
+import { qbDatabase } from '../data/qbDatabase';
 import { EndGameCTA } from './EndGameCTA';
-import { useGameStore } from '../store/gameStore';
-import { qbDatabase } from '../data/qbData';
+import { getTier } from '../utils/tierCalculator';
 
 export const Game: React.FC = () => {
-  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const {
-    currentTeam,
-    picks,
-    isGameOver,
-    totalScore,
-    resetGame,
-    initializeGame,
-    addPick
-  } = useGameStore();
-  const [isInitializing, setIsInitializing] = useState(true);
+  const { user } = useAuth();
+  const { picks, currentTeam, totalScore, addPick, resetGame, saveGame } = useGameStore();
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
-
-  console.log('Game: Rendering with state:', {
-    user: user ? 'authenticated' : 'anonymous',
-    authLoading,
-    currentTeam,
-    picks,
-    totalScore,
-    isGameOver
-  });
+  const [showInstructions, setShowInstructions] = useState(true);
+  const [isGameOver, setIsGameOver] = useState(false);
 
   useEffect(() => {
-    console.log('Game: Initializing');
-    if (!currentTeam) {
-      initializeGame();
+    console.log('Game: Component mounted');
+    if (picks.length === 0) {
+      console.log('Game: Initializing new game');
+      resetGame();
     }
-    setIsInitializing(false);
-  }, [currentTeam, initializeGame]);
-
-  const saveGame = async () => {
-    if (!user) {
-      console.log('Game: Attempted to save game as anonymous user');
-      return;
-    }
-
-    console.log('Game: Saving game for user:', user.uid);
-    try {
-      await addDoc(collection(db, 'games'), {
-        userId: user.uid,
-        date: new Date(),
-        totalScore,
-        tier: getTier(totalScore),
-        picks: picks.map(pick => ({
-          team: pick.team,
-          qb: pick.qb,
-          wins: pick.wins
-        }))
-      });
-      console.log('Game: Successfully saved game');
-      navigate('/my-games');
-    } catch (error) {
-      console.error('Game: Error saving game:', error);
-    }
-  };
-
-  const handleNewGame = async () => {
-    console.log('Game: Starting new game');
-    if (user) {
-      await saveGame();
-    }
-    resetGame();
-    initializeGame();
-  };
+  }, [resetGame, picks.length]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Game: Handling submit with input:', inputValue);
+
+    const qb = inputValue.trim();
+    if (!qb) {
+      setError('Please enter a QB name');
+      return;
+    }
+
+    // Check if QB exists in database
+    const qbData = qbDatabase.find(q => q.name.toLowerCase() === qb.toLowerCase());
+    if (!qbData) {
+      setError('QB not found in database');
+      return;
+    }
+
+    // Check if QB has played for the current team
+    if (!qbData.teams.includes(currentTeam)) {
+      setError(`${qb} has never played for ${currentTeam}`);
+      return;
+    }
+
+    // Check if QB has already been used
+    if (picks.some(pick => pick.qb.toLowerCase() === qb.toLowerCase())) {
+      setError('This QB has already been used');
+      return;
+    }
+
+    console.log('Game: Adding pick:', { team: currentTeam, qb, wins: qbData.wins });
+    addPick(currentTeam, qb, qbData.wins);
+    setInputValue('');
     setError('');
 
-    const qb = qbDatabase[inputValue];
-    if (!qb) {
-      setError('Invalid QB name. Please try again.');
-      return;
+    if (picks.length + 1 >= 19) {
+      setIsGameOver(true);
     }
-
-    if (picks.some(pick => pick.qb === qb.name)) {
-      setError('This QB has already been used. Please choose another.');
-      return;
-    }
-
-    addPick(qb.name, qb.wins, qb.name);
-    setInputValue('');
   };
 
-  const getTier = (score: number): string => {
-    if (score >= 2500) return '🏆 THE GOAT';
-    if (score >= 2451) return '🏈 Hall of Famer';
-    if (score >= 2401) return '🏆 SuperBowl MVP';
-    if (score >= 2351) return '🏈 SuperBowl Winner';
-    if (score >= 2301) return '🏆 NFL MVP';
-    if (score >= 2251) return '🏆 Heisman Trophy Winner';
-    if (score >= 2176) return '🥇 First Round Pick';
-    if (score >= 2101) return '🥈 Draft Pick';
-    if (score >= 2001) return '🥉 High School All-American';
-    if (score >= 1901) return '⭐ Division 1 Scholarship';
-    if (score >= 1851) return '⭐ College Walk-on';
-    if (score >= 1801) return '⭐ High School Team Captain';
-    if (score >= 1751) return '⭐ JV';
-    return '⭐ Pop Warner';
+  const handleNewGame = () => {
+    console.log('Game: Starting new game');
+    resetGame();
+    setIsGameOver(false);
   };
-
-  // Show loading state while auth or game is initializing
-  if (isInitializing || authLoading) {
-    console.log('Game: Showing loading state');
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
 
   if (isGameOver) {
     console.log('Game: Showing game over screen');
     return (
-      <div className="text-center p-8">
-        <h2 className="text-3xl font-bold mb-4">Game Over!</h2>
-        <p className="text-xl mb-4">Final Score: {totalScore}</p>
-        <p className="text-xl mb-4">Tier: {getTier(totalScore)}</p>
-        {user ? (
+      <div className="max-w-2xl mx-auto p-4 text-center">
+        <h2 className="text-3xl font-bold mb-4 text-white">Game Over!</h2>
+        <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
+          <p className="text-2xl mb-2 text-white">Final Score: {totalScore}</p>
+          <p className="text-xl text-blue-400">Tier: {getTier(totalScore)}</p>
+        </div>
+        <div className="space-y-4">
+          {user ? (
+            <button
+              onClick={saveGame}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              Save Score
+            </button>
+          ) : (
+            <EndGameCTA onSaveGame={() => navigate('/login')} />
+          )}
           <button
-            onClick={saveGame}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={handleNewGame}
+            className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors"
           >
-            Save Score
+            New Game
           </button>
-        ) : (
-          <EndGameCTA onSaveGame={() => navigate('/login')} />
-        )}
-        <button
-          onClick={handleNewGame}
-          className="ml-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          New Game
-        </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (showInstructions) {
+    return (
+      <div className="max-w-2xl mx-auto p-4">
+        <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+          <h2 className="text-2xl font-bold mb-4 text-white">How to Play</h2>
+          <div className="space-y-4 text-gray-300">
+            <p>Test your NFL knowledge by naming quarterbacks for each team. Each QB can only be used once, and you'll get points based on their career wins.</p>
+            <div>
+              <h3 className="text-lg font-semibold text-blue-400 mb-2">Rules:</h3>
+              <ul className="list-disc list-inside space-y-2">
+                <li>Each round, you'll see a random NFL team</li>
+                <li>Enter a QB who has played for that team</li>
+                <li>Points are based on the QB's career wins</li>
+                <li>Each QB can only be used once</li>
+                <li>Play until you've made 20 picks</li>
+                <li>Try to reach 2,500 total wins!</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-blue-400 mb-2">Achievement Levels:</h3>
+              <ul className="space-y-1 text-sm">
+                <li>🏆 THE GOAT: 2500+ wins</li>
+                <li>🏈 Hall of Famer: 2451-2499 wins</li>
+                <li>🏆 SuperBowl MVP: 2401-2450 wins</li>
+                <li>🏈 SuperBowl Winner: 2351-2400 wins</li>
+                <li>🏆 NFL MVP: 2301-2350 wins</li>
+                <li>🏆 Heisman Trophy Winner: 2251-2300 wins</li>
+                <li>🥇 First Round Pick: 2176-2250 wins</li>
+                <li>🥈 Draft Pick: 2101-2175 wins</li>
+                <li>🥉 High School All-American: 2001-2100 wins</li>
+                <li>⭐ Division 1 Scholarship: 1901-2000 wins</li>
+                <li>⭐ College Walk-on: 1851-1900 wins</li>
+                <li>⭐ High School Team Captain: 1801-1850 wins</li>
+                <li>⭐ JV: 1751-1800 wins</li>
+                <li>⭐ Pop Warner: 1500-1750 wins</li>
+              </ul>
+            </div>
+            <button
+              onClick={() => setShowInstructions(false)}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              Start Game
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -151,20 +151,25 @@ export const Game: React.FC = () => {
   console.log('Game: Rendering game UI');
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <div className="mb-4">
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="w-full bg-gray-700 rounded-full h-2.5">
           <div
-            className="bg-blue-600 h-2.5 rounded-full"
+            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
             style={{ width: `${((picks.length + 1) / 20) * 100}%` }}
           ></div>
         </div>
+        <p className="text-sm text-gray-400 mt-2 text-center">
+          Round {picks.length + 1} of 20
+        </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 className="text-xl font-semibold mb-4">Current Team: {currentTeam}</h3>
-        <div className="space-y-4">
+      {/* Current Team and Picks */}
+      <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
+        <h3 className="text-xl font-semibold mb-4 text-white">Current Team: {currentTeam}</h3>
+        <div className="space-y-2">
           {picks.map((pick, index) => (
-            <div key={index} className="flex items-center space-x-2">
+            <div key={index} className="flex items-center justify-between text-gray-300">
               <span className="font-medium">{pick.team}:</span>
               <span>{pick.qb} ({pick.wins} wins)</span>
             </div>
@@ -172,9 +177,10 @@ export const Game: React.FC = () => {
         </div>
       </div>
 
+      {/* Input Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="qb-input" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="qb-input" className="block text-sm font-medium text-gray-300 mb-2">
             Enter QB Name
           </label>
           <input
@@ -182,14 +188,15 @@ export const Game: React.FC = () => {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter QB name..."
+            autoFocus
           />
-          {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
         >
           Submit
         </button>

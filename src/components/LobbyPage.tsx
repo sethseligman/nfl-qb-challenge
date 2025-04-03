@@ -56,7 +56,7 @@ const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: {
   }, [shouldShowRules]);
 
   return (
-    <>
+    <div className="relative">
       <div 
         className={`relative rounded-xl overflow-hidden transition-all duration-300 ${
           isActive ? 'scale-105 shadow-lg' : 'hover:scale-105 hover:shadow-lg'
@@ -143,7 +143,7 @@ const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

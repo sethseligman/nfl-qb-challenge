@@ -33,23 +33,6 @@ const NFL_TEAMS = [
   "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"
 ];
 
-const getTier = (score: number): string => {
-  if (score >= 2500) return '🏆 THE GOAT';
-  if (score >= 2451) return '🏈 Hall of Famer';
-  if (score >= 2401) return '🏆 SuperBowl MVP';
-  if (score >= 2351) return '🏈 SuperBowl Winner';
-  if (score >= 2301) return '🏆 NFL MVP';
-  if (score >= 2251) return '🏆 Heisman Trophy Winner';
-  if (score >= 2176) return '🥇 First Round Pick';
-  if (score >= 2101) return '🥈 Draft Pick';
-  if (score >= 2001) return '🥉 High School All-American';
-  if (score >= 1901) return '⭐ Division 1 Scholarship';
-  if (score >= 1851) return '⭐ College Walk-on';
-  if (score >= 1801) return '⭐ High School Team Captain';
-  if (score >= 1751) return '⭐ JV';
-  return '⭐ Pop Warner';
-};
-
 export function Game() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -58,9 +41,6 @@ export function Game() {
     picks,
     isGameOver,
     totalScore,
-    usedQBs,
-    setCurrentTeam,
-    addPick,
     resetGame,
     initializeGame
   } = useGameStore();
@@ -89,8 +69,25 @@ export function Game() {
     }
   };
 
-  const handlePick = (direction: 'higher' | 'lower') => {
+  const handlePick = () => {
     // TODO: Implement pick logic
+  };
+
+  const getTier = (score: number): string => {
+    if (score >= 2500) return '🏆 THE GOAT';
+    if (score >= 2451) return '🏈 Hall of Famer';
+    if (score >= 2401) return '🏆 SuperBowl MVP';
+    if (score >= 2351) return '🏈 SuperBowl Winner';
+    if (score >= 2301) return '🏆 NFL MVP';
+    if (score >= 2251) return '🏆 Heisman Trophy Winner';
+    if (score >= 2176) return '🥇 First Round Pick';
+    if (score >= 2101) return '🥈 Draft Pick';
+    if (score >= 2001) return '🥉 High School All-American';
+    if (score >= 1901) return '⭐ Division 1 Scholarship';
+    if (score >= 1851) return '⭐ College Walk-on';
+    if (score >= 1801) return '⭐ High School Team Captain';
+    if (score >= 1751) return '⭐ JV';
+    return '⭐ Pop Warner';
   };
 
   if (isGameOver) {
@@ -135,13 +132,13 @@ export function Game() {
 
       <div className="grid grid-cols-2 gap-4">
         <button
-          onClick={() => handlePick('higher')}
+          onClick={handlePick}
           className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg"
         >
           Higher
         </button>
         <button
-          onClick={() => handlePick('lower')}
+          onClick={handlePick}
           className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg"
         >
           Lower

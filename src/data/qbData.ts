@@ -210,7 +210,7 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Patrick Mahomes": {
     name: "Patrick Mahomes",
-    wins: 74,
+    wins: 89,
     teams: ["Kansas City Chiefs"]
   },
 
@@ -247,7 +247,7 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Kirk Cousins": {
     name: "Kirk Cousins",
-    wins: 76,
+    wins: 78,
     teams: ["Washington Commanders", "Minnesota Vikings", "Atlanta Falcons"]
   },
   "Derek Carr": {
@@ -257,37 +257,37 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Dak Prescott": {
     name: "Dak Prescott",
-    wins: 73,
+    wins: 76,
     teams: ["Dallas Cowboys"]
   },
   "Lamar Jackson": {
     name: "Lamar Jackson",
-    wins: 58,
+    wins: 70,
     teams: ["Baltimore Ravens"]
   },
   "Josh Allen": {
     name: "Josh Allen",
-    wins: 63,
+    wins: 76,
     teams: ["Buffalo Bills"]
   },
   "Joe Burrow": {
     name: "Joe Burrow",
-    wins: 29,
+    wins: 38,
     teams: ["Cincinnati Bengals"]
   },
   "Justin Herbert": {
     name: "Justin Herbert",
-    wins: 30,
+    wins: 41,
     teams: ["Los Angeles Chargers"]
   },
   "Tua Tagovailoa": {
     name: "Tua Tagovailoa",
-    wins: 32,
+    wins: 40,
     teams: ["Miami Dolphins"]
   },
   "Trevor Lawrence": {
     name: "Trevor Lawrence",
-    wins: 20,
+    wins: 22,
     teams: ["Jacksonville Jaguars"]
   },
   "Mark Brunell": {
@@ -467,6 +467,11 @@ export const qbDatabase: Record<string, QBData> = {
     wins: 57,
     teams: ["Cleveland Browns"]
   },
+  "Joe Flacco": {
+    name: "Joe Flacco",
+    wins: 98,
+    teams: ["Baltimore Ravens", "Denver Broncos", "New York Jets", "Cleveland Browns", "Indianapolis Colts"]
+  },
   "Steve Grogan": {
     name: "Steve Grogan",
     wins: 75,
@@ -543,6 +548,11 @@ export const qbDatabase: Record<string, QBData> = {
     name: "Andrew Luck",
     wins: 53,
     teams: ["Indianapolis Colts"]
+  },
+  "Vinny Testaverde": {
+    name: "Vinny Testaverde",
+    wins: 90,
+    teams: ["Tampa Bay Buccaneers", "Cleveland Browns", "Baltimore Ravens", "New York Jets", "Dallas Cowboys", "New England Patriots", "Carolina Panthers"]
   },
 
   // Houston Texans QBs
@@ -623,7 +633,7 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Jordan Love": {
     name: "Jordan Love",
-    wins: 9,
+    wins: 21,
     teams: ["Green Bay Packers"]
   },
   "Don Horn": {
@@ -753,6 +763,24 @@ export const qbDatabase: Record<string, QBData> = {
   }
 };
 
+// Function to normalize team names
+export const normalizeTeamName = (team: string): string => {
+  const teamChanges: { [key: string]: string } = {
+    'San Diego Chargers': 'Los Angeles Chargers',
+    'Oakland Raiders': 'Las Vegas Raiders',
+    'St. Louis Rams': 'Los Angeles Rams',
+    'San Francisco 49ers': 'San Francisco 49ers',
+    'Arizona Cardinals': 'Arizona Cardinals',
+    'Seattle Seahawks': 'Seattle Seahawks',
+    'Denver Broncos': 'Denver Broncos',
+    'Kansas City Chiefs': 'Kansas City Chiefs',
+    'Los Angeles Chargers': 'Los Angeles Chargers',
+    'Las Vegas Raiders': 'Las Vegas Raiders',
+    'Los Angeles Rams': 'Los Angeles Rams',
+  };
+  return teamChanges[team] || team;
+};
+
 export function validateQB(qbName: string, team: string): QBData | null {
   // Try to find the closest match for the QB name
   const matchedName = findClosestMatch(qbName);
@@ -761,12 +789,16 @@ export function validateQB(qbName: string, team: string): QBData | null {
   const qb = qbDatabase[matchedName];
   if (!qb) return null;
   
+  // Normalize team names for comparison
+  const normalizedCurrentTeam = normalizeTeamName(team);
+  const normalizedQbTeams = qb.teams.map(normalizeTeamName);
+  
   // Special case for Baltimore Colts/Indianapolis Colts
-  if (team === "Indianapolis Colts" && qb.teams.includes("Baltimore Colts")) {
+  if (normalizedCurrentTeam === "Indianapolis Colts" && normalizedQbTeams.includes("Baltimore Colts")) {
     return qb;
   }
   
-  if (!qb.teams.includes(team)) return null;
+  if (!normalizedQbTeams.includes(normalizedCurrentTeam)) return null;
   
   return qb;
 }

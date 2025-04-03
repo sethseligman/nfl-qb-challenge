@@ -111,6 +111,7 @@ export const Game: React.FC = () => {
     return '⭐ Pop Warner';
   };
 
+  // Show loading state while auth or game is initializing
   if (isInitializing || authLoading) {
     console.log('Game: Showing loading state');
     return (

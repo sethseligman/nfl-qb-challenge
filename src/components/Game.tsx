@@ -425,8 +425,8 @@ export const Game: React.FC = () => {
                 {(currentTeam || shufflingTeam) ? (
                   <>
                     <img 
-                      src={getTeamLogo(shufflingTeam || currentTeam)} 
-                      alt={shufflingTeam || currentTeam} 
+                      src={getTeamLogo(shufflingTeam || currentTeam || '')} 
+                      alt={shufflingTeam || currentTeam || ''} 
                       className={`w-32 h-32 object-contain ${
                         isShuffling 
                           ? 'animate-pulse-fast' 

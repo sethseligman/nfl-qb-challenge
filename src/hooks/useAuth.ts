@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut,
+  signInAnonymously
+} from 'firebase/auth';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -9,10 +14,25 @@ export const useAuth = () => {
 
   useEffect(() => {
     console.log('useAuth: Setting up auth listener');
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      console.log('useAuth: Auth state changed:', user ? 'authenticated' : 'anonymous');
-      setUser(user);
-      setLoading(false);
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      console.log('useAuth: Auth state changed:', user ? 'authenticated' : 'no user');
+      
+      if (user) {
+        console.log('useAuth: User exists, setting user state');
+        setUser(user);
+        setLoading(false);
+      } else {
+        console.log('useAuth: No user, attempting anonymous sign in');
+        try {
+          const anonymousUser = await signInAnonymously(auth);
+          console.log('useAuth: Anonymous sign in successful:', anonymousUser.user.uid);
+          setUser(anonymousUser.user);
+        } catch (error) {
+          console.error('useAuth: Anonymous sign in error:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
     });
 
     return () => {

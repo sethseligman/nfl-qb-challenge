@@ -59,8 +59,6 @@ export const Game: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showRules, setShowRules] = useState(false);
-  const [validationState, setValidationState] = useState<'idle' | 'error' | 'success'>('idle');
-  const [validationMessage, setValidationMessage] = useState('');
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
@@ -127,20 +125,6 @@ export const Game: React.FC = () => {
     }
   }, [isGameOver]);
 
-  // Add timeout cleanup for validation messages
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (validationState !== 'idle') {
-      timeout = setTimeout(() => {
-        setValidationState('idle');
-        setValidationMessage('');
-      }, 3000);
-    }
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [validationState]);
-
   const handleReset = () => {
     // Initialize game state
     initializeGame();
@@ -157,16 +141,12 @@ export const Game: React.FC = () => {
     // Clear input and validation states
     setInput('');
     setError(null);
-    setValidationState('idle');
-    setValidationMessage('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    setValidationState('idle');
-    setValidationMessage('');
 
     try {
       console.log('Submitting QB:', input);
@@ -195,14 +175,10 @@ export const Game: React.FC = () => {
         if (availableQBs.length > 0) {
           setAvailableQBs(availableQBs);
           setShowHelpDropdown(true);
-          setValidationState('success');
-          setValidationMessage('Available QBs shown below');
           setIsLoading(false);
           return;
         } else {
           setError('No more QBs available for this team');
-          setValidationState('error');
-          setValidationMessage('No more QBs available for this team');
           return;
         }
       }
@@ -212,16 +188,12 @@ export const Game: React.FC = () => {
       console.log('Validation result:', validationResult);
       if (!validationResult) {
         setError('Invalid quarterback name');
-        setValidationState('error');
-        setValidationMessage('Invalid quarterback name');
         return;
       }
 
       const { name, wins } = validationResult;
       if (usedQBs.includes(name)) {
         setError('This quarterback has already been used');
-        setValidationState('error');
-        setValidationMessage('This quarterback has already been used');
         return;
       }
 
@@ -239,13 +211,9 @@ export const Game: React.FC = () => {
       }, 1500);
       
       setInput('');
-      setValidationState('success');
-      setValidationMessage('✔️ QB Accepted');
     } catch (err) {
       console.error('Error in handleSubmit:', err);
       setError('An error occurred. Please try again.');
-      setValidationState('error');
-      setValidationMessage('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -308,8 +276,6 @@ export const Game: React.FC = () => {
     // Clear input and validation states
     setInput('');
     setError(null);
-    setValidationState('idle');
-    setValidationMessage('');
   };
 
   if (isGameOver) {
@@ -515,14 +481,6 @@ export const Game: React.FC = () => {
                 {error && (
                   <p className="mt-2 text-sm text-red-400 animate-fade-in">
                     {error}
-                  </p>
-                )}
-
-                {validationState !== 'idle' && !error && (
-                  <p className={`mt-2 text-sm animate-fade-in ${
-                    validationState === 'error' ? 'text-red-400' : 'text-emerald-400'
-                  }`}>
-                    {validationMessage}
                   </p>
                 )}
               </form>

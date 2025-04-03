@@ -41,6 +41,7 @@ export const Game: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [validationState, setValidationState] = useState<'idle' | 'error' | 'success'>('idle');
   const [validationMessage, setValidationMessage] = useState('');
+  const [showRules, setShowRules] = useState(false);
 
   // Calculate total score and current round
   const totalScore = picks.reduce((sum, pick) => sum + pick.wins, 0);
@@ -252,13 +253,64 @@ export const Game: React.FC = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-blue-500">NFL QB Challenge</h1>
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-          >
-            New Game
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowRules(!showRules)}
+              className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm"
+            >
+              Rules
+            </button>
+            <button
+              onClick={handleReset}
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-sm"
+            >
+              New Game
+            </button>
+          </div>
         </div>
+
+        {/* Rules Modal */}
+        {showRules && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-blue-500">How to Play</h2>
+                <button
+                  onClick={() => setShowRules(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="text-gray-300 space-y-4">
+                <p>
+                  Test your NFL knowledge by predicting the winner of each game. 
+                  Make your picks before kickoff and earn points for correct predictions. 
+                  The more confident you are, the more points you can earn!
+                </p>
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-500 mb-2">Achievement Levels</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li>• 🏆 THE GOAT: 2500+ wins</li>
+                    <li>• 🏈 Hall of Famer: 2451-2499 wins</li>
+                    <li>• 🏆 SuperBowl MVP: 2401-2450 wins</li>
+                    <li>• 🏈 SuperBowl Winner: 2351-2400 wins</li>
+                    <li>• 🏆 NFL MVP: 2301-2350 wins</li>
+                    <li>• 🏆 Heisman Trophy Winner: 2251-2300 wins</li>
+                    <li>• 🥇 First Round Pick: 2176-2250 wins</li>
+                    <li>• 🥈 Draft Pick: 2101-2175 wins</li>
+                    <li>• 🥉 High School All-American: 2001-2100 wins</li>
+                    <li>• ⭐ Division 1 Scholarship: 1901-2000 wins</li>
+                    <li>• ⭐ College Walk-on: 1851-1900 wins</li>
+                    <li>• ⭐ High School Team Captain: 1801-1850 wins</li>
+                    <li>• ⭐ JV: 1751-1800 wins</li>
+                    <li>• ⭐ Pop Warner: 1500-1750 wins</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-6">

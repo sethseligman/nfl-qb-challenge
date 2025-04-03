@@ -42,18 +42,13 @@ const GAME_CARDS: GameCard[] = [
 
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
-const GameCard = ({ game, isActive, onClick }: { game: GameCard, isActive: boolean, onClick: () => void }) => {
+const GameCard = ({ game, isActive, onClick, isMobile }: { 
+  game: GameCard, 
+  isActive: boolean, 
+  onClick: () => void,
+  isMobile: boolean 
+}) => {
   const [showRules, setShowRules] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   return (
     <>
@@ -174,6 +169,16 @@ const GameCard = ({ game, isActive, onClick }: { game: GameCard, isActive: boole
 export const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState('NFL');
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const filteredGames = GAME_CARDS.filter(game => game.sport === activeTab);
 
@@ -217,6 +222,7 @@ export const LobbyPage: React.FC = () => {
               game={game}
               isActive={activeTab === game.sport}
               onClick={() => navigate(game.path)}
+              isMobile={isMobile}
             />
           ))}
         </div>

@@ -528,7 +528,7 @@ export const Game: React.FC = () => {
           </div>
 
           {/* Stats Panel */}
-          <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start relative z-[1]">
+          <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start relative z-[-1]">
             <div className="bg-gray-800 rounded-xl shadow-xl p-6">
               {/* Picks History */}
               <div>

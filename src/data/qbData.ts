@@ -830,6 +830,96 @@ export const qbDatabase: Record<string, QBData> = {
     name: "Chris Chandler",
     wins: 67,
     teams: ["Indianapolis Colts", "Tampa Bay Buccaneers", "Houston Oilers", "Atlanta Falcons", "Chicago Bears", "St. Louis Rams", "Tennessee Titans"]
+  },
+  "Jim Harbaugh": {
+    name: "Jim Harbaugh",
+    wins: 66,
+    teams: ["Chicago Bears", "Indianapolis Colts", "Baltimore Ravens", "San Diego Chargers", "Detroit Lions", "Carolina Panthers"]
+  },
+  "Charlie Conerly": {
+    name: "Charlie Conerly",
+    wins: 65,
+    teams: ["New York Giants"]
+  },
+  "Jack Kemp": {
+    name: "Jack Kemp",
+    wins: 64,
+    teams: ["Buffalo Bills", "San Diego Chargers", "Detroit Lions"]
+  },
+  "Jim Everett": {
+    name: "Jim Everett",
+    wins: 63,
+    teams: ["Los Angeles Rams", "New Orleans Saints", "San Diego Chargers"]
+  },
+  "Earl Morrall": {
+    name: "Earl Morrall",
+    wins: 63,
+    teams: ["San Francisco 49ers", "Pittsburgh Steelers", "Detroit Lions", "Baltimore Colts", "Miami Dolphins", "Baltimore Ravens"]
+  },
+  "Jake Delhomme": {
+    name: "Jake Delhomme",
+    wins: 56,
+    teams: ["Carolina Panthers", "Cleveland Browns", "Houston Texans"]
+  },
+  "Bobby Hebert": {
+    name: "Bobby Hebert",
+    wins: 56,
+    teams: ["New Orleans Saints", "Atlanta Falcons"]
+  },
+  "Dan Pastorini": {
+    name: "Dan Pastorini",
+    wins: 56,
+    teams: ["Houston Oilers", "Oakland Raiders", "Los Angeles Rams", "Philadelphia Eagles"]
+  },
+  "Milt Plum": {
+    name: "Milt Plum",
+    wins: 56,
+    teams: ["Cleveland Browns", "Detroit Lions", "New York Giants", "Baltimore Colts"]
+  },
+  "Neil O'Donnell": {
+    name: "Neil O'Donnell",
+    wins: 55,
+    teams: ["Pittsburgh Steelers", "New York Jets", "Tennessee Titans", "Cincinnati Bengals"]
+  },
+  "Joe Namath": {
+    name: "Joe Namath",
+    wins: 53,
+    teams: ["New York Jets", "Los Angeles Rams"]
+  },
+  "Danny White": {
+    name: "Danny White",
+    wins: 53,
+    teams: ["Dallas Cowboys"]
+  },
+  "Jay Schroeder": {
+    name: "Jay Schroeder",
+    wins: 51,
+    teams: ["Washington Commanders", "Los Angeles Raiders", "Cincinnati Bengals", "Arizona Cardinals"]
+  },
+  "Steve Bartkowski": {
+    name: "Steve Bartkowski",
+    wins: 50,
+    teams: ["Atlanta Falcons", "Los Angeles Rams"]
+  },
+  "Charley Johnson": {
+    name: "Charley Johnson",
+    wins: 50,
+    teams: ["St. Louis Cardinals", "Houston Oilers", "Denver Broncos", "San Diego Chargers"]
+  },
+  "Trent Dilfer": {
+    name: "Trent Dilfer",
+    wins: 50,
+    teams: ["Tampa Bay Buccaneers", "Baltimore Ravens", "Seattle Seahawks", "Cleveland Browns", "San Francisco 49ers"]
+  },
+  "Frank Ryan": {
+    name: "Frank Ryan",
+    wins: 56,
+    teams: ["Los Angeles Rams", "Cleveland Browns", "Washington Commanders"]
+  },
+  "Tommy Kramer": {
+    name: "Tommy Kramer",
+    wins: 54,
+    teams: ["Minnesota Vikings", "New Orleans Saints"]
   }
 };
 

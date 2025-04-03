@@ -1,137 +1,113 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup
-} from 'firebase/auth';
+import { useAuth } from '../hooks/useAuth';
 
-export const Login: React.FC = () => {
-  const [isRegistering, setIsRegistering] = useState(false);
+export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { login, register } = useAuth();
   const navigate = useNavigate();
 
-  const handleEmailAuth = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+    setError('');
 
     try {
-      if (isRegistering) {
-        await createUserWithEmailAndPassword(auth, email, password);
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
-      }
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+      await login(email, password);
+      navigate('/game');
+    } catch (err) {
+      setError('Failed to sign in. Please check your credentials.');
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    setError(null);
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
 
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+      await register(email, password);
+      navigate('/game');
+    } catch (err) {
+      setError('Failed to create account. Please try again.');
     }
+  };
+
+  const handleContinueAsGuest = () => {
+    navigate('/game');
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-xl shadow-xl p-8 max-w-md w-full">
-        <h2 className="text-3xl font-bold text-center text-blue-500 mb-8">
-          {isRegistering ? 'Create Account' : 'Welcome Back'}
-        </h2>
+    <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+      <h2 className="text-2xl font-bold mb-6 text-center">Welcome to NFL QB Challenge</h2>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            required
+          />
+        </div>
 
-        <form onSubmit={handleEmailAuth} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            required
+          />
+        </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        {error && (
+          <div className="text-red-500 text-sm">{error}</div>
+        )}
 
-          {error && (
-            <div className="text-red-500 text-sm text-center">
-              {error}
-            </div>
-          )}
-
+        <div className="flex flex-col space-y-2">
           <button
             type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors disabled:opacity-50"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            {isLoading ? 'Loading...' : (isRegistering ? 'Register' : 'Sign In')}
+            Sign In
           </button>
-        </form>
+          <button
+            type="button"
+            onClick={handleSignUp}
+            className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          >
+            Sign Up
+          </button>
+        </div>
+      </form>
 
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-600"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-800 text-gray-400">Or continue with</span>
-            </div>
+      <div className="mt-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
           </div>
-
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            className="mt-6 w-full bg-white hover:bg-gray-100 text-gray-900 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            <img src="/google.svg" alt="Google" className="w-5 h-5" />
-            Sign in with Google
-          </button>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or</span>
+          </div>
         </div>
 
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setIsRegistering(!isRegistering)}
-            className="text-sm text-gray-400 hover:text-white transition-colors"
-          >
-            {isRegistering 
-              ? 'Already have an account? Sign in' 
-              : "Don't have an account? Register"}
-          </button>
-        </div>
+        <button
+          onClick={handleContinueAsGuest}
+          className="mt-6 w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        >
+          Continue as Guest
+        </button>
       </div>
     </div>
   );
-}; 
+} 

@@ -449,7 +449,7 @@ export const Game: React.FC = () => {
                         if (newValue.toLowerCase().trim() === 'help') {
                           setShowHelpDropdown(false);
                           setAvailableQBs([]);
-                          setIsValidInput(true);
+                          setIsValidInput(null);
                           return;
                         }
                         
@@ -485,7 +485,7 @@ export const Game: React.FC = () => {
                   </div>
                   <button
                     type="submit"
-                    disabled={isLoading || !isValidInput}
+                    disabled={isLoading || (!isValidInput && input.toLowerCase().trim() !== 'help')}
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? '...' : 'Submit'}

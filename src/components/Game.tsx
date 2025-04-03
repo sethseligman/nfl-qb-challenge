@@ -77,14 +77,18 @@ export const Game: React.FC = () => {
   }, [validationState]);
 
   const handleReset = () => {
+    // Set a new random team first
+    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+    setCurrentTeam(randomTeam);
+    
+    // Then reset game state
     resetGame();
+    
+    // Clear input and validation states
     setInput('');
     setError(null);
     setValidationState('idle');
     setValidationMessage('');
-    // Set a new random team after reset
-    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-    setCurrentTeam(randomTeam);
   };
 
   const validateQB = (input: string): { isValid: boolean; qb: string; wins: number; displayName: string } | null => {
@@ -346,86 +350,4 @@ export const Game: React.FC = () => {
                         setValidationState('idle');
                         setValidationMessage('');
                       }}
-                      className={`flex-1 bg-gray-700/50 text-white border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 transition-colors duration-200 ${
-                        validationState === 'error' 
-                          ? 'border-red-500 focus:ring-red-500' 
-                          : validationState === 'success'
-                          ? 'border-emerald-500 focus:ring-emerald-500'
-                          : 'border-gray-600 focus:ring-blue-500 focus:border-transparent'
-                      }`}
-                      placeholder="Enter QB name..."
-                      required
-                      disabled={isLoading}
-                    />
-                    <button
-                      type="submit"
-                      disabled={isLoading || validationState === 'error'}
-                      className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? 'Submitting...' : 'Submit'}
-                    </button>
-                  </div>
-                  {error && (
-                    <p className="mt-2 text-sm text-red-400 animate-fade-in">
-                      {error}
-                    </p>
-                  )}
-                  {validationState !== 'idle' && !error && (
-                    <p className={`mt-2 text-sm animate-fade-in ${
-                      validationState === 'error' ? 'text-red-400' : 'text-emerald-400'
-                    }`}>
-                      {validationMessage}
-                    </p>
-                  )}
-                </div>
-              </form>
-
-              <div className="mt-6 flex justify-between items-center">
-                <div className="text-gray-400">Round {currentRound} of 20</div>
-                {showScore && (
-                  <div className="text-emerald-500 font-medium">Score: {totalScore}</div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Panel */}
-          <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start">
-            <div className="bg-gray-800 rounded-xl shadow-xl p-6">
-              {/* Picks History */}
-              <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-lg font-semibold text-gray-300">Your Picks</h4>
-                  <div className="text-lg font-bold text-blue-500">{picks.length}/20</div>
-                </div>
-                <div className="space-y-3">
-                  {picks.map((pick, index) => (
-                    <div key={index} className="bg-gray-700/50 backdrop-blur-sm rounded-lg p-3 flex items-center gap-3">
-                      <div className="flex-shrink-0">
-                        <img
-                          src={getTeamLogo(pick.team)}
-                          alt={pick.team}
-                          className="w-8 h-8 object-contain"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <QBPhoto qb={pick.qb} size="sm" />
-                          <div className="text-sm font-medium text-white truncate">{pick.displayName}</div>
-                        </div>
-                        <div className="text-xs text-gray-400 truncate">{pick.team}</div>
-                        {showScore && (
-                          <div className="text-xs text-emerald-500 mt-1">{pick.wins} wins</div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}; 
+                      className={`

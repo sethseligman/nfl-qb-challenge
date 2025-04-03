@@ -4,6 +4,7 @@ import { useGameStore } from '../store/gameStore';
 import { useAuth } from '../hooks/useAuth';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { EndGameCTA } from './EndGameCTA';
 
 export function Game() {
   const navigate = useNavigate();
@@ -18,12 +19,10 @@ export function Game() {
     addPick
   } = useGameStore();
 
-  const handleNewGame = async () => {
-    if (!user) return;
-
+  const saveGame = async () => {
     try {
       await addDoc(collection(db, 'games'), {
-        userId: user.uid,
+        userId: user?.uid || 'anonymous',
         date: new Date(),
         totalScore,
         tier: getTier(totalScore),
@@ -33,13 +32,18 @@ export function Game() {
           wins: pick.wins
         }))
       });
-
-      resetGame();
-      initializeGame();
-      navigate('/my-games');
     } catch (error) {
       console.error('Error saving game:', error);
     }
+  };
+
+  const handleNewGame = async () => {
+    if (user) {
+      await saveGame();
+    }
+    resetGame();
+    initializeGame();
+    navigate('/my-games');
   };
 
   const handlePick = (isHigher: boolean) => {
@@ -77,8 +81,9 @@ export function Game() {
           onClick={handleNewGame}
           className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg"
         >
-          Save Score & Start New Game
+          {user ? 'Save Score & Start New Game' : 'Start New Game'}
         </button>
+        <EndGameCTA onSaveGame={saveGame} />
       </div>
     );
   }

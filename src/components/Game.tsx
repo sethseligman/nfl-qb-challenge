@@ -1,37 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useGameStore } from '../store/gameStore';
-import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName } from '../data/qbData';
-import { getTeamLogo } from '../data/teamLogos';
-import { getQBPhoto } from '../data/qbPhotos';
-import { ScoreHistory } from './ScoreHistory';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGameStore } from '../store/gameStore';
 import { useAuth } from '../hooks/useAuth';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-
-interface Score {
-  id: string;
-  date: string;
-  totalScore: number;
-  tier: string;
-  picks: {
-    qb: string;
-    wins: number;
-    displayName: string;
-    team: string;
-  }[];
-}
-
-const NFL_TEAMS = [
-  "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
-  "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns",
-  "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers",
-  "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs",
-  "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins",
-  "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants",
-  "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers",
-  "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"
-];
 
 export function Game() {
   const navigate = useNavigate();

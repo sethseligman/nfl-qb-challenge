@@ -108,7 +108,9 @@ const GameCard = ({ game, isActive, onClick, isMobile }: {
                 </button>
               ) : (
                 <div 
-                  className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium cursor-help"
+                  className={`absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium cursor-help transition-opacity duration-200 ${
+                    isHovered ? 'opacity-100' : 'opacity-0'
+                  }`}
                   onMouseEnter={() => setShowRules(true)}
                   onMouseLeave={() => setShowRules(false)}
                 >

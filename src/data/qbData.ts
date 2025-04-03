@@ -773,8 +773,10 @@ export function validateQB(qbName: string, team: string): QBData | null {
 
 // Function to format QB display name
 export function formatQBDisplayName(input: string, fullName: string): string {
+  const normalizedInput = input.toLowerCase().trim();
+  
   // If input is a recognized nickname, show "Full Name / 'Nickname'"
-  if (QB_NICKNAMES[input.toLowerCase()]) {
+  if (QB_NICKNAMES[normalizedInput]) {
     return `${fullName} / '${input}'`;
   }
   
@@ -787,12 +789,12 @@ export function formatQBDisplayName(input: string, fullName: string): string {
     return acc;
   }, {} as Record<string, string>);
 
-  if (lastNames[input.toLowerCase()]) {
+  if (lastNames[normalizedInput]) {
     return fullName;
   }
 
   // For exact matches, show full name only
-  if (input.toLowerCase() === fullName.toLowerCase()) {
+  if (normalizedInput === fullName.toLowerCase()) {
     return fullName;
   }
 

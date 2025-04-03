@@ -119,6 +119,12 @@ export const Game: React.FC = () => {
     const qbData = qbDatabase[result];
     if (!qbData) return null;
 
+    // Check if the QB played for the current team
+    if (!qbData.teams.includes(currentTeam || '')) {
+      return null;
+    }
+
+    // Get the display name based on the input and full name
     const displayName = formatQBDisplayName(input, result);
     return { isValid: true, qb: result, wins: qbData.wins, displayName };
   };

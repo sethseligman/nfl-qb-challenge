@@ -147,10 +147,7 @@ export const Game: React.FC = () => {
         return;
       }
 
-      // Get the full QB name from the database
-      const qbData = qbDatabase[qb];
-      const fullDisplayName = formatQBDisplayName(qb, qb);
-      addPick(qb, wins, fullDisplayName);
+      addPick(qb, wins, displayName);
       setInput('');
       setValidationState('success');
       setValidationMessage('✔️ QB Accepted');

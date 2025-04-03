@@ -792,6 +792,11 @@ export function formatQBDisplayName(input: string, fullName: string): string {
   }
 
   // For exact matches, show full name only
+  if (input.toLowerCase() === fullName.toLowerCase()) {
+    return fullName;
+  }
+
+  // For any other case, show the full name
   return fullName;
 }
 

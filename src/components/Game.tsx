@@ -60,6 +60,8 @@ export const Game: React.FC = () => {
   const [showRules, setShowRules] = useState(false);
   const [validationState, setValidationState] = useState<'idle' | 'error' | 'success'>('idle');
   const [validationMessage, setValidationMessage] = useState('');
+  const [showHelpDropdown, setShowHelpDropdown] = useState(false);
+  const [availableQBs, setAvailableQBs] = useState<string[]>([]);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -123,24 +125,23 @@ export const Game: React.FC = () => {
 
       // Check if input is 'help'
       if (input.toLowerCase().trim() === 'help') {
-        // Find the best available QB for the current team
+        // Find all available QBs for the current team
         const availableQBs = Object.entries(qbDatabase)
           .filter(([qbName, data]) => {
             const normalizedCurrentTeam = normalizeTeamName(currentTeam || '');
             const normalizedQbTeams = data.teams.map(normalizeTeamName);
             return normalizedQbTeams.includes(normalizedCurrentTeam) && !usedQBs.includes(qbName);
           })
-          .sort((a, b) => b[1].wins - a[1].wins);
+          .sort((a, b) => b[1].wins - a[1].wins)
+          .map(([name]) => name);
 
-        console.log('Available QBs for', currentTeam, ':', availableQBs);
-        console.log('Used QBs:', usedQBs);
+        console.log('Available QBs:', availableQBs); // Debug log
 
         if (availableQBs.length > 0) {
-          const bestQB = availableQBs[0];
-          console.log('Best QB found:', bestQB);
-          setInput(bestQB[0]);
+          setAvailableQBs(availableQBs);
+          setShowHelpDropdown(true);
           setValidationState('success');
-          setValidationMessage('Best available QB selected! Click submit to use them.');
+          setValidationMessage('Available QBs shown below');
           setIsLoading(false);
           return;
         } else {
@@ -188,6 +189,12 @@ export const Game: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleQBSelect = (qbName: string) => {
+    setInput(qbName);
+    setShowHelpDropdown(false);
+    setAvailableQBs([]);
   };
 
   const QBPhoto: React.FC<{ qb: string; size?: 'sm' | 'lg' }> = ({ qb, size = 'sm' }) => {
@@ -393,51 +400,56 @@ export const Game: React.FC = () => {
             </div>
 
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      id="qb"
-                      value={input}
-                      onChange={(e) => {
-                        setInput(e.target.value);
-                        setError(null);
-                        setValidationState('idle');
-                        setValidationMessage('');
-                      }}
-                      className={`flex-1 bg-gray-700/50 text-white border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 transition-colors duration-200 ${
-                        validationState === 'error' 
-                          ? 'border-red-500 focus:ring-red-500' 
-                          : validationState === 'success'
-                          ? 'border-emerald-500 focus:ring-emerald-500'
-                          : 'border-gray-600 focus:ring-blue-500 focus:border-transparent'
-                      }`}
-                      placeholder="Enter QB name..."
-                      required
-                      disabled={isLoading}
-                    />
-                    <button
-                      type="submit"
-                      disabled={isLoading || validationState === 'error'}
-                      className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? 'Submitting...' : 'Submit'}
-                    </button>
-                  </div>
-                  {error && (
-                    <p className="mt-2 text-sm text-red-400 animate-fade-in">
-                      {error}
-                    </p>
-                  )}
-                  {validationState !== 'idle' && !error && (
-                    <p className={`mt-2 text-sm animate-fade-in ${
-                      validationState === 'error' ? 'text-red-400' : 'text-emerald-400'
-                    }`}>
-                      {validationMessage}
-                    </p>
-                  )}
+              <form onSubmit={handleSubmit} className="relative">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      setShowHelpDropdown(false);
+                      setAvailableQBs([]);
+                    }}
+                    placeholder="Enter quarterback name or type 'help'"
+                    className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  >
+                    {isLoading ? '...' : 'Submit'}
+                  </button>
                 </div>
+
+                {showHelpDropdown && availableQBs.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                    {availableQBs.map((qbName) => (
+                      <button
+                        key={qbName}
+                        onClick={() => handleQBSelect(qbName)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white"
+                      >
+                        {qbName}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {error && (
+                  <p className="mt-2 text-sm text-red-400 animate-fade-in">
+                    {error}
+                  </p>
+                )}
+
+                {validationState !== 'idle' && !error && (
+                  <p className={`mt-2 text-sm animate-fade-in ${
+                    validationState === 'error' ? 'text-red-400' : 'text-emerald-400'
+                  }`}>
+                    {validationMessage}
+                  </p>
+                )}
               </form>
 
               <div className="mt-6 flex justify-between items-center">

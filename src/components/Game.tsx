@@ -449,7 +449,7 @@ export const Game: React.FC = () => {
                         if (newValue.toLowerCase().trim() === 'help') {
                           setShowHelpDropdown(false);
                           setAvailableQBs([]);
-                          setIsValidInput(null);
+                          setIsValidInput(true);
                           return;
                         }
                         

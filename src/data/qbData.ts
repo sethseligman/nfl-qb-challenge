@@ -11,86 +11,21 @@ const QB_NICKNAMES: Record<string, string> = {
   "The GOAT": "Tom Brady",
   "Peyton": "Peyton Manning",
   "The Sheriff": "Peyton Manning",
-  "Favre": "Brett Favre",
-  "Brees": "Drew Brees",
   "Big Ben": "Ben Roethlisberger",
-  "Elway": "John Elway",
-  "Marino": "Dan Marino",
-  "Rodgers": "Aaron Rodgers",
   "A-Rod": "Aaron Rodgers",
-  "Rivers": "Philip Rivers",
-  "Tarkenton": "Fran Tarkenton",
-  "Unitas": "Johnny Unitas",
-  "Eli": "Eli Manning",
-  "Montana": "Joe Montana",
   "Joe Cool": "Joe Montana",
-  "Bradshaw": "Terry Bradshaw",
-  "Moon": "Warren Moon",
-  "Kelly": "Jim Kelly",
-  "Wilson": "Russell Wilson",
-  "Young": "Steve Young",
-  "Aikman": "Troy Aikman",
-  "Staubach": "Roger Staubach",
   "Captain America": "Roger Staubach",
-  "Mahomes": "Patrick Mahomes",
   "Matty Ice": "Matt Ryan",
-  "Bledsoe": "Drew Bledsoe",
-  "McNabb": "Donovan McNabb",
-  "Palmer": "Carson Palmer",
-  "Romo": "Tony Romo",
-  "Stafford": "Matthew Stafford",
-  "Cousins": "Kirk Cousins",
-  "Carr": "Derek Carr",
   "Dak": "Dak Prescott",
-  "Lamar": "Lamar Jackson",
-  "Allen": "Josh Allen",
-  "Burrow": "Joe Burrow",
-  "Herbert": "Justin Herbert",
   "Tua": "Tua Tagovailoa",
-  "Lawrence": "Trevor Lawrence",
-  "Stabler": "Ken Stabler",
   "The Snake": "Ken Stabler",
-  "Griese": "Bob Griese",
-  "Dawson": "Len Dawson",
-  "Starr": "Bart Starr",
-  "Jurgensen": "Sonny Jurgensen",
-  "Graham": "Otto Graham",
-  "Luckman": "Sid Luckman",
-  "Baugh": "Sammy Baugh",
-  "Layne": "Bobby Layne",
-  "Tittle": "Y.A. Tittle",
-  "Van Brocklin": "Norm Van Brocklin",
-  "Blanda": "George Blanda",
-  "Brodie": "John Brodie",
-  "Gabriel": "Roman Gabriel",
-  "Lamonica": "Daryle Lamonica",
   "The Mad Bomber": "Daryle Lamonica",
-  "Kilmer": "Billy Kilmer",
-  "Anderson": "Ken Anderson",
-  "Hart": "Jim Hart",
-  "Archie": "Archie Manning",
-  "Fouts": "Dan Fouts",
-  "Plunkett": "Jim Plunkett",
-  "Jones": "Bert Jones",
-  "Sipe": "Brian Sipe",
-  "Grogan": "Steve Grogan",
-  "Simms": "Phil Simms",
-  "McMahon": "Jim McMahon",
   "The Punky QB": "Jim McMahon",
-  "Esiason": "Boomer Esiason",
-  "Boomer": "Boomer Esiason",
-  "Rypien": "Mark Rypien",
-  "McNair": "Steve McNair",
   "Air McNair": "Steve McNair",
-  "Warner": "Kurt Warner",
-  "Gannon": "Rich Gannon",
-  "Garcia": "Jeff Garcia",
-  "Green": "Trent Green",
-  "Plummer": "Jake Plummer",
-  "Bulger": "Marc Bulger",
-  "Vick": "Michael Vick",
-  "Hasselbeck": "Matt Hasselbeck",
-  "Luck": "Andrew Luck"
+  "Fitz": "Ryan Fitzpatrick",
+  "Fitzmagic": "Ryan Fitzpatrick",
+  "Tyrod": "Tyrod Taylor",
+  "Eli": "Eli Manning"
 };
 
 // Function to calculate string similarity (Levenshtein distance)
@@ -244,7 +179,7 @@ export const qbDatabase: Record<string, QBData> = {
   "Warren Moon": {
     name: "Warren Moon",
     wins: 102,
-    teams: ["Houston Oilers", "Minnesota Vikings", "Seattle Seahawks", "Kansas City Chiefs"]
+    teams: ["Seattle Seahawks", "Houston Oilers", "Minnesota Vikings", "Kansas City Chiefs"]
   },
   "Jim Kelly": {
     name: "Jim Kelly",
@@ -318,7 +253,7 @@ export const qbDatabase: Record<string, QBData> = {
   "Derek Carr": {
     name: "Derek Carr",
     wins: 63,
-    teams: ["Oakland Raiders", "Las Vegas Raiders", "New Orleans Saints"]
+    teams: ["New Orleans Saints", "Oakland Raiders", "Las Vegas Raiders"]
   },
   "Dak Prescott": {
     name: "Dak Prescott",
@@ -353,6 +288,66 @@ export const qbDatabase: Record<string, QBData> = {
   "Trevor Lawrence": {
     name: "Trevor Lawrence",
     wins: 20,
+    teams: ["Jacksonville Jaguars"]
+  },
+  "Mark Brunell": {
+    name: "Mark Brunell",
+    wins: 69,
+    teams: ["Jacksonville Jaguars", "Washington Commanders", "New Orleans Saints", "New York Jets"]
+  },
+  "David Garrard": {
+    name: "David Garrard",
+    wins: 39,
+    teams: ["Jacksonville Jaguars", "New York Jets"]
+  },
+  "Blake Bortles": {
+    name: "Blake Bortles",
+    wins: 24,
+    teams: ["Jacksonville Jaguars", "Los Angeles Rams", "Denver Broncos", "Green Bay Packers", "New Orleans Saints"]
+  },
+  "Nick Foles": {
+    name: "Nick Foles",
+    wins: 29,
+    teams: ["Jacksonville Jaguars", "Philadelphia Eagles", "St. Louis Rams", "Kansas City Chiefs", "Chicago Bears", "Indianapolis Colts"]
+  },
+  "Gardner Minshew": {
+    name: "Gardner Minshew",
+    wins: 7,
+    teams: ["Jacksonville Jaguars", "Philadelphia Eagles", "Indianapolis Colts"]
+  },
+  "Byron Leftwich": {
+    name: "Byron Leftwich",
+    wins: 24,
+    teams: ["Pittsburgh Steelers", "Jacksonville Jaguars", "Atlanta Falcons", "Tampa Bay Buccaneers"]
+  },
+  "Chad Henne": {
+    name: "Chad Henne",
+    wins: 18,
+    teams: ["Jacksonville Jaguars", "Miami Dolphins", "Kansas City Chiefs"]
+  },
+  "C.J. Beathard": {
+    name: "C.J. Beathard",
+    wins: 2,
+    teams: ["Jacksonville Jaguars", "San Francisco 49ers"]
+  },
+  "Mike Glennon": {
+    name: "Mike Glennon",
+    wins: 6,
+    teams: ["Jacksonville Jaguars", "Tampa Bay Buccaneers", "Chicago Bears", "Arizona Cardinals", "New York Giants", "Miami Dolphins"]
+  },
+  "Jake Luton": {
+    name: "Jake Luton",
+    wins: 0,
+    teams: ["Seattle Seahawks", "Jacksonville Jaguars", "Miami Dolphins", "Minnesota Vikings"]
+  },
+  "Josh Johnson": {
+    name: "Josh Johnson",
+    wins: 1,
+    teams: ["Jacksonville Jaguars", "Tampa Bay Buccaneers", "San Francisco 49ers", "Cleveland Browns", "Cincinnati Bengals", "New York Jets", "Washington Commanders", "Baltimore Ravens", "Denver Broncos", "Houston Texans", "Las Vegas Raiders", "Dallas Cowboys"]
+  },
+  "Nathan Rourke": {
+    name: "Nathan Rourke",
+    wins: 0,
     teams: ["Jacksonville Jaguars"]
   },
   "Ken Stabler": {
@@ -502,7 +497,7 @@ export const qbDatabase: Record<string, QBData> = {
   "Steve McNair": {
     name: "Steve McNair",
     wins: 91,
-    teams: ["Houston Oilers", "Tennessee Titans", "Baltimore Ravens"]
+    teams: ["Tennessee Titans", "Houston Oilers", "Baltimore Ravens"]
   },
   "Kurt Warner": {
     name: "Kurt Warner",
@@ -522,7 +517,7 @@ export const qbDatabase: Record<string, QBData> = {
   "Trent Green": {
     name: "Trent Green",
     wins: 56,
-    teams: ["Washington Commanders", "St. Louis Rams", "Kansas City Chiefs", "Miami Dolphins"]
+    teams: ["Kansas City Chiefs", "Washington Commanders", "St. Louis Rams", "Miami Dolphins"]
   },
   "Jake Plummer": {
     name: "Jake Plummer",
@@ -537,17 +532,224 @@ export const qbDatabase: Record<string, QBData> = {
   "Michael Vick": {
     name: "Michael Vick",
     wins: 61,
-    teams: ["Atlanta Falcons", "Philadelphia Eagles", "New York Jets", "Pittsburgh Steelers"]
+    teams: ["Pittsburgh Steelers", "Atlanta Falcons", "Philadelphia Eagles", "New York Jets"]
   },
   "Matt Hasselbeck": {
     name: "Matt Hasselbeck",
     wins: 85,
-    teams: ["Green Bay Packers", "Seattle Seahawks", "Tennessee Titans", "Indianapolis Colts"]
+    teams: ["Tennessee Titans", "Seattle Seahawks", "Green Bay Packers", "Indianapolis Colts"]
   },
   "Andrew Luck": {
     name: "Andrew Luck",
     wins: 53,
     teams: ["Indianapolis Colts"]
+  },
+
+  // Houston Texans QBs
+  "Deshaun Watson": {
+    name: "Deshaun Watson",
+    wins: 28,
+    teams: ["Houston Texans", "Cleveland Browns"]
+  },
+  "Matt Schaub": {
+    name: "Matt Schaub",
+    wins: 46,
+    teams: ["Houston Texans", "Atlanta Falcons", "Oakland Raiders", "Baltimore Ravens"]
+  },
+  "David Carr": {
+    name: "David Carr",
+    wins: 23,
+    teams: ["Houston Texans", "Carolina Panthers", "New York Giants", "San Francisco 49ers"]
+  },
+  "Case Keenum": {
+    name: "Case Keenum",
+    wins: 29,
+    teams: ["Houston Texans", "Minnesota Vikings", "Denver Broncos", "Washington Commanders", "Cleveland Browns", "Buffalo Bills", "Los Angeles Rams"]
+  },
+  "Ryan Fitzpatrick": {
+    name: "Ryan Fitzpatrick",
+    wins: 59,
+    teams: ["Tennessee Titans", "Buffalo Bills", "Houston Texans", "New York Jets", "Tampa Bay Buccaneers", "Miami Dolphins", "Washington Commanders"]
+  },
+  "Brian Hoyer": {
+    name: "Brian Hoyer",
+    wins: 16,
+    teams: ["Houston Texans", "New England Patriots", "Arizona Cardinals", "Cleveland Browns", "Chicago Bears", "San Francisco 49ers", "Indianapolis Colts", "Las Vegas Raiders"]
+  },
+  "T.J. Yates": {
+    name: "T.J. Yates",
+    wins: 4,
+    teams: ["Houston Texans", "Atlanta Falcons", "Miami Dolphins"]
+  },
+  "Brandon Weeden": {
+    name: "Brandon Weeden",
+    wins: 5,
+    teams: ["Houston Texans", "Cleveland Browns", "Dallas Cowboys", "Tennessee Titans"]
+  },
+  "Ryan Mallett": {
+    name: "Ryan Mallett",
+    wins: 3,
+    teams: ["Houston Texans", "Baltimore Ravens"]
+  },
+  "Tom Savage": {
+    name: "Tom Savage",
+    wins: 2,
+    teams: ["Houston Texans", "San Francisco 49ers"]
+  },
+  "Davis Mills": {
+    name: "Davis Mills",
+    wins: 5,
+    teams: ["Houston Texans"]
+  },
+  "Tyrod Taylor": {
+    name: "Tyrod Taylor",
+    wins: 24,
+    teams: ["Houston Texans", "Buffalo Bills", "Cleveland Browns", "Los Angeles Chargers", "New York Giants"]
+  },
+  "Jeff Driskel": {
+    name: "Jeff Driskel",
+    wins: 1,
+    teams: ["Houston Texans", "Cincinnati Bengals", "Detroit Lions", "Denver Broncos", "San Francisco 49ers"]
+  },
+  "Kyle Allen": {
+    name: "Kyle Allen",
+    wins: 2,
+    teams: ["Houston Texans", "Carolina Panthers", "Washington Commanders", "Buffalo Bills"]
+  },
+  "Scott Hunter": {
+    name: "Scott Hunter",
+    wins: 6,
+    teams: ["Green Bay Packers", "Buffalo Bills", "Atlanta Falcons", "Detroit Lions", "Cincinnati Bengals"]
+  },
+  "Jordan Love": {
+    name: "Jordan Love",
+    wins: 9,
+    teams: ["Green Bay Packers"]
+  },
+  "Don Horn": {
+    name: "Don Horn",
+    wins: 4,
+    teams: ["Green Bay Packers", "Denver Broncos", "San Diego Chargers", "Cleveland Browns"]
+  },
+  "Zeke Bratkowski": {
+    name: "Zeke Bratkowski",
+    wins: 12,
+    teams: ["Green Bay Packers", "Chicago Bears", "Los Angeles Rams"]
+  },
+  "John Hadl": {
+    name: "John Hadl",
+    wins: 8,
+    teams: ["Green Bay Packers", "San Diego Chargers", "Los Angeles Rams", "Houston Oilers"]
+  },
+  "David Whitehurst": {
+    name: "David Whitehurst",
+    wins: 17,
+    teams: ["Green Bay Packers", "Kansas City Chiefs"]
+  },
+  "Lynn Dickey": {
+    name: "Lynn Dickey",
+    wins: 25,
+    teams: ["Green Bay Packers", "Houston Oilers", "Kansas City Chiefs"]
+  },
+  "Randy Wright": {
+    name: "Randy Wright",
+    wins: 4,
+    teams: ["Green Bay Packers"]
+  },
+  "Anthony Dilweg": {
+    name: "Anthony Dilweg",
+    wins: 2,
+    teams: ["Green Bay Packers"]
+  },
+  "Mike Tomczak": {
+    name: "Mike Tomczak",
+    wins: 42,
+    teams: ["Pittsburgh Steelers", "Chicago Bears", "Green Bay Packers", "Cleveland Browns", "Washington Commanders"]
+  },
+  "Blair Kiel": {
+    name: "Blair Kiel",
+    wins: 0,
+    teams: ["Green Bay Packers", "Indianapolis Colts", "Tampa Bay Buccaneers"]
+  },
+  "Don Majkowski": {
+    name: "Don Majkowski",
+    wins: 27,
+    teams: ["Green Bay Packers", "Indianapolis Colts", "Detroit Lions"]
+  },
+  "Ty Detmer": {
+    name: "Ty Detmer",
+    wins: 4,
+    teams: ["Green Bay Packers", "Philadelphia Eagles", "San Francisco 49ers", "Cleveland Browns", "Detroit Lions", "Atlanta Falcons"]
+  },
+  "Doug Pederson": {
+    name: "Doug Pederson",
+    wins: 2,
+    teams: ["Green Bay Packers", "Philadelphia Eagles", "Cleveland Browns", "Miami Dolphins"]
+  },
+  "Matt Flynn": {
+    name: "Matt Flynn",
+    wins: 3,
+    teams: ["Green Bay Packers", "Seattle Seahawks", "Oakland Raiders", "Buffalo Bills", "New York Jets", "New Orleans Saints"]
+  },
+  "Brett Hundley": {
+    name: "Brett Hundley",
+    wins: 3,
+    teams: ["Green Bay Packers", "Seattle Seahawks", "Arizona Cardinals", "Indianapolis Colts"]
+  },
+  "Tim Boyle": {
+    name: "Tim Boyle",
+    wins: 0,
+    teams: ["Green Bay Packers", "Detroit Lions", "New York Jets"]
+  },
+  "Elvis Grbac": {
+    name: "Elvis Grbac",
+    wins: 31,
+    teams: ["Kansas City Chiefs", "San Francisco 49ers", "Baltimore Ravens"]
+  },
+  "Damon Huard": {
+    name: "Damon Huard",
+    wins: 14,
+    teams: ["Kansas City Chiefs", "Miami Dolphins", "New England Patriots", "San Francisco 49ers"]
+  },
+  "Brodie Croyle": {
+    name: "Brodie Croyle",
+    wins: 0,
+    teams: ["Kansas City Chiefs"]
+  },
+  "Kerry Collins": {
+    name: "Kerry Collins",
+    wins: 81,
+    teams: ["Tennessee Titans", "Carolina Panthers", "New York Giants", "Oakland Raiders", "Indianapolis Colts"]
+  },
+  "Jake Locker": {
+    name: "Jake Locker",
+    wins: 9,
+    teams: ["Tennessee Titans"]
+  },
+  "Marcus Mariota": {
+    name: "Marcus Mariota",
+    wins: 29,
+    teams: ["Tennessee Titans", "Las Vegas Raiders", "Atlanta Falcons", "Philadelphia Eagles"]
+  },
+  "Matt Cassel": {
+    name: "Matt Cassel",
+    wins: 33,
+    teams: ["Tennessee Titans", "New England Patriots", "Kansas City Chiefs", "Minnesota Vikings", "Buffalo Bills", "Dallas Cowboys", "Detroit Lions"]
+  },
+  "Blaine Gabbert": {
+    name: "Blaine Gabbert",
+    wins: 13,
+    teams: ["Tennessee Titans", "Jacksonville Jaguars", "San Francisco 49ers", "Arizona Cardinals", "Kansas City Chiefs", "Tampa Bay Buccaneers"]
+  },
+  "Rusty Smith": {
+    name: "Rusty Smith",
+    wins: 0,
+    teams: ["Tennessee Titans"]
+  },
+  "Alex Hasselbeck": {
+    name: "Alex Hasselbeck",
+    wins: 0,
+    teams: ["Tennessee Titans"]
   }
 };
 

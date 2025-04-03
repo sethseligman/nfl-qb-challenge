@@ -37,7 +37,7 @@ const App: React.FC = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="/" element={<Game />} />
+            <Route path="/" element={<Navigate to="/game" replace />} />
             <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />
             <Route path="/mlb" element={<div className="text-center p-8">MLB Pitcher Challenge - Coming Soon!</div>} />
             <Route path="/soccer" element={<div className="text-center p-8">Soccer Goals Challenge - Coming Soon!</div>} />

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { auth } from '../firebase';
 import { User } from 'firebase/auth';
+import { auth } from '../firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -9,10 +10,7 @@ export const useAuth = () => {
   useEffect(() => {
     console.log('useAuth: Setting up auth listener');
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      console.log('useAuth: Auth state changed:', {
-        user: user ? 'authenticated' : 'anonymous',
-        uid: user?.uid
-      });
+      console.log('useAuth: Auth state changed:', user ? 'authenticated' : 'anonymous');
       setUser(user);
       setLoading(false);
     });
@@ -23,5 +21,37 @@ export const useAuth = () => {
     };
   }, []);
 
-  return { user, loading };
+  const login = async (email: string, password: string) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('useAuth: User logged in:', userCredential.user.uid);
+      return userCredential.user;
+    } catch (error) {
+      console.error('useAuth: Login error:', error);
+      throw error;
+    }
+  };
+
+  const register = async (email: string, password: string) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('useAuth: User registered:', userCredential.user.uid);
+      return userCredential.user;
+    } catch (error) {
+      console.error('useAuth: Registration error:', error);
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      console.log('useAuth: User logged out');
+    } catch (error) {
+      console.error('useAuth: Logout error:', error);
+      throw error;
+    }
+  };
+
+  return { user, loading, login, register, logout };
 }; 

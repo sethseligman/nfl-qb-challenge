@@ -4,6 +4,10 @@ import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName } from '
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
 import { ScoreHistory } from './ScoreHistory';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 interface Score {
   id: string;
@@ -53,6 +57,8 @@ export const Game: React.FC = () => {
     resetGame,
     addScore
   } = useGameStore();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -218,31 +224,30 @@ export const Game: React.FC = () => {
     );
   };
 
-  const handleNewGame = () => {
-    // Save the current game score if we have a team
-    if (currentTeam && picks.length > 0) {
-      const score: Score = {
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-        totalScore,
-        tier: getTier(totalScore),
-        picks: [...picks]
-      };
-      addScore(score);
+  const handleNewGame = async () => {
+    if (!user) return;
+
+    try {
+      const score = totalScore;
+      const tier = getTier(score);
+
+      await addDoc(collection(db, 'games'), {
+        userId: user.uid,
+        date: new Date(),
+        totalScore: score,
+        tier,
+        picks: picks.map(pick => ({
+          team: pick.team,
+          qb: pick.qb,
+          wins: pick.wins
+        }))
+      });
+
+      handleReset();
+      navigate('/my-games');
+    } catch (error) {
+      console.error('Error saving game:', error);
     }
-    
-    // Reset the game state
-    resetGame();
-    
-    // Set a new random team
-    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-    setCurrentTeam(randomTeam);
-    
-    // Clear input and validation states
-    setInput('');
-    setError(null);
-    setValidationState('idle');
-    setValidationMessage('');
   };
 
   if (isGameOver) {
@@ -262,7 +267,7 @@ export const Game: React.FC = () => {
                 onClick={handleNewGame}
                 className="bg-emerald-500 text-white px-6 py-2 rounded-lg hover:bg-emerald-600 transition-colors font-medium"
               >
-                New Game
+                Save Score & Start New Game
               </button>
             </div>
           </div>

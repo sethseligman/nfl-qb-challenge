@@ -68,6 +68,22 @@ const GameCard = ({ game, isActive, onClick }: { game: GameCard, isActive: boole
           alt={game.title}
           className="w-full h-48 object-cover"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <div className="flex justify-between items-start mb-2">
+            <h2 className="text-xl font-bold text-white">{game.title}</h2>
+            <span
+              className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                game.status === 'LIVE'
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-600 text-gray-300'
+              }`}
+            >
+              {game.status}
+            </span>
+          </div>
+          <p className="text-gray-200 text-sm">{game.subtitle}</p>
+        </div>
         {game.title === 'NFL QB Wins Challenge' && (
           <>
             {isMobile ? (

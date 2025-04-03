@@ -790,7 +790,7 @@ export function formatQBDisplayName(input: string, fullName: string): string {
   }, {} as Record<string, string>);
 
   if (lastNames[normalizedInput]) {
-    return fullName;
+    return lastNames[normalizedInput];
   }
 
   // For exact matches, show full name only

@@ -64,6 +64,7 @@ export const Game: React.FC = () => {
   const [isShuffling, setIsShuffling] = useState(false);
   const [shufflingTeam, setShufflingTeam] = useState<string | undefined>(undefined);
   const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
+  const [isHelpCommand, setIsHelpCommand] = useState(false);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -143,6 +144,7 @@ export const Game: React.FC = () => {
     setInput('');
     setError(null);
     setIsValidInput(null);
+    setIsHelpCommand(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -277,6 +279,7 @@ export const Game: React.FC = () => {
     setInput('');
     setError(null);
     setIsValidInput(null);
+    setIsHelpCommand(false);
   };
 
   if (isGameOver) {
@@ -436,7 +439,7 @@ export const Game: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6 relative">
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
               <form onSubmit={handleSubmit} className="relative">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -450,9 +453,11 @@ export const Game: React.FC = () => {
                           setShowHelpDropdown(false);
                           setAvailableQBs([]);
                           setIsValidInput(null);
+                          setIsHelpCommand(true);
                           return;
                         }
                         
+                        setIsHelpCommand(false);
                         // Validate input in real-time
                         if (newValue.trim() === '') {
                           setIsValidInput(null);
@@ -485,7 +490,7 @@ export const Game: React.FC = () => {
                   </div>
                   <button
                     type="submit"
-                    disabled={isLoading || (!isValidInput && input.toLowerCase().trim() !== 'help')}
+                    disabled={isLoading || (!isValidInput && !isHelpCommand)}
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? '...' : 'Submit'}
@@ -493,7 +498,7 @@ export const Game: React.FC = () => {
                 </div>
 
                 {showHelpDropdown && availableQBs.length > 0 && (
-                  <div className="absolute z-[9999] w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                  <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
                     {availableQBs.map((qb) => (
                       <button
                         key={qb.name}
@@ -528,7 +533,7 @@ export const Game: React.FC = () => {
           </div>
 
           {/* Stats Panel */}
-          <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start relative z-0">
+          <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start">
             <div className="bg-gray-800 rounded-xl shadow-xl p-6">
               {/* Picks History */}
               <div>

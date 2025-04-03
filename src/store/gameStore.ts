@@ -13,7 +13,6 @@ interface GameState {
   isGameOver: boolean;
   showScore: boolean;
   usedQBs: string[];
-  showHelp: boolean;
 }
 
 interface GameActions {
@@ -21,7 +20,6 @@ interface GameActions {
   addPick: (qb: string, wins: number, displayName: string) => void;
   resetGame: () => void;
   setShowScore: (show: boolean) => void;
-  setShowHelp: (show: boolean) => void;
 }
 
 export const useGameStore = create<GameState & GameActions>((set) => ({
@@ -30,7 +28,6 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
   isGameOver: false,
   showScore: false,
   usedQBs: [],
-  showHelp: true,
   setCurrentTeam: (team) => set({ currentTeam: team }),
   addPick: (qb, wins, displayName) =>
     set((state) => {
@@ -42,7 +39,6 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
         picks: newPicks,
         usedQBs: newUsedQBs,
         isGameOver: isOver,
-        currentTeam: null,
       };
     }),
   resetGame: () =>
@@ -52,8 +48,6 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
       isGameOver: false,
       showScore: false,
       usedQBs: [],
-      showHelp: true,
     }),
   setShowScore: (show) => set({ showScore: show }),
-  setShowHelp: (show) => set({ showHelp: show }),
 })); 

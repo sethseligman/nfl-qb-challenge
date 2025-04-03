@@ -3,14 +3,6 @@ import { useGameStore } from '../store/gameStore';
 import { findClosestMatch, formatQBDisplayName, qbDatabase } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
-import LandingScreen from './LandingScreen';
-
-interface QB {
-  qb: string;
-  wins: number;
-  displayName: string;
-  team: string;
-}
 
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
@@ -39,17 +31,14 @@ export const Game: React.FC = () => {
     isGameOver,
     showScore,
     usedQBs,
-    showHelp,
     setCurrentTeam,
     addPick,
     resetGame,
-    setShowScore,
-    setShowHelp
+    setShowScore
   } = useGameStore();
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
   const [validationState, setValidationState] = useState<'idle' | 'error' | 'success'>('idle');
   const [validationMessage, setValidationMessage] = useState('');
 
@@ -58,17 +47,10 @@ export const Game: React.FC = () => {
   const currentRound = picks.length + 1;
 
   useEffect(() => {
-    if (!currentTeam && !isGameOver && gameStarted) {
-      // Get teams that haven't been used yet
-      const usedTeams = picks.map(pick => pick.team);
-      const availableTeams = NFL_TEAMS.filter(team => !usedTeams.includes(team));
-      
-      if (availableTeams.length > 0) {
-        const randomTeam = availableTeams[Math.floor(Math.random() * availableTeams.length)];
-        setCurrentTeam(randomTeam);
-      }
-    }
-  }, [currentTeam, isGameOver, setCurrentTeam, gameStarted, picks]);
+    // Start with a random team
+    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+    setCurrentTeam(randomTeam);
+  }, []);
 
   useEffect(() => {
     if (isGameOver) {
@@ -93,19 +75,8 @@ export const Game: React.FC = () => {
     };
   }, [validationState]);
 
-  // Add help timeout
-  useEffect(() => {
-    if (showHelp) {
-      const timeout = setTimeout(() => {
-        setShowHelp(false);
-      }, 5000);
-      return () => clearTimeout(timeout);
-    }
-  }, [showHelp]);
-
   const handleReset = () => {
     resetGame();
-    setGameStarted(false);
     setInput('');
     setError(null);
     setValidationState('idle');
@@ -137,6 +108,30 @@ export const Game: React.FC = () => {
     setValidationMessage('');
 
     try {
+      // Check if input is 'help'
+      if (input.toLowerCase().trim() === 'help') {
+        // Find the best available QB for the current team
+        const bestQB = Object.entries(qbDatabase)
+          .filter(([qbName, data]) => 
+            data.teams.includes(currentTeam || '') && 
+            !usedQBs.includes(qbName)
+          )
+          .sort((a, b) => b[1].wins - a[1].wins)[0];
+
+        if (bestQB) {
+          setInput(bestQB[0]);
+          setValidationState('success');
+          setValidationMessage('Best available QB selected! Click submit to use them.');
+          setIsLoading(false);
+          return;
+        } else {
+          setError('No more QBs available for this team');
+          setValidationState('error');
+          setValidationMessage('No more QBs available for this team');
+          return;
+        }
+      }
+
       const result = validateQB(input);
       if (!result) {
         setError('Invalid quarterback name');
@@ -153,8 +148,18 @@ export const Game: React.FC = () => {
         return;
       }
 
-      // Force display name to be "!!!!" for testing
-      addPick(qb, wins, "!!!!");
+      // Format the display name properly
+      const displayName = formatQBDisplayName(input, qb);
+      addPick(qb, wins, displayName);
+      
+      // Set a new random team
+      const usedTeams = [...picks.map(pick => pick.team), currentTeam || ''];
+      const availableTeams = NFL_TEAMS.filter(team => !usedTeams.includes(team));
+      if (availableTeams.length > 0) {
+        const randomTeam = availableTeams[Math.floor(Math.random() * availableTeams.length)];
+        setCurrentTeam(randomTeam);
+      }
+      
       setInput('');
       setValidationState('success');
       setValidationMessage('✔️ QB Accepted');
@@ -194,13 +199,6 @@ export const Game: React.FC = () => {
       />
     );
   };
-
-  if (!gameStarted) {
-    return <LandingScreen onStart={() => {
-      setGameStarted(true);
-      setShowHelp(true);
-    }} />;
-  }
 
   if (isGameOver) {
     return (
@@ -261,18 +259,6 @@ export const Game: React.FC = () => {
             New Game
           </button>
         </div>
-
-        {/* Help Message */}
-        {showHelp && (
-          <div className="mb-6 p-4 bg-blue-900/50 rounded-lg border border-blue-500/50 animate-fade-in">
-            <p className="text-blue-200">
-              Enter the quarterback's name who played for the displayed team. 
-              You can use first name, last name, or nickname. 
-              Each QB can only be used once. 
-              The game ends after 20 picks or when you can't find any more QBs.
-            </p>
-          </div>
-        )}
 
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-6">

@@ -63,6 +63,7 @@ export const Game: React.FC = () => {
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
   const [shufflingTeam, setShufflingTeam] = useState<string | undefined>(undefined);
+  const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -141,6 +142,7 @@ export const Game: React.FC = () => {
     // Clear input and validation states
     setInput('');
     setError(null);
+    setIsValidInput(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -149,10 +151,6 @@ export const Game: React.FC = () => {
     setError(null);
 
     try {
-      console.log('Submitting QB:', input);
-      console.log('Current team:', currentTeam);
-      console.log('Used QBs:', usedQBs);
-
       // Check if input is 'help'
       if (input.toLowerCase().trim() === 'help') {
         // Find all available QBs for the current team
@@ -170,8 +168,6 @@ export const Game: React.FC = () => {
           [availableQBs[i], availableQBs[j]] = [availableQBs[j], availableQBs[i]];
         }
 
-        console.log('Available QBs:', availableQBs); // Debug log
-
         if (availableQBs.length > 0) {
           setAvailableQBs(availableQBs);
           setShowHelpDropdown(true);
@@ -179,30 +175,28 @@ export const Game: React.FC = () => {
           return;
         } else {
           setError('No more QBs available for this team');
+          setIsValidInput(false);
           return;
         }
       }
 
-      // Validate the QB
+      // Since we're validating in real-time, we can assume the input is valid if we get here
       const validationResult = validateQB(input, currentTeam || '');
-      console.log('Validation result:', validationResult);
-      if (!validationResult) {
+      if (!validationResult || usedQBs.includes(validationResult.name)) {
+        setIsValidInput(false);
         setError('Invalid quarterback name');
         return;
       }
 
       const { name, wins } = validationResult;
-      if (usedQBs.includes(name)) {
-        setError('This quarterback has already been used');
-        return;
-      }
-
+      
       // Format the display name properly
       const displayName = formatQBDisplayName(input, name);
       addPick(name, wins, displayName);
       
-      // Clear input immediately
+      // Clear input and validation states
       setInput('');
+      setIsValidInput(null);
       
       // Start shuffling animation
       setIsShuffling(true);
@@ -215,6 +209,7 @@ export const Game: React.FC = () => {
     } catch (err) {
       console.error('Error in handleSubmit:', err);
       setError('An error occurred. Please try again.');
+      setIsValidInput(false);
     } finally {
       setIsLoading(false);
     }
@@ -224,6 +219,10 @@ export const Game: React.FC = () => {
     setInput(qbName);
     setShowHelpDropdown(false);
     setAvailableQBs([]);
+    // Validate the selected QB
+    const validationResult = validateQB(qbName, currentTeam || '');
+    const isValid = validationResult && !usedQBs.includes(validationResult.name);
+    setIsValidInput(isValid);
   };
 
   const QBPhoto: React.FC<{ qb: string; size?: 'sm' | 'lg' }> = ({ qb, size = 'sm' }) => {
@@ -277,6 +276,7 @@ export const Game: React.FC = () => {
     // Clear input and validation states
     setInput('');
     setError(null);
+    setIsValidInput(null);
   };
 
   if (isGameOver) {
@@ -439,24 +439,54 @@ export const Game: React.FC = () => {
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
               <form onSubmit={handleSubmit} className="relative">
                 <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => {
-                      setInput(e.target.value);
-                      if (e.target.value.toLowerCase().trim() !== 'help') {
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setInput(newValue);
+                        if (newValue.toLowerCase().trim() === 'help') {
+                          setShowHelpDropdown(false);
+                          setAvailableQBs([]);
+                          setIsValidInput(null);
+                          return;
+                        }
+                        
+                        // Validate input in real-time
+                        if (newValue.trim() === '') {
+                          setIsValidInput(null);
+                        } else {
+                          const validationResult = validateQB(newValue, currentTeam || '');
+                          const isValid = validationResult && !usedQBs.includes(validationResult.name);
+                          setIsValidInput(isValid);
+                        }
+                        
                         setShowHelpDropdown(false);
                         setAvailableQBs([]);
-                      }
-                    }}
-                    placeholder="Enter a Quarterback's Name"
-                    className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    disabled={isLoading}
-                  />
+                      }}
+                      placeholder="Enter a Quarterback's Name"
+                      className={`w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 ${
+                        isValidInput === null 
+                          ? 'focus:ring-blue-500' 
+                          : isValidInput 
+                            ? 'focus:ring-green-500 ring-2 ring-green-500' 
+                            : 'focus:ring-red-500 ring-2 ring-red-500'
+                      }`}
+                      disabled={isLoading}
+                    />
+                    {isValidInput && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
                   <button
                     type="submit"
-                    disabled={isLoading}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    disabled={isLoading || !isValidInput}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? '...' : 'Submit'}
                   </button>

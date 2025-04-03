@@ -25,8 +25,14 @@ export const useGameStore = create<GameState>((set, get) => ({
     const newPicks = [...get().picks, { team, qb, wins }];
     const newTotalScore = newPicks.reduce((sum, pick) => sum + pick.wins, 0);
     
+    // Get a random team that hasn't been used yet
+    const usedTeams = newPicks.map(pick => pick.team);
+    const availableTeams = nflTeams.filter(team => !usedTeams.includes(team));
+    const nextTeam = availableTeams[Math.floor(Math.random() * availableTeams.length)];
+    
     set({
       picks: newPicks,
+      currentTeam: nextTeam,
       totalScore: newTotalScore
     });
   },

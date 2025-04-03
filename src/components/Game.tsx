@@ -1,32 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import { useGameStore } from '../stores/gameStore';
 import { qbDatabase } from '../data/qbDatabase';
-import { EndGameCTA } from './EndGameCTA';
 import { getTier } from '../utils/tierCalculator';
 
 export const Game: React.FC = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { picks, currentTeam, totalScore, addPick, resetGame, saveGame } = useGameStore();
+  const { picks, currentTeam, totalScore, addPick, resetGame } = useGameStore();
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
   const [showInstructions, setShowInstructions] = useState(true);
   const [isGameOver, setIsGameOver] = useState(false);
 
   useEffect(() => {
-    console.log('Game: Component mounted');
     if (picks.length === 0) {
-      console.log('Game: Initializing new game');
       resetGame();
     }
   }, [resetGame, picks.length]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Game: Handling submit with input:', inputValue);
-
     const qb = inputValue.trim();
     if (!qb) {
       setError('Please enter a QB name');
@@ -59,25 +50,21 @@ export const Game: React.FC = () => {
       return;
     }
 
-    console.log('Game: Adding pick:', { team: currentTeam, qb, wins: qbData.wins });
     addPick(currentTeam, qb, qbData.wins);
     setInputValue('');
     setError('');
 
-    // Set game over after 20 picks
     if (picks.length + 1 >= 20) {
       setIsGameOver(true);
     }
   };
 
   const handleNewGame = () => {
-    console.log('Game: Starting new game');
     resetGame();
     setIsGameOver(false);
   };
 
   if (isGameOver) {
-    console.log('Game: Showing game over screen');
     return (
       <div className="max-w-2xl mx-auto p-4 text-center">
         <h2 className="text-3xl font-bold mb-4 text-white">Game Over!</h2>
@@ -85,24 +72,12 @@ export const Game: React.FC = () => {
           <p className="text-2xl mb-2 text-white">Final Score: {totalScore}</p>
           <p className="text-xl text-blue-400">Tier: {getTier(totalScore)}</p>
         </div>
-        <div className="space-y-4">
-          {user ? (
-            <button
-              onClick={saveGame}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
-            >
-              Save Score
-            </button>
-          ) : (
-            <EndGameCTA onSaveGame={() => navigate('/login')} />
-          )}
-          <button
-            onClick={handleNewGame}
-            className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors"
-          >
-            New Game
-          </button>
-        </div>
+        <button
+          onClick={handleNewGame}
+          className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors"
+        >
+          New Game
+        </button>
       </div>
     );
   }
@@ -156,7 +131,6 @@ export const Game: React.FC = () => {
     );
   }
 
-  console.log('Game: Rendering game UI');
   return (
     <div className="max-w-2xl mx-auto p-4">
       {/* Progress Bar */}

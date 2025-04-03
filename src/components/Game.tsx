@@ -3,6 +3,7 @@ import { useGameStore } from '../store/gameStore';
 import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
+import { teamColors } from '../data/teamColors';
 import { ScoreHistory } from './ScoreHistory';
 
 interface Score {
@@ -456,7 +457,7 @@ export const Game: React.FC = () => {
                     />
                     <div className="h-[48px]"> {/* Placeholder with same height as team name */}
                       {!isShuffling && (
-                        <h3 className="text-4xl font-bold text-emerald-500 animate-slide-up">
+                        <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam || ''] || 'text-emerald-500'}`}>
                           {currentTeam}
                         </h3>
                       )}

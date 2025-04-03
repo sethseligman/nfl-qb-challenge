@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { AuthBanner } from './components/AuthBanner';
 import { Login } from './components/Login';
@@ -11,8 +11,17 @@ import './index.css';
 
 const AppContent: React.FC = () => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
+  console.log('AppContent render:', {
+    pathname: location.pathname,
+    loading,
+    user: user ? 'authenticated' : 'anonymous'
+  });
+
+  // Show loading state while auth is being checked
   if (loading) {
+    console.log('AppContent: Showing loading state');
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -20,6 +29,7 @@ const AppContent: React.FC = () => {
     );
   }
 
+  console.log('AppContent: Rendering routes');
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
@@ -49,6 +59,7 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  console.log('App: Initial render');
   return (
     <Router>
       <AppContent />

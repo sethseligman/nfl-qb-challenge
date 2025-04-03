@@ -21,12 +21,20 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('useAuth: Setting up auth listener');
     const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log('useAuth: Auth state changed:', {
+        user: user ? 'authenticated' : 'anonymous',
+        uid: user?.uid
+      });
       setUser(user);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      console.log('useAuth: Cleaning up auth listener');
+      unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<User> => {

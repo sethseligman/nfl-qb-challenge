@@ -43,7 +43,6 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
     }),
   resetGame: () =>
     set({
-      currentTeam: null,
       picks: [],
       isGameOver: false,
       showScore: false,

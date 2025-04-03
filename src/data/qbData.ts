@@ -760,6 +760,11 @@ export const qbDatabase: Record<string, QBData> = {
     name: "Alex Hasselbeck",
     wins: 0,
     teams: ["Tennessee Titans"]
+  },
+  "Jay Cutler": {
+    name: "Jay Cutler",
+    wins: 74,
+    teams: ["Denver Broncos", "Chicago Bears", "Miami Dolphins"]
   }
 };
 

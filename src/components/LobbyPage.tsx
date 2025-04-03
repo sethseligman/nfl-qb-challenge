@@ -50,19 +50,10 @@ const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: {
   shouldShowRules: boolean
 }) => {
   const [showRules, setShowRules] = useState(shouldShowRules);
-  const [isRulesClicked, setIsRulesClicked] = useState(false);
 
   React.useEffect(() => {
-    if (!isMobile) {
-      setShowRules(shouldShowRules);
-    }
-  }, [shouldShowRules, isMobile]);
-
-  const handleRulesClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsRulesClicked(!isRulesClicked);
-    setShowRules(!isRulesClicked);
-  };
+    setShowRules(shouldShowRules);
+  }, [shouldShowRules]);
 
   return (
     <div className="relative">
@@ -100,7 +91,10 @@ const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: {
             <p className="text-gray-200 text-sm mb-4">{game.subtitle}</p>
             {game.title === 'NFL QB Wins Challenge' && (
               <button
-                onClick={onClick}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClick();
+                }}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
               >
                 Play Now
@@ -109,7 +103,10 @@ const GameCard = ({ game, isActive, onClick, isMobile, shouldShowRules }: {
           </div>
           {game.title === 'NFL QB Wins Challenge' && isMobile && (
             <button
-              onClick={handleRulesClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowRules(!showRules);
+              }}
               className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors"
             >
               Rules

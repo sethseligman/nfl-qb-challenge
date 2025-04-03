@@ -60,9 +60,8 @@ const GameCard = ({ game, isActive, onClick }: { game: GameCard, isActive: boole
       className={`relative rounded-xl overflow-hidden transition-all duration-300 ${
         isActive ? 'scale-105 shadow-lg' : 'hover:scale-105 hover:shadow-lg'
       }`}
-      onClick={onClick}
     >
-      <div className="relative">
+      <div className="relative bg-gray-800">
         <img 
           src={`/images/${game.title.replace(/\s+/g, '-').toLowerCase()}.jpg`} 
           alt={game.title}
@@ -82,7 +81,13 @@ const GameCard = ({ game, isActive, onClick }: { game: GameCard, isActive: boole
               {game.status}
             </span>
           </div>
-          <p className="text-gray-200 text-sm">{game.subtitle}</p>
+          <p className="text-gray-200 text-sm mb-4">{game.subtitle}</p>
+          <button
+            onClick={onClick}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
+          >
+            Play Now
+          </button>
         </div>
         {game.title === 'NFL QB Wins Challenge' && (
           <>
@@ -106,45 +111,47 @@ const GameCard = ({ game, isActive, onClick }: { game: GameCard, isActive: boole
               </div>
             )}
             {showRules && (
-              <div className={`absolute z-50 bg-gray-800 p-4 rounded-lg shadow-xl max-w-sm ${
-                isMobile ? 'top-16 right-2' : 'top-12 right-2'
-              }`}>
-                <div className="text-white">
-                  <h3 className="text-lg font-semibold text-blue-500 mb-2">How to Play</h3>
-                  <p className="text-sm text-gray-300 mb-4">
-                    Test your NFL knowledge by predicting the winner of each game. 
-                    Make your picks before kickoff and earn points for correct predictions. 
-                    The more confident you are, the more points you can earn!
-                  </p>
-                  <h3 className="text-lg font-semibold text-blue-500 mt-4 mb-2">Achievement Levels</h3>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>• 🏆 THE GOAT: 2500+ wins</li>
-                    <li>• 🏈 Hall of Famer: 2451-2499 wins</li>
-                    <li>• 🏆 SuperBowl MVP: 2401-2450 wins</li>
-                    <li>• 🏈 SuperBowl Winner: 2351-2400 wins</li>
-                    <li>• 🏆 NFL MVP: 2301-2350 wins</li>
-                    <li>• 🏆 Heisman Trophy Winner: 2251-2300 wins</li>
-                    <li>• 🥇 First Round Pick: 2176-2250 wins</li>
-                    <li>• 🥈 Draft Pick: 2101-2175 wins</li>
-                    <li>• 🥉 High School All-American: 2001-2100 wins</li>
-                    <li>• ⭐ Division 1 Scholarship: 1901-2000 wins</li>
-                    <li>• ⭐ College Walk-on: 1851-1900 wins</li>
-                    <li>• ⭐ High School Team Captain: 1801-1850 wins</li>
-                    <li>• ⭐ JV: 1751-1800 wins</li>
-                    <li>• ⭐ Pop Warner: 1500-1750 wins</li>
-                  </ul>
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold text-blue-500">How to Play</h2>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowRules(false);
+                      }}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="text-gray-300 space-y-4">
+                    <p>
+                      Test your NFL knowledge by predicting the winner of each game. 
+                      Make your picks before kickoff and earn points for correct predictions. 
+                      The more confident you are, the more points you can earn!
+                    </p>
+                    <div>
+                      <h3 className="text-lg font-semibold text-blue-500 mb-2">Achievement Levels</h3>
+                      <ul className="space-y-2 text-sm">
+                        <li>• 🏆 THE GOAT: 2500+ wins</li>
+                        <li>• 🏈 Hall of Famer: 2451-2499 wins</li>
+                        <li>• 🏆 SuperBowl MVP: 2401-2450 wins</li>
+                        <li>• 🏈 SuperBowl Winner: 2351-2400 wins</li>
+                        <li>• 🏆 NFL MVP: 2301-2350 wins</li>
+                        <li>• 🏆 Heisman Trophy Winner: 2251-2300 wins</li>
+                        <li>• 🥇 First Round Pick: 2176-2250 wins</li>
+                        <li>• 🥈 Draft Pick: 2101-2175 wins</li>
+                        <li>• 🥉 High School All-American: 2001-2100 wins</li>
+                        <li>• ⭐ Division 1 Scholarship: 1901-2000 wins</li>
+                        <li>• ⭐ College Walk-on: 1851-1900 wins</li>
+                        <li>• ⭐ High School Team Captain: 1801-1850 wins</li>
+                        <li>• ⭐ JV: 1751-1800 wins</li>
+                        <li>• ⭐ Pop Warner: 1500-1750 wins</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-                {isMobile && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowRules(false);
-                    }}
-                    className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                  >
-                    Close
-                  </button>
-                )}
               </div>
             )}
           </>

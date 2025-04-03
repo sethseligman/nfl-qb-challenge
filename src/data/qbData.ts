@@ -118,27 +118,29 @@ function levenshteinDistance(a: string, b: string): number {
 }
 
 // Function to find closest match
-function findClosestMatch(input: string, threshold: number = 3): string | null {
+export function findClosestMatch(input: string, threshold: number = 3): string | null {
   const normalizedInput = input.toLowerCase().trim();
   
-  // Check exact matches and nicknames first
-  if (qbDatabase[input]) return input;
-  if (QB_NICKNAMES[input]) return QB_NICKNAMES[input];
+  // Check nicknames first (case-insensitive)
+  const nicknameMatch = Object.entries(QB_NICKNAMES).find(([nickname]) => 
+    nickname.toLowerCase() === normalizedInput
+  );
+  if (nicknameMatch) return nicknameMatch[1];
   
-  // Check for last name matches
-  const lastNames = Object.entries(qbDatabase).reduce((acc, [fullName, data]) => {
+  // Check exact matches (case-insensitive)
+  const exactMatch = Object.keys(qbDatabase).find(name => 
+    name.toLowerCase() === normalizedInput
+  );
+  if (exactMatch) return exactMatch;
+  
+  // Check for last name matches (case-insensitive)
+  const lastNameMatch = Object.entries(qbDatabase).find(([fullName]) => {
     const lastName = fullName.split(' ').pop()?.toLowerCase();
-    if (lastName) {
-      acc[lastName] = fullName;
-    }
-    return acc;
-  }, {} as Record<string, string>);
-
-  if (lastNames[normalizedInput]) {
-    return lastNames[normalizedInput];
-  }
+    return lastName === normalizedInput;
+  });
+  if (lastNameMatch) return lastNameMatch[0];
   
-  // Check for close matches
+  // Check for close matches using Levenshtein distance
   let closestMatch: string | null = null;
   let minDistance = threshold;
   
@@ -575,7 +577,7 @@ export function formatQBDisplayName(input: string, fullName: string): string {
   }
   
   // If input is a last name, just show the full name
-  const lastNames = Object.entries(qbDatabase).reduce((acc, [fullName, data]) => {
+  const lastNames = Object.entries(qbDatabase).reduce((acc, [fullName]) => {
     const lastName = fullName.split(' ').pop()?.toLowerCase();
     if (lastName) {
       acc[lastName] = fullName;
@@ -595,12 +597,14 @@ export function findHighestScoringQB(team: string | null, usedQBs: string[]): QB
   if (!team) return null;
   
   let highestQB: QBData | null = null;
-  let highestWins = 0;
+  let highestWins = -1;
 
   for (const [name, data] of Object.entries(qbDatabase)) {
-    if (data.teams.includes(team) && !usedQBs.includes(name) && data.wins > highestWins) {
-      highestQB = { name, wins: data.wins, teams: data.teams };
-      highestWins = data.wins;
+    if (data.teams.includes(team) && !usedQBs.includes(name)) {
+      if (data.wins > highestWins) {
+        highestWins = data.wins;
+        highestQB = data;
+      }
     }
   }
 

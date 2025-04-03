@@ -45,8 +45,8 @@ export function Game() {
   const handlePick = (isHigher: boolean) => {
     // TODO: Implement the actual win comparison logic
     const mockWins = Math.floor(Math.random() * 200); // Temporary random wins for testing
-    const mockQB = 'Test QB';
-    const mockDisplayName = 'Test QB';
+    const mockQB = isHigher ? 'Higher QB' : 'Lower QB';
+    const mockDisplayName = mockQB;
     addPick(mockQB, mockWins, mockDisplayName);
   };
 

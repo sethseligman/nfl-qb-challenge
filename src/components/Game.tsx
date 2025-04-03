@@ -20,9 +20,11 @@ export function Game() {
   } = useGameStore();
 
   const saveGame = async () => {
+    if (!user) return; // Don't save for anonymous users
+    
     try {
       await addDoc(collection(db, 'games'), {
-        userId: user?.uid || 'anonymous',
+        userId: user.uid,
         date: new Date(),
         totalScore,
         tier: getTier(totalScore),
@@ -43,7 +45,9 @@ export function Game() {
     }
     resetGame();
     initializeGame();
-    navigate('/my-games');
+    if (user) {
+      navigate('/my-games');
+    }
   };
 
   const handlePick = (isHigher: boolean) => {
@@ -81,9 +85,9 @@ export function Game() {
           onClick={handleNewGame}
           className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg"
         >
-          {user ? 'Save Score & Start New Game' : 'Start New Game'}
+          Start New Game
         </button>
-        <EndGameCTA onSaveGame={saveGame} />
+        {!user && <EndGameCTA onSaveGame={saveGame} />}
       </div>
     );
   }

@@ -17,14 +17,7 @@ const App: React.FC = () => {
         <main className="container mx-auto px-4 py-8">
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route
-              path="/game"
-              element={
-                <ProtectedRoute>
-                  <Game />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/game" element={<Game />} />
             <Route
               path="/my-games"
               element={

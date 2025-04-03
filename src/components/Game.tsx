@@ -42,7 +42,8 @@ export function Game() {
     isGameOver,
     totalScore,
     resetGame,
-    initializeGame
+    initializeGame,
+    addPick
   } = useGameStore();
 
   const handleNewGame = async () => {
@@ -69,8 +70,12 @@ export function Game() {
     }
   };
 
-  const handlePick = () => {
-    // TODO: Implement pick logic
+  const handlePick = (isHigher: boolean) => {
+    // TODO: Implement the actual win comparison logic
+    const mockWins = Math.floor(Math.random() * 200); // Temporary random wins for testing
+    const mockQB = 'Test QB';
+    const mockDisplayName = 'Test QB';
+    addPick(mockQB, mockWins, mockDisplayName);
   };
 
   const getTier = (score: number): string => {
@@ -132,13 +137,13 @@ export function Game() {
 
       <div className="grid grid-cols-2 gap-4">
         <button
-          onClick={handlePick}
+          onClick={() => handlePick(true)}
           className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg"
         >
           Higher
         </button>
         <button
-          onClick={handlePick}
+          onClick={() => handlePick(false)}
           className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg"
         >
           Lower

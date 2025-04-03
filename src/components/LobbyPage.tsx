@@ -49,7 +49,6 @@ const GameCard = ({ game, isActive, onClick, isMobile }: {
   isMobile: boolean 
 }) => {
   const [showRules, setShowRules] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <>
@@ -57,8 +56,6 @@ const GameCard = ({ game, isActive, onClick, isMobile }: {
         className={`relative rounded-xl overflow-hidden transition-all duration-300 ${
           isActive ? 'scale-105 shadow-lg' : 'hover:scale-105 hover:shadow-lg'
         }`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative bg-gray-800">
           <div className="w-full h-48 bg-gray-700 flex items-center justify-center">

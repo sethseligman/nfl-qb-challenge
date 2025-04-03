@@ -454,13 +454,11 @@ export const Game: React.FC = () => {
                           : 'animate-pulse-slow'
                       }`}
                     />
-                    <h3 className={`text-4xl font-bold text-emerald-500 transition-all duration-100 ${
-                      isShuffling 
-                        ? 'animate-bounce-fast scale-105' 
-                        : 'animate-slide-up'
-                    }`}>
-                      {shufflingTeam || currentTeam}
-                    </h3>
+                    {!isShuffling && (
+                      <h3 className="text-4xl font-bold text-emerald-500 animate-slide-up">
+                        {currentTeam}
+                      </h3>
+                    )}
                   </>
                 ) : (
                   <div className="w-32 h-32 bg-gray-700 rounded-lg animate-pulse" />

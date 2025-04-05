@@ -171,9 +171,24 @@ export const Game: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isValidInput === null) return;
+    
+    // Handle help command
+    if (isHelpCommand && input.toLowerCase().trim() === 'help') {
+      const validationResult = validateQB('help', currentTeam || '');
+      if (validationResult) {
+        const qbs = Object.entries(validationResult)
+          .filter(([name]) => !usedQBs.includes(name))
+          .map(([name, data]) => ({ name, wins: data.wins }));
+        setAvailableQBs(qbs);
+        setShowHelpDropdown(true);
+        setInput('');
+        setIsValidInput(null);
+        return;
+      }
+    }
 
-    if (isValidInput || isHelpCommand) {
+    // Handle QB submission
+    if (isValidInput) {
       const validationResult = validateQB(input, currentTeam || '');
       if (validationResult && !usedQBs.includes(validationResult.name)) {
         const { name, wins } = validationResult;

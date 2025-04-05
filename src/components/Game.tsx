@@ -449,7 +449,7 @@ export const Game: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Column - Team and Input */}
         <div className="flex-1">
-          <div className="bg-gradient-to-b from-gray-700/50 via-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
+          <div className="bg-gradient-to-t from-black/60 to-transparent backdrop-blur-sm rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
             <div className="flex flex-col items-center gap-4">
               {(currentTeam || shufflingTeam) ? (
                 <>
@@ -476,7 +476,7 @@ export const Game: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-b from-gray-700/50 via-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
+          <div className="bg-gradient-to-t from-black/60 to-transparent backdrop-blur-sm rounded-xl shadow-xl p-6">
             <form onSubmit={handleSubmit} className="relative">
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -547,7 +547,7 @@ export const Game: React.FC = () => {
 
         {/* Right Column - Picks and Score History */}
         <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start">
-          <div className="bg-gradient-to-b from-gray-700/50 via-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl shadow-xl p-6 mb-6">
+          <div className="bg-gradient-to-t from-black/60 to-transparent backdrop-blur-sm rounded-xl shadow-xl p-6 mb-6">
             {/* Picks History */}
             <div>
               <div className="flex justify-between items-center mb-4">
@@ -556,7 +556,7 @@ export const Game: React.FC = () => {
               </div>
               <div className="space-y-3">
                 {picks.map((pick, index) => (
-                  <div key={index} className="bg-gradient-to-b from-gray-600/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm rounded-lg p-3 flex items-center gap-3">
+                  <div key={index} className="bg-gradient-to-t from-black/40 to-transparent backdrop-blur-sm rounded-lg p-3 flex items-center gap-3">
                     <div className="flex-shrink-0">
                       <img
                         src={getTeamLogo(pick.team)}
@@ -582,7 +582,7 @@ export const Game: React.FC = () => {
           </div>
 
           {/* Score History Box */}
-          <div className="bg-gradient-to-b from-gray-700/50 via-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
+          <div className="bg-gradient-to-t from-black/60 to-transparent backdrop-blur-sm rounded-xl shadow-xl p-6">
             <ScoreHistory />
           </div>
         </div>

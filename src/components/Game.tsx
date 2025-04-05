@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName, findHighestScoringQB } from '../data/qbData';
+import { formatQBDisplayName, validateQB, findHighestScoringQB } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
-import { getQBPhoto } from '../data/qbPhotos';
-import { teamColors } from '../data/teamColors';
-import { ScoreHistory } from './ScoreHistory';
 
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
@@ -50,17 +47,14 @@ const Game: React.FC = () => {
     addPick,
     setCurrentTeam,
     totalScore,
-    initializeGame,
-    setIsGameOver
+    initializeGame
   } = useGameStore();
 
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
-  const [isHelpCommand, setIsHelpCommand] = useState(false);
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
-  const [isShuffling, setIsShuffling] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,15 +75,9 @@ const Game: React.FC = () => {
   const handleReset = () => {
     initializeGame();
     setShowPicks(false);
-    setIsShuffling(true);
-    setTimeout(() => {
-      const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-      setCurrentTeam(randomTeam);
-    }, 1500);
     setInput('');
     setError(null);
     setIsValidInput(null);
-    setIsHelpCommand(false);
     setUsedHelp([]);
   };
 
@@ -105,7 +93,6 @@ const Game: React.FC = () => {
 
     const normalizedInput = input.trim().toLowerCase();
     if (normalizedInput === 'help') {
-      setIsHelpCommand(true);
       const highestScoringQB = findHighestScoringQB(currentTeam, usedQBs);
       if (highestScoringQB) {
         const newUsedHelp = [...usedHelp, true];
@@ -116,7 +103,6 @@ const Game: React.FC = () => {
           formatQBDisplayName(highestScoringQB.name, highestScoringQB.name)
         );
         setInput('');
-        setIsHelpCommand(false);
       } else {
         setError('No available QBs found for this team');
       }

@@ -421,7 +421,7 @@ export const Game: React.FC = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowRules(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-blue-600/20 text-blue-400 px-4 py-1.5 rounded-full hover:bg-blue-600/30 transition-colors text-sm"
           >
             Rules
           </button>

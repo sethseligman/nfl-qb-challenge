@@ -10,7 +10,7 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/" element={<LobbyPage />} />
-          <Route path="/game" element={<Game />} />
+          <Route path="/game" element={<Game onNewGame={() => {}} />} />
           <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />
           <Route path="/mlb" element={<div className="text-center p-8">MLB Pitcher Challenge - Coming Soon!</div>} />
           <Route path="/soccer" element={<div className="text-center p-8">Soccer Goals Challenge - Coming Soon!</div>} />

@@ -44,11 +44,7 @@ const getAchievedTier = (score: number) => {
   );
 };
 
-interface GameProps {
-  onNewGame: () => void;
-}
-
-export const Game: React.FC<GameProps> = ({ onNewGame }) => {
+export const Game: React.FC = () => {
   const {
     currentTeam,
     picks,

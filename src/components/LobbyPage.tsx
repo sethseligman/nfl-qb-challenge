@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { GameCard } from './GameCard';
 
@@ -7,7 +7,7 @@ const GAMES = [
     id: 'nfl-qb-challenge',
     title: 'NFL QB Challenge',
     description: 'Name quarterbacks who played for each team. Each QB can only be used once!',
-    status: 'live',
+    status: 'live' as const,
     sport: 'NFL',
     path: '/nfl/qb-challenge'
   },
@@ -15,7 +15,7 @@ const GAMES = [
     id: 'nba-scorer-challenge',
     title: 'NBA Scorer Challenge',
     description: 'Name players who scored the most points for each team. Each player can only be used once!',
-    status: 'coming-soon',
+    status: 'coming-soon' as const,
     sport: 'NBA',
     path: '/nba/scorer-challenge'
   },
@@ -23,7 +23,7 @@ const GAMES = [
     id: 'mlb-hitter-challenge',
     title: 'MLB Hitter Challenge',
     description: 'Name players who had the most hits for each team. Each player can only be used once!',
-    status: 'coming-soon',
+    status: 'coming-soon' as const,
     sport: 'MLB',
     path: '/mlb/hitter-challenge'
   },
@@ -31,7 +31,7 @@ const GAMES = [
     id: 'soccer-scorer-challenge',
     title: 'Soccer Scorer Challenge',
     description: 'Name players who scored the most goals for each team. Each player can only be used once!',
-    status: 'coming-soon',
+    status: 'coming-soon' as const,
     sport: 'Soccer',
     path: '/soccer/scorer-challenge'
   }

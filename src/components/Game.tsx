@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName } from '../data/qbData';
+import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName, findHighestScoringQB } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
@@ -46,7 +46,6 @@ const Game: React.FC = () => {
     picks,
     isGameOver,
     showScore,
-    toggleScore,
     usedQBs,
     addPick,
     setCurrentTeam,
@@ -57,78 +56,12 @@ const Game: React.FC = () => {
 
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showRules, setShowRules] = useState(false);
-  const [showHelpDropdown, setShowHelpDropdown] = useState(false);
-  const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
-  const [isShuffling, setIsShuffling] = useState(false);
-  const [shufflingTeam, setShufflingTeam] = useState<string | undefined>(undefined);
   const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
   const [isHelpCommand, setIsHelpCommand] = useState(false);
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
-
-  // Calculate total score and current round
-  const currentRound = picks.length + 1;
-
-  useEffect(() => {
-    // Initialize game state
-    initializeGame();
-    
-    // Start shuffling animation
-    setIsShuffling(true);
-    
-    // Set a new random team after animation
-    setTimeout(() => {
-      const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-      setCurrentTeam(randomTeam);
-    }, 1500);
-  }, []);
-
-  // Add effect for shuffling animation
-  useEffect(() => {
-    if (isShuffling) {
-      // Start with a faster interval for more rapid changes
-      const fastInterval = setInterval(() => {
-        const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-        setShufflingTeam(randomTeam);
-      }, 50); // Change every 50ms for rapid shuffling
-
-      // After 1 second, slow down the changes
-      const slowDownTimeout = setTimeout(() => {
-        clearInterval(fastInterval);
-        const slowInterval = setInterval(() => {
-          const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-          setShufflingTeam(randomTeam);
-        }, 200); // Change every 200ms for slower shuffling
-
-        // After 0.5 seconds, stop and show the final team
-        const finalTimeout = setTimeout(() => {
-          clearInterval(slowInterval);
-          setIsShuffling(false);
-          setShufflingTeam(undefined);
-        }, 500);
-
-        return () => {
-          clearInterval(slowInterval);
-          clearTimeout(finalTimeout);
-        };
-      }, 1000); // Changed from 1500 to 1000
-
-      return () => {
-        clearInterval(fastInterval);
-        clearTimeout(slowDownTimeout);
-      };
-    }
-  }, [isShuffling]);
-
-  // Remove any effect that might be resetting showScore
-  useEffect(() => {
-    if (isGameOver) {
-      setInput('');
-    }
-  }, [isGameOver]);
 
   useEffect(() => {
     if (isGameOver && !showPicks && achievementListRef.current) {
@@ -146,145 +79,66 @@ const Game: React.FC = () => {
   }, [isGameOver, showPicks, totalScore]);
 
   const handleReset = () => {
-    // Initialize game state
     initializeGame();
-    
-    // Reset showPicks to false to show achievement tiers
     setShowPicks(false);
-    
-    // Start shuffling animation
     setIsShuffling(true);
-    
-    // Set a new random team after animation
     setTimeout(() => {
       const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
       setCurrentTeam(randomTeam);
     }, 1500);
-    
-    // Clear input and validation states
     setInput('');
     setError(null);
     setIsValidInput(null);
     setIsHelpCommand(false);
-    setUsedHelp([]); // Reset usedHelp array
+    setUsedHelp([]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInput(value);
     setError(null);
+    setIsValidInput(null);
+  };
 
-    try {
-      // Check if input is 'help'
-      if (input.toLowerCase().trim() === 'help') {
-        // Find all available QBs for the current team
-        const availableQBs = Object.entries(qbDatabase)
-          .filter(([qbName, data]) => {
-            const normalizedCurrentTeam = normalizeTeamName(currentTeam || '');
-            const normalizedQbTeams = data.teams.map(normalizeTeamName);
-            return normalizedQbTeams.includes(normalizedCurrentTeam) && !usedQBs.includes(qbName);
-          })
-          .map(([name, data]) => ({ name, wins: data.wins }));
+  const handleSubmit = () => {
+    if (!input.trim()) return;
 
-        // Randomize the order of QBs
-        for (let i = availableQBs.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [availableQBs[i], availableQBs[j]] = [availableQBs[j], availableQBs[i]];
-        }
-
-        if (availableQBs.length > 0) {
-          setAvailableQBs(availableQBs);
-          setShowHelpDropdown(true);
-          setIsLoading(false);
-          return;
-        } else {
-          setError('No more QBs available for this team');
-          setIsValidInput(false);
-          return;
-        }
+    const normalizedInput = input.trim().toLowerCase();
+    if (normalizedInput === 'help') {
+      setIsHelpCommand(true);
+      const highestScoringQB = findHighestScoringQB(currentTeam, usedQBs);
+      if (highestScoringQB) {
+        const newUsedHelp = [...usedHelp, true];
+        setUsedHelp(newUsedHelp);
+        addPick(
+          highestScoringQB.name,
+          highestScoringQB.wins,
+          formatQBDisplayName(highestScoringQB.name, highestScoringQB.name)
+        );
+        setInput('');
+        setIsHelpCommand(false);
+      } else {
+        setError('No available QBs found for this team');
       }
-
-      // Since we're validating in real-time, we can assume the input is valid if we get here
-      const validationResult = validateQB(input, currentTeam || '');
-      if (!validationResult || usedQBs.includes(validationResult.name)) {
-        setIsValidInput(false);
-        setError('Invalid quarterback name');
-        return;
-      }
-
-      const { name, wins } = validationResult;
-      
-      // Format the display name properly
-      const displayName = formatQBDisplayName(input, name);
-      addPick(name, wins, displayName);
-      
-      // Add whether help was used to the usedHelp array
-      setUsedHelp(prev => [...prev, isHelpCommand]);
-      
-      // Clear input and validation states
-      setInput('');
-      setIsValidInput(null);
-      setIsHelpCommand(false);
-      
-      // TEMPORARY: End game after 1 pick for testing
-      setIsGameOver(true);
       return;
-      
-      // Start shuffling animation
-      setIsShuffling(true);
-      
-      // Set a new random team after animation
-      setTimeout(() => {
-        const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-        setCurrentTeam(randomTeam);
-      }, 1500);
-    } catch (err) {
-      console.error('Error in handleSubmit:', err);
-      setError('An error occurred. Please try again.');
+    }
+
+    const validationResult = validateQB(input, currentTeam || '');
+    if (!validationResult || usedQBs.includes(validationResult.name)) {
+      setError('Invalid quarterback name');
       setIsValidInput(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQBSelect = (qbName: string) => {
-    setInput(qbName);
-    setShowHelpDropdown(false);
-    setAvailableQBs([]);
-    // Set isHelpCommand to true since this QB was selected from help
-    setIsHelpCommand(true);
-    // Validate the selected QB
-    const validationResult = validateQB(qbName, currentTeam || '');
-    const isValid = validationResult && !usedQBs.includes(validationResult.name);
-    setIsValidInput(isValid);
-  };
-
-  const QBPhoto: React.FC<{ qb: string; size?: 'sm' | 'lg' }> = ({ qb, size = 'sm' }) => {
-    const [showImage, setShowImage] = useState(true);
-    const photoUrl = getQBPhoto(qb);
-
-    if (!showImage || !photoUrl) {
-      return (
-        <div className={`flex items-center justify-center bg-gray-700 rounded-full ${
-          size === 'sm' ? 'w-6 h-6' : 'w-16 h-16'
-        }`}>
-          <span className={`text-gray-400 ${size === 'sm' ? 'text-xs' : 'text-lg'}`}>
-            {qb.split(' ').map(n => n[0]).join('')}
-          </span>
-        </div>
-      );
+      return;
     }
 
-    return (
-      <img
-        src={photoUrl}
-        alt={qb}
-        className={`object-contain rounded-full ${
-          size === 'sm' ? 'w-6 h-6' : 'w-16 h-16'
-        }`}
-        onError={() => setShowImage(false)}
-      />
+    const newUsedHelp = [...usedHelp, false];
+    setUsedHelp(newUsedHelp);
+    addPick(
+      validationResult.name,
+      validationResult.wins,
+      formatQBDisplayName(input, validationResult.name)
     );
+    setInput('');
+    setIsValidInput(true);
   };
 
   if (isGameOver) {
@@ -439,30 +293,8 @@ const Game: React.FC = () => {
                   <input
                     type="text"
                     value={input}
-                    onChange={(e) => {
-                      const newValue = e.target.value;
-                      setInput(newValue);
-                      if (newValue.toLowerCase().trim() === 'help') {
-                        setShowHelpDropdown(false);
-                        setAvailableQBs([]);
-                        setIsValidInput(null);
-                        setIsHelpCommand(true);
-                        return;
-                      }
-                      
-                      setIsHelpCommand(false);
-                      // Validate input in real-time
-                      if (newValue.trim() === '') {
-                        setIsValidInput(null);
-                      } else {
-                        const validationResult = validateQB(newValue, currentTeam || '');
-                        const isValid = validationResult && !usedQBs.includes(validationResult.name);
-                        setIsValidInput(isValid);
-                      }
-                      
-                      setShowHelpDropdown(false);
-                      setAvailableQBs([]);
-                    }}
+                    onChange={handleInputChange}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                     placeholder="Type QB name or 'help'"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 ${
                       isValidInput === true

@@ -6,19 +6,6 @@ import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
 import { ScoreHistory } from './ScoreHistory';
 
-interface Score {
-  id: string;
-  date: string;
-  totalScore: number;
-  tier: string;
-  picks: {
-    qb: string;
-    wins: number;
-    displayName: string;
-    team: string;
-  }[];
-}
-
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
   "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns",
@@ -53,15 +40,6 @@ const getAchievedTier = (score: number) => {
   );
 };
 
-const getTier = (score: number): string => {
-  if (score < 2000) return "College Walk-On";
-  if (score < 2200) return "Pop Warner";
-  if (score < 2300) return "HS All-American";
-  if (score < 2400) return "Draft Pick";
-  if (score < 2500) return "Heisman Winner";
-  return "GOAT";
-};
-
 export const Game: React.FC = () => {
   const {
     currentTeam,
@@ -75,7 +53,6 @@ export const Game: React.FC = () => {
     totalScore,
     initializeGame,
     resetGame,
-    addScore,
     setIsGameOver
   } = useGameStore();
 

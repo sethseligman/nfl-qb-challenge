@@ -285,9 +285,9 @@ export const Game: React.FC = () => {
         onTouchMove={(e) => e.preventDefault()}
       >
         <div 
-          className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-8"
+          className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4"
           style={{ 
-            maxHeight: '90vh',
+            maxHeight: '85vh',
             overflow: 'auto',
             WebkitOverflowScrolling: 'touch',
             touchAction: 'pan-y',
@@ -296,11 +296,11 @@ export const Game: React.FC = () => {
           }}
         >
           <h2 className="text-2xl font-bold mb-4 text-center text-white">Game Over!</h2>
-          <div className="text-center mb-6">
+          <div className="text-center mb-4">
             <p className="text-xl text-gray-300">Your final score: <span className="font-bold text-emerald-500">{totalScore}</span></p>
             <p className="text-lg mt-2 text-gray-300">Achievement Level:</p>
             <div 
-              className="mt-4 space-y-2 max-h-[60vh] overflow-y-auto"
+              className="mt-4 space-y-2 max-h-[40vh] overflow-y-auto"
               style={{
                 WebkitOverflowScrolling: 'touch',
                 touchAction: 'pan-y'

@@ -41,7 +41,7 @@ export const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isHomePage = location.pathname === '/';
-  const activeSport = location.pathname.split('/')[1]?.toUpperCase() || 'NFL';
+  const activeSport = location.pathname.split('/')[1]?.toUpperCase() || '';
 
   const filteredGames = isHomePage 
     ? GAMES 

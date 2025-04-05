@@ -10,7 +10,8 @@ interface AppLayoutProps {
 export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const currentSport = location.pathname.split('/')[1]?.toUpperCase() || 'NFL';
+  const isHomePage = location.pathname === '/';
+  const currentSport = location.pathname.split('/')[1]?.toUpperCase() || '';
 
   const handleTabClick = (tab: string) => {
     if (tab === 'More') {
@@ -24,6 +25,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
   };
 
   const isTabActive = (tab: string) => {
+    if (isHomePage) return false;
     if (tab === 'More') {
       return location.pathname === '/more';
     }

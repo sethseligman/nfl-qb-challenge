@@ -1,4 +1,4 @@
-interface QBData {
+export interface QBData {
   name: string;
   wins: number;
   teams: string[];

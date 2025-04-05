@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { formatQBDisplayName, validateQB } from '../data/qbData';
+import { formatQBDisplayName, validateQB, qbDatabase, normalizeTeamName, QBData } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
@@ -173,17 +173,20 @@ export const Game: React.FC = () => {
     
     // Handle help command
     if (input.toLowerCase().trim() === 'help') {
-      const validationResult = validateQB('help', currentTeam || '');
-      if (validationResult) {
-        const qbs = Object.entries(validationResult)
-          .filter(([name]) => !usedQBs.includes(name))
-          .map(([name, data]) => ({ name, wins: data.wins }));
-        setAvailableQBs(qbs);
-        setShowHelpDropdown(true);
-        setInput('');
-        setIsValidInput(null);
-        return;
-      }
+      // Get all QBs for the current team that haven't been used
+      const availableQBsForTeam = Object.entries(qbDatabase)
+        .filter(([name, data]: [string, QBData]) => {
+          const normalizedCurrentTeam = normalizeTeamName(currentTeam || '');
+          const normalizedQbTeams = data.teams.map(normalizeTeamName);
+          return normalizedQbTeams.includes(normalizedCurrentTeam) && !usedQBs.includes(name);
+        })
+        .map(([name, data]: [string, QBData]) => ({ name, wins: data.wins }));
+      
+      setAvailableQBs(availableQBsForTeam);
+      setShowHelpDropdown(true);
+      setInput('');
+      setIsValidInput(null);
+      return;
     }
 
     // Handle QB submission

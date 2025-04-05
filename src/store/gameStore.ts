@@ -27,6 +27,7 @@ interface GameState {
   toggleScore: () => void;
   addScore: (score: Score) => void;
   clearScores: () => void;
+  setIsGameOver: (value: boolean) => void;
 }
 
 interface GameActions {
@@ -43,7 +44,7 @@ export const useGameStore = create<GameState & GameActions>()(
       currentTeam: null,
       picks: [],
       isGameOver: false,
-      showScore: true,
+      showScore: false,
       usedQBs: [],
       totalScore: 0,
       scores: [],
@@ -54,7 +55,7 @@ export const useGameStore = create<GameState & GameActions>()(
           const newPicks = [...state.picks, { qb, wins, displayName, team: state.currentTeam || '' }];
           const newUsedQBs = [...state.usedQBs, qb];
           const isOver = newPicks.length >= 20;
-          const newTotalScore = newPicks.reduce((sum, pick) => sum + pick.wins, 0);
+          const newTotalScore = state.totalScore + wins;
 
           return {
             picks: newPicks,
@@ -74,21 +75,21 @@ export const useGameStore = create<GameState & GameActions>()(
           showScore: state.showScore
         })),
       setShowScore: (show) => set({ showScore: show }),
-      initializeGame: () => set((state) => ({
+      initializeGame: () => set({
         currentTeam: null,
         picks: [],
         isGameOver: false,
-        showScore: state.showScore,
+        showScore: false,
         usedQBs: [],
-        totalScore: 0,
-        scores: state.scores
-      })),
+        totalScore: 0
+      }),
       addScore: (score) => 
         set((state) => ({
           scores: [...state.scores, score]
         })),
       clearScores: () => 
-        set({ scores: [] })
+        set({ scores: [] }),
+      setIsGameOver: (value) => set({ isGameOver: value })
     }),
     {
       name: 'game-storage',

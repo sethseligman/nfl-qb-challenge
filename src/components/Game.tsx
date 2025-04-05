@@ -459,6 +459,8 @@ export const Game: React.FC = () => {
               <p>4. Points are awarded based on the quarterback's career wins</p>
               <p>5. Try to get the highest score possible in 20 rounds!</p>
               <p>6. Type 'help' for a list of available quarterbacks</p>
+              <p>7. Use the 'Show Scores' button to toggle score visibility</p>
+              <p>8. Click 'New Game' to start over</p>
             </div>
           </div>
         </div>

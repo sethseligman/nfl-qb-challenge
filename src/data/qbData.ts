@@ -925,12 +925,12 @@ export const qbDatabase: Record<string, QBData> = {
   // Adding CJ Stroud and Baker Mayfield
   "C.J. Stroud": {
     name: "C.J. Stroud",
-    wins: 10,
+    wins: 19,
     teams: ["Houston Texans"]
   },
   "Baker Mayfield": {
     name: "Baker Mayfield",
-    wins: 40,
+    wins: 50,
     teams: ["Cleveland Browns", "Carolina Panthers", "Los Angeles Rams", "Tampa Bay Buccaneers"]
   }
 };

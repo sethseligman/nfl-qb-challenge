@@ -271,7 +271,7 @@ export const Game: React.FC = () => {
   if (isGameOver) {
     return (
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto"
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
         style={{ 
           position: 'fixed',
           top: 0,
@@ -279,8 +279,10 @@ export const Game: React.FC = () => {
           right: 0,
           bottom: 0,
           overflow: 'hidden',
-          touchAction: 'none'
+          touchAction: 'none',
+          WebkitOverflowScrolling: 'touch'
         }}
+        onTouchMove={(e) => e.preventDefault()}
       >
         <div 
           className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-8"
@@ -288,14 +290,22 @@ export const Game: React.FC = () => {
             maxHeight: '90vh',
             overflow: 'auto',
             WebkitOverflowScrolling: 'touch',
-            touchAction: 'pan-y'
+            touchAction: 'pan-y',
+            position: 'relative',
+            zIndex: 1
           }}
         >
           <h2 className="text-2xl font-bold mb-4 text-center text-white">Game Over!</h2>
           <div className="text-center mb-6">
             <p className="text-xl text-gray-300">Your final score: <span className="font-bold text-emerald-500">{totalScore}</span></p>
             <p className="text-lg mt-2 text-gray-300">Achievement Level:</p>
-            <div className="mt-4 space-y-2 max-h-[60vh] overflow-y-auto">
+            <div 
+              className="mt-4 space-y-2 max-h-[60vh] overflow-y-auto"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-y'
+              }}
+            >
               {ACHIEVEMENT_LEVELS.map((level, index) => {
                 const isAchieved = getAchievedTier(totalScore) === level;
                 return (

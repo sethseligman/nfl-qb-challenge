@@ -65,6 +65,7 @@ export const Game: React.FC = () => {
   const [shufflingTeam, setShufflingTeam] = useState<string | undefined>(undefined);
   const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
   const [isHelpCommand, setIsHelpCommand] = useState(false);
+  const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -196,9 +197,13 @@ export const Game: React.FC = () => {
       const displayName = formatQBDisplayName(input, name);
       addPick(name, wins, displayName);
       
+      // Add whether help was used to the usedHelp array
+      setUsedHelp([...usedHelp, isHelpCommand]);
+      
       // Clear input and validation states
       setInput('');
       setIsValidInput(null);
+      setIsHelpCommand(false);
       
       // Start shuffling animation
       setIsShuffling(true);
@@ -535,6 +540,29 @@ export const Game: React.FC = () => {
                 )}
               </div>
             </div>
+
+            {showScore && (
+              <div className="bg-gray-800 rounded-xl p-6 mb-8">
+                <h2 className="text-xl font-bold text-blue-500 mb-4">Your Picks</h2>
+                <div className="space-y-4">
+                  {picks.map((pick, index) => (
+                    <div key={index} className="flex items-center justify-between bg-gray-700 rounded-lg p-4">
+                      <div className="flex items-center gap-4">
+                        <QBPhoto qb={pick.qb} size="sm" />
+                        <div>
+                          <p className="font-medium">{pick.displayName}</p>
+                          <p className="text-sm text-gray-400">{pick.team}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {usedHelp[index] && <span className="text-2xl">🆘</span>}
+                        <span className="text-blue-400 font-bold">{pick.wins} wins</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Stats Panel */}

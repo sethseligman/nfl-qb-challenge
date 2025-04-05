@@ -24,16 +24,16 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <AppLayout activeTab={activeTab} onTabChange={handleTabChange}>
-        <Routes>
+      <Routes>
+        <Route element={<AppLayout activeTab={activeTab} onTabChange={handleTabChange} />}>
           <Route path="/" element={<LobbyPage />} />
           <Route path="/game" element={<Game />} />
           <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />
           <Route path="/mlb" element={<div className="text-center p-8">MLB Pitcher Challenge - Coming Soon!</div>} />
           <Route path="/soccer" element={<div className="text-center p-8">Soccer Goals Challenge - Coming Soon!</div>} />
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AppLayout>
+        </Route>
+      </Routes>
     </Router>
   );
 };

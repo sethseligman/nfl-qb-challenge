@@ -67,6 +67,7 @@ export const Game: React.FC = () => {
   const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
   const [isHelpCommand, setIsHelpCommand] = useState(false);
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
+  const [showPicks, setShowPicks] = useState(false);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -298,41 +299,73 @@ export const Game: React.FC = () => {
           <h2 className="text-2xl font-bold mb-4 text-center text-white">Game Over!</h2>
           <div className="text-center mb-4">
             <p className="text-xl text-gray-300">Your final score: <span className="font-bold text-emerald-500">{totalScore}</span></p>
-            <p className="text-lg mt-2 text-gray-300">Achievement Level:</p>
-            <div 
-              className="mt-4 space-y-2 max-h-[40vh] overflow-y-auto"
-              style={{
-                WebkitOverflowScrolling: 'touch',
-                touchAction: 'pan-y'
-              }}
-            >
-              {ACHIEVEMENT_LEVELS.map((level, index) => {
-                const isAchieved = getAchievedTier(totalScore) === level;
-                return (
-                  <div
-                    key={index}
-                    className={`p-2 rounded-lg ${
-                      isAchieved
-                        ? 'bg-blue-500 border-2 border-blue-400 animate-pulse'
-                        : 'bg-gray-700'
-                    }`}
-                  >
-                    <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
-                      {level.emoji} {level.tier}
-                    </span>
-                    {level.maxScore ? (
-                      <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
-                        ({level.minScore}-{level.maxScore} wins)
-                      </span>
-                    ) : (
-                      <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
-                        ({level.minScore}+ wins)
-                      </span>
-                    )}
+            {!showPicks && (
+              <>
+                <p className="text-lg mt-2 text-gray-300">Achievement Level:</p>
+                <div 
+                  className="mt-4 space-y-2 max-h-[40vh] overflow-y-auto"
+                  style={{
+                    WebkitOverflowScrolling: 'touch',
+                    touchAction: 'pan-y'
+                  }}
+                >
+                  {ACHIEVEMENT_LEVELS.map((level, index) => {
+                    const isAchieved = getAchievedTier(totalScore) === level;
+                    return (
+                      <div
+                        key={index}
+                        className={`p-2 rounded-lg ${
+                          isAchieved
+                            ? 'bg-blue-500 border-2 border-blue-400 animate-pulse'
+                            : 'bg-gray-700'
+                        }`}
+                      >
+                        <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
+                          {level.emoji} {level.tier}
+                        </span>
+                        {level.maxScore ? (
+                          <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
+                            ({level.minScore}-{level.maxScore} wins)
+                          </span>
+                        ) : (
+                          <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
+                            ({level.minScore}+ wins)
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+            {showPicks && (
+              <div 
+                className="mt-4 space-y-2 max-h-[40vh] overflow-y-auto"
+                style={{
+                  WebkitOverflowScrolling: 'touch',
+                  touchAction: 'pan-y'
+                }}
+              >
+                {picks.map((pick, index) => (
+                  <div key={index} className="bg-gray-700 p-3 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={getTeamLogo(pick.team)}
+                          alt={pick.team}
+                          className="w-6 h-6 object-contain"
+                        />
+                        <span className="text-white font-medium">{pick.displayName}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {usedHelp[index] && <span className="text-2xl">🆘</span>}
+                        <span className="text-emerald-500">{pick.wins} wins</span>
+                      </div>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="flex justify-center space-x-4">
             <button
@@ -353,10 +386,10 @@ export const Game: React.FC = () => {
           </div>
           <div className="mt-4 text-center">
             <button
-              onClick={() => toggleScore()}
+              onClick={() => setShowPicks(!showPicks)}
               className="text-blue-400 hover:text-blue-300 underline"
             >
-              View My Picks
+              {showPicks ? 'View Achievement Levels' : 'View My Picks'}
             </button>
           </div>
         </div>

@@ -42,18 +42,13 @@ const GAME_CARDS: GameCard[] = [
 
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
-const GameCard = ({ game, isActive, onClick, shouldShowRules }: { 
+const GameCard = ({ game, isActive, onClick, shouldShowRules, onRulesClick }: { 
   game: GameCard, 
   isActive: boolean, 
   onClick: () => void,
-  shouldShowRules: boolean
+  shouldShowRules: boolean,
+  onRulesClick: () => void
 }) => {
-  const [showRules, setShowRules] = useState(shouldShowRules);
-
-  useEffect(() => {
-    setShowRules(shouldShowRules);
-  }, [shouldShowRules]);
-
   return (
     <div className="relative">
       <div 
@@ -104,7 +99,7 @@ const GameCard = ({ game, isActive, onClick, shouldShowRules }: {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setShowRules(!showRules);
+                onRulesClick();
               }}
               className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors"
             >
@@ -113,46 +108,6 @@ const GameCard = ({ game, isActive, onClick, shouldShowRules }: {
           )}
         </div>
       </div>
-
-      {/* Rules Overlay - Only for NFL QB game */}
-      {showRules && game.title === 'NFL QB Wins Challenge' && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">How to Play</h2>
-            <div className="space-y-4">
-              <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
-              <p>Each quarterback can only be used once throughout the game.</p>
-              <p>Type "help" to see available QBs for the current team.</p>
-              <p>Your goal is to reach 2,500 total QB career wins.</p>
-              <div className="mt-6">
-                <h3 className="text-xl font-semibold mb-2">Achievement Levels:</h3>
-                <ul className="space-y-2">
-                  <li>🏆 THE GOAT: 2500+ wins</li>
-                  <li>🏈 Hall of Famer: 2451-2499 wins</li>
-                  <li>🏆 SuperBowl MVP: 2401-2450 wins</li>
-                  <li>🏈 SuperBowl Winner: 2351-2400 wins</li>
-                  <li>🏆 NFL MVP: 2301-2350 wins</li>
-                  <li>🏆 Heisman Trophy Winner: 2251-2300 wins</li>
-                  <li>🥇 First Round Pick: 2176-2250 wins</li>
-                  <li>🥈 Draft Pick: 2101-2175 wins</li>
-                  <li>🥉 High School All-American: 2001-2100 wins</li>
-                  <li>⭐ Division 1 Scholarship: 1901-2000 wins</li>
-                  <li>⭐ College Walk-on: 1851-1900 wins</li>
-                  <li>⭐ High School Team Captain: 1801-1850 wins</li>
-                  <li>⭐ JV: 1751-1800 wins</li>
-                  <li>⭐ Pop Warner: 1500-1750 wins</li>
-                </ul>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowRules(false)}
-              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Got it!
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
@@ -160,6 +115,7 @@ const GameCard = ({ game, isActive, onClick, shouldShowRules }: {
 export const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('NFL');
+  const [showRules, setShowRules] = useState(false);
 
   const filteredGames = GAME_CARDS.filter(game => game.sport === activeTab);
 
@@ -198,19 +154,58 @@ export const LobbyPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGames.map((game, index) => (
-            <div
-              key={index}
-            >
+            <div key={index}>
               <GameCard
                 game={game}
                 isActive={activeTab === game.sport}
                 onClick={() => navigate(game.path)}
                 shouldShowRules={false}
+                onRulesClick={() => setShowRules(true)}
               />
             </div>
           ))}
         </div>
       </div>
+
+      {/* Rules Modal */}
+      {showRules && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">How to Play</h2>
+            <div className="space-y-4">
+              <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
+              <p>Each quarterback can only be used once throughout the game.</p>
+              <p>Type "help" to see available QBs for the current team.</p>
+              <p>Your goal is to reach 2,500 total QB career wins.</p>
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold mb-2">Achievement Levels:</h3>
+                <ul className="space-y-2">
+                  <li>🏆 THE GOAT: 2500+ wins</li>
+                  <li>🏈 Hall of Famer: 2451-2499 wins</li>
+                  <li>🏆 SuperBowl MVP: 2401-2450 wins</li>
+                  <li>🏈 SuperBowl Winner: 2351-2400 wins</li>
+                  <li>🏆 NFL MVP: 2301-2350 wins</li>
+                  <li>🏆 Heisman Trophy Winner: 2251-2300 wins</li>
+                  <li>🥇 First Round Pick: 2176-2250 wins</li>
+                  <li>🥈 Draft Pick: 2101-2175 wins</li>
+                  <li>🥉 High School All-American: 2001-2100 wins</li>
+                  <li>⭐ Division 1 Scholarship: 1901-2000 wins</li>
+                  <li>⭐ College Walk-on: 1851-1900 wins</li>
+                  <li>⭐ High School Team Captain: 1801-1850 wins</li>
+                  <li>⭐ JV: 1751-1800 wins</li>
+                  <li>⭐ Pop Warner: 1500-1750 wins</li>
+                </ul>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowRules(false)}
+              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }; 

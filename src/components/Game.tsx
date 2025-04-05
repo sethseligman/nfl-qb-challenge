@@ -654,29 +654,6 @@ export const Game: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Your Picks Modal */}
-      <div className="fixed top-0 right-0 h-full w-64 bg-gray-800 p-4 overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4 text-white">Your Picks</h2>
-        <div className="space-y-2">
-          {picks.map((pick, index) => (
-            <div key={index} className="bg-gray-700 p-2 rounded">
-              <div className="flex items-center gap-2">
-                <img
-                  src={getTeamLogo(pick.team)}
-                  alt={pick.team}
-                  className="w-6 h-6 object-contain"
-                />
-                <span className="text-white">{pick.displayName}</span>
-              </div>
-              <div className="flex items-center justify-between mt-1">
-                {usedHelp[index] && <span className="text-2xl">🆘</span>}
-                <span className="text-emerald-500">{pick.wins} wins</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };

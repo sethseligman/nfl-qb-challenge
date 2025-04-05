@@ -172,7 +172,7 @@ export const Game: React.FC = () => {
     e.preventDefault();
     
     // Handle help command
-    if (isHelpCommand && input.toLowerCase().trim() === 'help') {
+    if (input.toLowerCase().trim() === 'help') {
       const validationResult = validateQB('help', currentTeam || '');
       if (validationResult) {
         const qbs = Object.entries(validationResult)
@@ -187,33 +187,58 @@ export const Game: React.FC = () => {
     }
 
     // Handle QB submission
-    if (isValidInput) {
-      const validationResult = validateQB(input, currentTeam || '');
-      if (validationResult && !usedQBs.includes(validationResult.name)) {
-        const { name, wins } = validationResult;
-        const displayName = formatQBDisplayName(input, name);
-        addPick(name, wins, displayName);
-        setInput('');
-        setError(null);
-        setIsValidInput(null);
-        setIsHelpCommand(false);
-        setUsedHelp([...usedHelp, isHelpCommand]);
+    const validationResult = validateQB(input, currentTeam || '');
+    if (validationResult && !usedQBs.includes(validationResult.name)) {
+      const { name, wins } = validationResult;
+      const displayName = formatQBDisplayName(input, name);
+      addPick(name, wins, displayName);
+      setInput('');
+      setError(null);
+      setIsValidInput(null);
+      setIsHelpCommand(false);
+      setUsedHelp([...usedHelp, isHelpCommand]);
 
-        // Start shuffling animation
-        setIsShuffling(true);
-        
-        // Set a new random team after animation
-        setTimeout(() => {
-          const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-          setCurrentTeam(randomTeam);
-        }, 1500);
+      // Start shuffling animation
+      setIsShuffling(true);
+      
+      // Set a new random team after animation
+      setTimeout(() => {
+        const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+        setCurrentTeam(randomTeam);
+      }, 1500);
 
-        // Check if this was the last round
-        if (currentRound === 20) {
-          setIsGameOver(true);
-        }
+      // Check if this was the last round
+      if (currentRound === 20) {
+        setIsGameOver(true);
       }
+    } else {
+      setError('Invalid quarterback name or already used');
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInput(newValue);
+    setError(null);
+    
+    if (newValue.toLowerCase().trim() === 'help') {
+      setIsHelpCommand(true);
+      setIsValidInput(true);
+      return;
+    }
+    
+    setIsHelpCommand(false);
+    // Validate input in real-time
+    if (newValue.trim() === '') {
+      setIsValidInput(null);
+    } else {
+      const validationResult = validateQB(newValue, currentTeam || '');
+      const isValid = validationResult && !usedQBs.includes(validationResult.name);
+      setIsValidInput(isValid);
+    }
+    
+    setShowHelpDropdown(false);
+    setAvailableQBs([]);
   };
 
   const handleQBSelect = (qbName: string) => {
@@ -496,33 +521,7 @@ export const Game: React.FC = () => {
                     <input
                       type="text"
                       value={input}
-                      onChange={(e) => {
-                        const newValue = e.target.value;
-                        setInput(newValue);
-                        setError(null);
-                        
-                        if (newValue.toLowerCase().trim() === 'help') {
-                          setIsHelpCommand(true);
-                          setIsValidInput(true);
-                          return;
-                        }
-                        
-                        setIsHelpCommand(false);
-                        // Validate input in real-time
-                        if (newValue.trim() === '') {
-                          setIsValidInput(null);
-                        } else {
-                          const validationResult = validateQB(newValue, currentTeam || '');
-                          const isValid = validationResult && !usedQBs.includes(validationResult.name);
-                          setIsValidInput(isValid);
-                          if (!isValid) {
-                            setError('Invalid quarterback name or already used');
-                          }
-                        }
-                        
-                        setShowHelpDropdown(false);
-                        setAvailableQBs([]);
-                      }}
+                      onChange={handleInputChange}
                       placeholder="Enter a Quarterback's Name"
                       className={`w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 ${
                         isValidInput === null 

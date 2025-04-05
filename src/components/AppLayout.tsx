@@ -4,11 +4,10 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
 interface AppLayoutProps {
-  activeTab?: string;
   onTabChange?: (tab: string) => void;
 }
 
-export const AppLayout: React.FC<AppLayoutProps> = ({ activeTab = 'NFL', onTabChange }) => {
+export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isMainLobby = location.pathname === '/';

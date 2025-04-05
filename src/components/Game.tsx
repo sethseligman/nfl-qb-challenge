@@ -31,7 +31,7 @@ const ACHIEVEMENT_LEVELS = [
   { tier: "College Walk-on", minScore: 1851, maxScore: 1900, emoji: "⭐" },
   { tier: "High School Team Captain", minScore: 1801, maxScore: 1850, emoji: "⭐" },
   { tier: "JV", minScore: 1751, maxScore: 1800, emoji: "⭐" },
-  { tier: "Pop Warner", minScore: 1500, maxScore: 1750, emoji: "⭐" }
+  { tier: "Pop Warner", minScore: 0, maxScore: 1750, emoji: "⭐" }
 ];
 
 const getAchievedTier = (score: number) => {

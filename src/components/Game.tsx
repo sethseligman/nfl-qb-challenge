@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName } from '../data/qbData';
+import { validateQB } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
-import { teamColors } from '../data/teamColors';
 import { ScoreHistory } from './ScoreHistory';
 import { GameLayout } from './GameLayout';
-import { getTeamName } from '../data/teamNames';
-import { getTeamQBs } from '../data/teamQBs';
-import { getTeamWins } from '../data/teamWins';
 
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
@@ -52,23 +48,18 @@ export const Game: React.FC = () => {
     showScore,
     toggleScore,
     usedQBs,
-    addPick,
     setCurrentTeam,
     totalScore,
-    initializeGame,
-    setIsGameOver
+    initializeGame
   } = useGameStore();
 
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
   const [shufflingTeam, setShufflingTeam] = useState<string | null>(null);
   const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
-  const [isHelpCommand, setIsHelpCommand] = useState(false);
-  const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
 
@@ -168,16 +159,12 @@ export const Game: React.FC = () => {
     setInput('');
     setError(null);
     setIsValidInput(null);
-    setIsHelpCommand(false);
-    setUsedHelp([]); // Reset usedHelp array
   };
 
   const handleQBSelect = (qbName: string) => {
     setInput(qbName);
     setShowHelpDropdown(false);
     setAvailableQBs([]);
-    // Set isHelpCommand to true since this QB was selected from help
-    setIsHelpCommand(true);
     // Validate the selected QB
     const validationResult = validateQB(qbName, currentTeam || '');
     const isValid = validationResult && !usedQBs.includes(validationResult.name);
@@ -255,7 +242,6 @@ export const Game: React.FC = () => {
                 >
                   {ACHIEVEMENT_LEVELS.map((level, index) => {
                     const isAchieved = getAchievedTier(totalScore) === level;
-                    const usedHelpInGame = usedHelp.some(used => used);
                     return (
                       <div
                         key={index}
@@ -280,9 +266,6 @@ export const Game: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          {isAchieved && usedHelpInGame && (
-                            <span className="text-2xl ml-2">🆘</span>
-                          )}
                         </div>
                       </div>
                     );
@@ -310,7 +293,6 @@ export const Game: React.FC = () => {
                         <span className="text-white font-medium">{pick.displayName}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        {usedHelp[index] && <span className="text-2xl">🆘</span>}
                         <span className="text-emerald-500">{pick.wins} wins</span>
                       </div>
                     </div>
@@ -394,15 +376,6 @@ export const Game: React.FC = () => {
                 onChange={(e) => {
                   const newValue = e.target.value;
                   setInput(newValue);
-                  if (newValue.toLowerCase().trim() === 'help') {
-                    setShowHelpDropdown(false);
-                    setAvailableQBs([]);
-                    setIsValidInput(null);
-                    setIsHelpCommand(true);
-                    return;
-                  }
-                  
-                  setIsHelpCommand(false);
                   // Validate input in real-time
                   if (newValue.trim() === '') {
                     setIsValidInput(null);
@@ -411,9 +384,6 @@ export const Game: React.FC = () => {
                     const isValid = validationResult && !usedQBs.includes(validationResult.name);
                     setIsValidInput(isValid);
                   }
-                  
-                  setShowHelpDropdown(false);
-                  setAvailableQBs([]);
                 }}
                 placeholder="Search quarterbacks..."
                 className={`w-full px-4 py-2 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 ${
@@ -423,7 +393,6 @@ export const Game: React.FC = () => {
                       ? 'focus:ring-green-500 ring-2 ring-green-500' 
                       : 'focus:ring-red-500 ring-2 ring-red-500'
                 }`}
-                disabled={isLoading}
               />
             </div>
           </div>
@@ -479,8 +448,7 @@ export const Game: React.FC = () => {
                     </div>
                     <div className="text-xs text-gray-400 truncate">{pick.team}</div>
                     <div className="flex items-center gap-2">
-                      {usedHelp[index] && <span className="text-2xl">🆘</span>}
-                      {showScore && <div className="text-xs text-emerald-500">{pick.wins} wins</div>}
+                      <span className="text-emerald-500">{pick.wins} wins</span>
                     </div>
                   </div>
                 </div>

@@ -114,10 +114,7 @@ const GameCard = ({ game, isActive, onClick, onRulesClick }: {
 
 export const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('NFL');
   const [showRules, setShowRules] = useState(false);
-
-  const filteredGames = GAME_CARDS.filter(game => game.sport === activeTab);
 
   const handleStartGame = () => {
     navigate('/game');

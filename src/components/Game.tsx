@@ -149,6 +149,9 @@ export const Game: React.FC = () => {
     // Initialize game state
     initializeGame();
     
+    // Reset showPicks to false to show achievement tiers
+    setShowPicks(false);
+    
     // Start shuffling animation
     setIsShuffling(true);
     

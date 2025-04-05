@@ -167,8 +167,32 @@ export const LobbyPage: React.FC = () => {
 
       {/* Rules Modal */}
       {showRules && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 z-50"
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch'
+          }}
+          onClick={() => setShowRules(false)}
+        >
+          <div 
+            className="bg-white rounded-lg p-6 max-w-md w-full mx-4 my-4"
+            style={{ 
+              maxHeight: '90vh',
+              overflow: 'auto',
+              WebkitOverflowScrolling: 'touch'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
             <h2 className="text-2xl font-bold mb-4">How to Play</h2>
             <div className="space-y-4">
               <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>

@@ -185,7 +185,7 @@ export const LobbyPage: React.FC = () => {
           onClick={() => setShowRules(false)}
         >
           <div 
-            className="bg-white rounded-lg p-6 max-w-md w-full mx-4 my-4"
+            className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-4"
             style={{ 
               maxHeight: '90vh',
               overflow: 'auto',
@@ -193,8 +193,8 @@ export const LobbyPage: React.FC = () => {
             }}
             onClick={e => e.stopPropagation()}
           >
-            <h2 className="text-2xl font-bold mb-4">How to Play</h2>
-            <div className="space-y-4">
+            <h2 className="text-2xl font-bold mb-4 text-white">How to Play</h2>
+            <div className="space-y-4 text-gray-300">
               <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
               <p>Each quarterback can only be used once throughout the game.</p>
               <p>Type "help" to see available QBs for the current team.</p>

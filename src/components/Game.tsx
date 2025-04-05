@@ -485,11 +485,11 @@ export const Game: React.FC = () => {
                       onChange={(e) => {
                         const newValue = e.target.value;
                         setInput(newValue);
+                        setError(null);
+                        
                         if (newValue.toLowerCase().trim() === 'help') {
-                          setShowHelpDropdown(false);
-                          setAvailableQBs([]);
-                          setIsValidInput(null);
                           setIsHelpCommand(true);
+                          setIsValidInput(true);
                           return;
                         }
                         
@@ -501,6 +501,9 @@ export const Game: React.FC = () => {
                           const validationResult = validateQB(newValue, currentTeam || '');
                           const isValid = validationResult && !usedQBs.includes(validationResult.name);
                           setIsValidInput(isValid);
+                          if (!isValid) {
+                            setError('Invalid quarterback name or already used');
+                          }
                         }
                         
                         setShowHelpDropdown(false);

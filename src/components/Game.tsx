@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
@@ -68,6 +68,7 @@ export const Game: React.FC = () => {
   const [isHelpCommand, setIsHelpCommand] = useState(false);
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
+  const achievementListRef = useRef<HTMLDivElement>(null);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -129,6 +130,21 @@ export const Game: React.FC = () => {
       setInput('');
     }
   }, [isGameOver]);
+
+  useEffect(() => {
+    if (isGameOver && !showPicks && achievementListRef.current) {
+      const achievedTier = getAchievedTier(totalScore);
+      if (achievedTier) {
+        const tierIndex = ACHIEVEMENT_LEVELS.findIndex(level => level === achievedTier);
+        if (tierIndex !== -1) {
+          const tierElement = achievementListRef.current.children[tierIndex] as HTMLElement;
+          if (tierElement) {
+            tierElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      }
+    }
+  }, [isGameOver, showPicks, totalScore]);
 
   const handleReset = () => {
     // Initialize game state
@@ -303,6 +319,7 @@ export const Game: React.FC = () => {
               <>
                 <p className="text-lg mt-2 text-gray-300">Achievement Level:</p>
                 <div 
+                  ref={achievementListRef}
                   className="mt-4 space-y-2 max-h-[40vh] overflow-y-auto"
                   style={{
                     WebkitOverflowScrolling: 'touch',

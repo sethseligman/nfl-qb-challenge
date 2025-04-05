@@ -45,7 +45,7 @@ export const LobbyPage: React.FC = () => {
 
   const filteredGames = isHomePage 
     ? GAMES 
-    : GAMES.filter(game => game.sport === activeSport);
+    : GAMES.filter(game => game.sport.toUpperCase() === activeSport);
 
   return (
     <div className="max-w-7xl mx-auto">

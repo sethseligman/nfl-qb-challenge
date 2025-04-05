@@ -384,21 +384,12 @@ export const Game: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center">
             <button
               onClick={handleReset}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               Play Again
-            </button>
-            <button
-              onClick={() => {
-                resetGame();
-                toggleScore();
-              }}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Exit
             </button>
           </div>
           <div className="mt-4 text-center">

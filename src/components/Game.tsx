@@ -230,10 +230,6 @@ export const Game: React.FC = () => {
       setIsValidInput(null);
       setIsHelpCommand(false);
       
-      // TEMPORARY: End game after 1 pick for testing
-      setIsGameOver(true);
-      return;
-      
       // Start shuffling animation
       setIsShuffling(true);
       

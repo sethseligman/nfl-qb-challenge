@@ -21,6 +21,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ onClose }) => {
           <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
           <p>Each quarterback can only be used once throughout the game.</p>
           <p>Type "help" to see available QBs for the current team.</p>
+          <p>Each game consists of 20 rounds.</p>
           <p>Your goal is to reach 2,500 total QB career wins.</p>
           <button
             onClick={onClose}

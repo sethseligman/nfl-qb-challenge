@@ -6,14 +6,10 @@ import { Game } from './components/Game';
 import './index.css';
 
 const App: React.FC = () => {
-  const handleTabChange = (tab: string) => {
-    // Handle tab change if needed
-  };
-
   return (
     <Router>
       <Routes>
-        <Route element={<AppLayout onTabChange={handleTabChange} />}>
+        <Route element={<AppLayout />}>
           <Route path="/" element={<LobbyPage />} />
           <Route path="/nfl/qb-challenge" element={<Game />} />
           <Route path="/nba/scorer-challenge" element={<div className="text-white">NBA Scorer Challenge - Coming Soon!</div>} />

@@ -4,21 +4,11 @@ import { Link } from 'react-router-dom';
 interface GameLayoutProps {
   children: React.ReactNode;
   title: string;
-  showScore?: boolean;
-  onToggleScore?: () => void;
-  onNewGame?: () => void;
-  currentRound?: number;
-  totalScore?: number;
 }
 
 export const GameLayout: React.FC<GameLayoutProps> = ({
   children,
-  title,
-  showScore,
-  onToggleScore,
-  onNewGame,
-  currentRound,
-  totalScore
+  title
 }) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
@@ -50,18 +40,6 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
             {title}
           </h1>
         </div>
-
-        {/* Game Progress */}
-        {(currentRound !== undefined || totalScore !== undefined) && (
-          <div className="flex justify-center items-center gap-4 mb-8">
-            {currentRound !== undefined && (
-              <div className="text-gray-400">Round {currentRound} of 20</div>
-            )}
-            {showScore && totalScore !== undefined && (
-              <div className="text-emerald-500 font-medium">Score: {totalScore}</div>
-            )}
-          </div>
-        )}
 
         {/* Game Content */}
         <div className="flex flex-col lg:flex-row gap-8">

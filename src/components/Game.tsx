@@ -6,6 +6,9 @@ import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
 import { ScoreHistory } from './ScoreHistory';
 import { GameLayout } from './GameLayout';
+import { getTeamName } from '../data/teamNames';
+import { getTeamQBs } from '../data/teamQBs';
+import { getTeamWins } from '../data/teamWins';
 
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
@@ -41,7 +44,11 @@ const getAchievedTier = (score: number) => {
   );
 };
 
-export const Game: React.FC = () => {
+interface GameProps {
+  onNewGame: () => void;
+}
+
+export const Game: React.FC<GameProps> = ({ onNewGame }) => {
   const {
     currentTeam,
     picks,
@@ -63,7 +70,7 @@ export const Game: React.FC = () => {
   const [showRules, setShowRules] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
-  const [shufflingTeam, setShufflingTeam] = useState<string | undefined>(undefined);
+  const [shufflingTeam, setShufflingTeam] = useState<string | null>(null);
   const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
   const [isHelpCommand, setIsHelpCommand] = useState(false);
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
@@ -108,7 +115,7 @@ export const Game: React.FC = () => {
         const finalTimeout = setTimeout(() => {
           clearInterval(slowInterval);
           setIsShuffling(false);
-          setShufflingTeam(undefined);
+          setShufflingTeam(null);
         }, 500);
 
         return () => {

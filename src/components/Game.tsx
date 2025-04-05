@@ -464,7 +464,7 @@ export const Game: React.FC = () => {
                   />
                   <div className="h-[48px]">
                     {!isShuffling && (
-                      <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam || ''] || 'text-emerald-500'}`}>
+                      <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam || ''] || 'text-emerald-500'} text-center whitespace-nowrap`}>
                         {currentTeam}
                       </h3>
                     )}

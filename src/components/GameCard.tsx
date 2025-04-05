@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface GameCardProps {
   title: string;
@@ -15,6 +15,13 @@ export const GameCard: React.FC<GameCardProps> = ({
   isActive,
   onClick 
 }) => {
+  const [showRules, setShowRules] = useState(false);
+
+  const handleRulesClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowRules(true);
+  };
+
   return (
     <div className="relative">
       <div 
@@ -60,10 +67,7 @@ export const GameCard: React.FC<GameCardProps> = ({
           </div>
           {status === 'live' && (
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                // TODO: Show rules modal
-              }}
+              onClick={handleRulesClick}
               className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors"
             >
               Rules
@@ -71,6 +75,51 @@ export const GameCard: React.FC<GameCardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Rules Modal */}
+      {showRules && (
+        <div 
+          className="fixed inset-0 z-50"
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch'
+          }}
+          onClick={() => setShowRules(false)}
+        >
+          <div 
+            className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-4"
+            style={{ 
+              maxHeight: '90vh',
+              overflow: 'auto',
+              WebkitOverflowScrolling: 'touch'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold mb-4 text-white">How to Play</h2>
+            <div className="space-y-4 text-gray-300">
+              <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
+              <p>Each quarterback can only be used once throughout the game.</p>
+              <p>Type "help" to see available QBs for the current team.</p>
+              <p>Your goal is to reach 2,500 total QB career wins.</p>
+            </div>
+            <button
+              onClick={() => setShowRules(false)}
+              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }; 

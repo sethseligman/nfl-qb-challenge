@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
@@ -10,7 +10,19 @@ interface AppLayoutProps {
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ activeTab = 'NFL', onTabChange }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isMainLobby = location.pathname === '/';
+  const currentSport = location.pathname.split('/')[1]?.toUpperCase() || '';
+
+  const handleTabClick = (tab: string) => {
+    if (tab === 'More') return; // Handle More tab separately if needed
+    if (isMainLobby) {
+      navigate(`/${tab.toLowerCase()}`);
+    } else {
+      navigate(`/${tab.toLowerCase()}`);
+    }
+    onTabChange?.(tab);
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -29,9 +41,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ activeTab = 'NFL', onTabCh
             {SPORTS_TABS.map((tab) => (
               <button
                 key={tab}
-                onClick={() => onTabChange?.(tab)}
+                onClick={() => handleTabClick(tab)}
                 className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${
-                  !isMainLobby && activeTab === tab
+                  !isMainLobby && currentSport === tab
                     ? 'text-blue-500 border-b-2 border-blue-500'
                     : 'text-gray-400 hover:text-white'
                 }`}

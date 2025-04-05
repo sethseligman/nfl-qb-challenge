@@ -14,8 +14,11 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   signIn: async (email: string, password: string) => {
-    // Implement your sign-in logic here
-    set({ user: { email } });
+    // For now, we'll just set the user without actual authentication
+    // In a real app, you would validate the password here
+    if (email && password) {
+      set({ user: { email } });
+    }
   },
   signOut: async () => {
     // Implement your sign-out logic here

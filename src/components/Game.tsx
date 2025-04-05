@@ -5,7 +5,6 @@ import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
 import { ScoreHistory } from './ScoreHistory';
-import Layout from './Layout';
 import GameContainer from './GameContainer';
 
 const NFL_TEAMS = [

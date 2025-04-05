@@ -66,6 +66,7 @@ export const Game: React.FC = () => {
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
+  const [showRules, setShowRules] = useState(false);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -418,6 +419,12 @@ export const Game: React.FC = () => {
         <h1 className="text-3xl font-bold text-blue-500">NFL QB Challenge</h1>
         <div className="flex items-center gap-4">
           <button
+            onClick={() => setShowRules(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Rules
+          </button>
+          <button
             onClick={toggleScore}
             className="bg-blue-600 text-white w-32 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -431,6 +438,31 @@ export const Game: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Rules Modal */}
+      {showRules && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg max-w-lg w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-white">How to Play</h2>
+              <button
+                onClick={() => setShowRules(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-4 text-gray-300">
+              <p>1. You'll be shown a random NFL team</p>
+              <p>2. Name a quarterback who played for that team</p>
+              <p>3. Each quarterback can only be used once</p>
+              <p>4. Points are awarded based on the quarterback's career wins</p>
+              <p>5. Try to get the highest score possible in 20 rounds!</p>
+              <p>6. Type 'help' for a list of available quarterbacks</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Game Content */}
       <div className="flex flex-col lg:flex-row gap-8">

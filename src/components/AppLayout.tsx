@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
@@ -16,11 +16,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
     if (tab === 'More') return; // Handle More tab separately if needed
     
     const sportPath = tab.toLowerCase();
-    if (location.pathname.startsWith(`/${sportPath}`)) {
-      navigate('/');
-    } else {
-      navigate(`/${sportPath}`);
-    }
+    navigate(`/${sportPath}`);
     onTabChange?.(tab);
   };
 
@@ -28,7 +24,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Navbar */}
       <nav className="bg-gray-800 p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-blue-500">StatStack</h1>
+        <Link to="/" className="text-2xl font-bold text-blue-500 hover:text-blue-400 transition-colors">
+          StatStack
+        </Link>
         <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200">
           Login
         </button>

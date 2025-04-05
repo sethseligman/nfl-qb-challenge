@@ -544,29 +544,6 @@ export const Game: React.FC = () => {
                 )}
               </div>
             </div>
-
-            {showScore && (
-              <div className="bg-gray-800 rounded-xl p-6 mb-8">
-                <h2 className="text-xl font-bold text-blue-500 mb-4">Your Picks</h2>
-                <div className="space-y-4">
-                  {picks.map((pick, index) => (
-                    <div key={index} className="flex items-center justify-between bg-gray-700 rounded-lg p-4">
-                      <div className="flex items-center gap-4">
-                        <QBPhoto qb={pick.qb} size="sm" />
-                        <div>
-                          <p className="font-medium">{pick.displayName}</p>
-                          <p className="text-sm text-gray-400">{pick.team}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {usedHelp[index] && <span className="text-2xl">🆘</span>}
-                        <span className="text-blue-400 font-bold">{pick.wins} wins</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Stats Panel */}
@@ -594,9 +571,10 @@ export const Game: React.FC = () => {
                           <div className="text-sm font-medium text-white truncate">{pick.displayName}</div>
                         </div>
                         <div className="text-xs text-gray-400 truncate">{pick.team}</div>
-                        {showScore && (
-                          <div className="text-xs text-emerald-500 mt-1">{pick.wins} wins</div>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {usedHelp[index] && <span className="text-2xl">🆘</span>}
+                          <div className="text-xs text-emerald-500">{pick.wins} wins</div>
+                        </div>
                       </div>
                     </div>
                   ))}

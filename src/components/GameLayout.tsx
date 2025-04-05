@@ -27,7 +27,7 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <Link to="/" className="text-2xl font-bold text-blue-500 hover:text-blue-400 transition-colors">
-              NFL Games
+              Statstack
             </Link>
             <div className="flex flex-wrap items-center gap-2 sm:gap-4">
               {showScore !== undefined && onToggleScore && (

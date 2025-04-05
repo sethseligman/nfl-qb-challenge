@@ -18,14 +18,16 @@ export const RulesModal: React.FC<RulesModalProps> = ({ onClose }) => {
           </button>
         </div>
         <div className="space-y-4 text-gray-300">
-          <p>1. You'll be shown a random NFL team</p>
-          <p>2. Name a quarterback who played for that team</p>
-          <p>3. Each quarterback can only be used once</p>
-          <p>4. Points are awarded based on the quarterback's career wins</p>
-          <p>5. Try to get the highest score possible in 20 rounds!</p>
-          <p>6. Type 'help' for a list of available quarterbacks</p>
-          <p>7. Use the 'Show Scores' button to toggle score visibility</p>
-          <p>8. Click 'New Game' to start over</p>
+          <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
+          <p>Each quarterback can only be used once throughout the game.</p>
+          <p>Type "help" to see available QBs for the current team.</p>
+          <p>Your goal is to reach 2,500 total QB career wins.</p>
+          <button
+            onClick={onClose}
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mt-4"
+          >
+            Got it!
+          </button>
         </div>
       </div>
     </div>

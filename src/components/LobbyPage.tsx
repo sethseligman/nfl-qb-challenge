@@ -199,25 +199,6 @@ export const LobbyPage: React.FC = () => {
               <p>Each quarterback can only be used once throughout the game.</p>
               <p>Type "help" to see available QBs for the current team.</p>
               <p>Your goal is to reach 2,500 total QB career wins.</p>
-              <div className="mt-6">
-                <h3 className="text-xl font-semibold mb-2">Achievement Levels:</h3>
-                <ul className="space-y-2">
-                  <li>🏆 THE GOAT: 2500+ wins</li>
-                  <li>🏈 Hall of Famer: 2451-2499 wins</li>
-                  <li>🏆 SuperBowl MVP: 2401-2450 wins</li>
-                  <li>🏈 SuperBowl Winner: 2351-2400 wins</li>
-                  <li>🏆 NFL MVP: 2301-2350 wins</li>
-                  <li>🏆 Heisman Trophy Winner: 2251-2300 wins</li>
-                  <li>🥇 First Round Pick: 2176-2250 wins</li>
-                  <li>🥈 Draft Pick: 2101-2175 wins</li>
-                  <li>🥉 High School All-American: 2001-2100 wins</li>
-                  <li>⭐ Division 1 Scholarship: 1901-2000 wins</li>
-                  <li>⭐ College Walk-on: 1851-1900 wins</li>
-                  <li>⭐ High School Team Captain: 1801-1850 wins</li>
-                  <li>⭐ JV: 1751-1800 wins</li>
-                  <li>⭐ Pop Warner: 1500-1750 wins</li>
-                </ul>
-              </div>
             </div>
             <button
               onClick={() => setShowRules(false)}

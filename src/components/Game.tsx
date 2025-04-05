@@ -30,6 +30,29 @@ const NFL_TEAMS = [
   "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"
 ];
 
+const ACHIEVEMENT_LEVELS = [
+  { tier: "GOAT", minScore: 2500, emoji: "🏆" },
+  { tier: "Hall of Famer", minScore: 2451, maxScore: 2499, emoji: "🏈" },
+  { tier: "SuperBowl MVP", minScore: 2401, maxScore: 2450, emoji: "🏆" },
+  { tier: "SuperBowl Winner", minScore: 2351, maxScore: 2400, emoji: "🏈" },
+  { tier: "NFL MVP", minScore: 2301, maxScore: 2350, emoji: "🏆" },
+  { tier: "Heisman Trophy Winner", minScore: 2251, maxScore: 2300, emoji: "🏆" },
+  { tier: "First Round Pick", minScore: 2176, maxScore: 2250, emoji: "🥇" },
+  { tier: "Draft Pick", minScore: 2101, maxScore: 2175, emoji: "🥈" },
+  { tier: "High School All-American", minScore: 2001, maxScore: 2100, emoji: "🥉" },
+  { tier: "Division 1 Scholarship", minScore: 1901, maxScore: 2000, emoji: "⭐" },
+  { tier: "College Walk-on", minScore: 1851, maxScore: 1900, emoji: "⭐" },
+  { tier: "High School Team Captain", minScore: 1801, maxScore: 1850, emoji: "⭐" },
+  { tier: "JV", minScore: 1751, maxScore: 1800, emoji: "⭐" },
+  { tier: "Pop Warner", minScore: 1500, maxScore: 1750, emoji: "⭐" }
+];
+
+const getAchievedTier = (score: number) => {
+  return ACHIEVEMENT_LEVELS.find(level => 
+    score >= level.minScore && (!level.maxScore || score <= level.maxScore)
+  );
+};
+
 const getTier = (score: number): string => {
   if (score < 2000) return "College Walk-On";
   if (score < 2200) return "Pop Warner";
@@ -587,6 +610,61 @@ export const Game: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {isGameOver && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 my-4">
+            <h2 className="text-2xl font-bold mb-4 text-center">Game Over!</h2>
+            <div className="text-center mb-6">
+              <p className="text-xl">Your final score: <span className="font-bold">{totalScore}</span></p>
+              <p className="text-lg mt-2">Achievement Level:</p>
+              <div className="mt-4 space-y-2">
+                {ACHIEVEMENT_LEVELS.map((level, index) => {
+                  const isAchieved = getAchievedTier(totalScore) === level;
+                  return (
+                    <div
+                      key={index}
+                      className={`p-2 rounded-lg ${
+                        isAchieved
+                          ? 'bg-blue-100 border-2 border-blue-500 animate-pulse'
+                          : 'bg-gray-100'
+                      }`}
+                    >
+                      <span className="text-lg">{level.emoji} {level.tier}</span>
+                      {level.maxScore ? (
+                        <span className="text-sm text-gray-600 ml-2">
+                          ({level.minScore}-{level.maxScore} wins)
+                        </span>
+                      ) : (
+                        <span className="text-sm text-gray-600 ml-2">
+                          ({level.minScore}+ wins)
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={handleReset}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Play Again
+              </button>
+              <button
+                onClick={() => {
+                  resetGame();
+                  toggleScore();
+                }}
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              >
+                Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

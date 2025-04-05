@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Game } from './components/Game';
-import { LobbyPage } from './components/LobbyPage';
 import { AppLayout } from './components/AppLayout';
+import { LobbyPage } from './components/LobbyPage';
+import { Game } from './components/Game';
 import './index.css';
 
 const App: React.FC = () => {
@@ -25,12 +25,12 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route element={<AppLayout activeTab={activeTab} onTabChange={handleTabChange} />}>
+        <Route element={<AppLayout onTabChange={handleTabChange} />}>
           <Route path="/" element={<LobbyPage />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />
-          <Route path="/mlb" element={<div className="text-center p-8">MLB Pitcher Challenge - Coming Soon!</div>} />
-          <Route path="/soccer" element={<div className="text-center p-8">Soccer Goals Challenge - Coming Soon!</div>} />
+          <Route path="/nfl/qb-challenge" element={<Game />} />
+          <Route path="/nba/scorer-challenge" element={<div className="text-white">NBA Scorer Challenge - Coming Soon!</div>} />
+          <Route path="/mlb/hitter-challenge" element={<div className="text-white">MLB Hitter Challenge - Coming Soon!</div>} />
+          <Route path="/soccer/scorer-challenge" element={<div className="text-white">Soccer Scorer Challenge - Coming Soon!</div>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

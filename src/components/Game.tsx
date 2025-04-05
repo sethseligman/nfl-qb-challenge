@@ -424,14 +424,7 @@ export const Game: React.FC<GameProps> = ({ onNewGame }) => {
   }
 
   return (
-    <GameLayout
-      title="NFL QB Challenge"
-      showScore={showScore}
-      onToggleScore={toggleScore}
-      onNewGame={handleReset}
-      currentRound={currentRound}
-      totalScore={totalScore}
-    >
+    <GameLayout title="NFL QB Challenge">
       {/* Main Game Area */}
       <div className="flex-1">
         {/* Team Logo and Name Box */}

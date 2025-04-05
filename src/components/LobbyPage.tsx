@@ -40,12 +40,9 @@ const GAMES = [
 export const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isMainLobby = location.pathname === '/';
-  const activeSport = location.pathname.split('/')[1] || '';
+  const activeSport = location.pathname.split('/')[1]?.toUpperCase() || 'NFL';
 
-  const filteredGames = isMainLobby 
-    ? GAMES 
-    : GAMES.filter(game => game.sport.toLowerCase() === activeSport);
+  const filteredGames = GAMES.filter(game => game.sport === activeSport);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

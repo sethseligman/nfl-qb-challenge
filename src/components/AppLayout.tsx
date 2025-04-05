@@ -10,15 +10,16 @@ interface AppLayoutProps {
 export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isMainLobby = location.pathname === '/';
-  const currentSport = location.pathname.split('/')[1]?.toUpperCase() || '';
+  const currentSport = location.pathname.split('/')[1]?.toUpperCase() || 'NFL';
 
   const handleTabClick = (tab: string) => {
     if (tab === 'More') return; // Handle More tab separately if needed
-    if (isMainLobby) {
-      navigate(`/${tab.toLowerCase()}`);
+    
+    const sportPath = tab.toLowerCase();
+    if (location.pathname.startsWith(`/${sportPath}`)) {
+      navigate('/');
     } else {
-      navigate(`/${tab.toLowerCase()}`);
+      navigate(`/${sportPath}`);
     }
     onTabChange?.(tab);
   };
@@ -42,7 +43,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
                 key={tab}
                 onClick={() => handleTabClick(tab)}
                 className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${
-                  !isMainLobby && currentSport === tab
+                  currentSport === tab
                     ? 'text-blue-500 border-b-2 border-blue-500'
                     : 'text-gray-400 hover:text-white'
                 }`}
@@ -55,9 +56,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
       </div>
 
       {/* Content Area */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 }; 

@@ -226,6 +226,8 @@ export const Game: React.FC = () => {
     setInput(qbName);
     setShowHelpDropdown(false);
     setAvailableQBs([]);
+    // Set isHelpCommand to true since this QB was selected from help
+    setIsHelpCommand(true);
     // Validate the selected QB
     const validationResult = validateQB(qbName, currentTeam || '');
     const isValid = validationResult && !usedQBs.includes(validationResult.name);

@@ -573,7 +573,7 @@ export const Game: React.FC = () => {
                         <div className="text-xs text-gray-400 truncate">{pick.team}</div>
                         <div className="flex items-center gap-2">
                           {usedHelp[index] && <span className="text-2xl">🆘</span>}
-                          <div className="text-xs text-emerald-500">{pick.wins} wins</div>
+                          {showScore && <div className="text-xs text-emerald-500">{pick.wins} wins</div>}
                         </div>
                       </div>
                     </div>

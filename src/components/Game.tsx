@@ -57,7 +57,6 @@ export const Game: React.FC = () => {
 
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
@@ -71,7 +70,6 @@ export const Game: React.FC = () => {
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
-  const isLastRound = currentRound === 20;
 
   useEffect(() => {
     // Initialize game state
@@ -513,7 +511,6 @@ export const Game: React.FC = () => {
                             ? 'focus:ring-green-500 ring-2 ring-green-500' 
                             : 'focus:ring-red-500 ring-2 ring-red-500'
                       }`}
-                      disabled={isLoading}
                     />
                     {isValidInput && (
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -525,10 +522,10 @@ export const Game: React.FC = () => {
                   </div>
                   <button
                     type="submit"
-                    disabled={isLoading || (!isValidInput && !isHelpCommand)}
+                    disabled={!isValidInput && !isHelpCommand}
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? '...' : 'Submit'}
+                    Submit
                   </button>
                 </div>
 

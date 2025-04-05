@@ -291,34 +291,6 @@ export const Game: React.FC = () => {
     );
   };
 
-  const handleNewGame = () => {
-    // Save the current game score if we have a team
-    if (currentTeam && picks.length > 0) {
-      const score: Score = {
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-        totalScore,
-        tier: getTier(totalScore),
-        picks: [...picks]
-      };
-      addScore(score);
-    }
-    
-    // Reset the game state
-    resetGame();
-    
-    // Set a new random team
-    const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-    setCurrentTeam(randomTeam);
-    
-    // Clear input and validation states
-    setInput('');
-    setError(null);
-    setIsValidInput(null);
-    setIsHelpCommand(false);
-    setUsedHelp([]); // Reset usedHelp array
-  };
-
   if (isGameOver) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

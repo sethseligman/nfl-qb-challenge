@@ -69,14 +69,9 @@ export const Game: React.FC = () => {
   const [showPicks, setShowPicks] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
 
-  // Calculate current round
+  // Calculate total score and current round
   const currentRound = picks.length + 1;
-
-  useEffect(() => {
-    if (currentRound > 20) {
-      setIsGameOver(true);
-    }
-  }, [currentRound, setIsGameOver]);
+  const isLastRound = currentRound === 20;
 
   useEffect(() => {
     // Initialize game state
@@ -175,81 +170,34 @@ export const Game: React.FC = () => {
     setUsedHelp([]); // Reset usedHelp array
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+    if (isValidInput === null) return;
 
-    try {
-      // Check if input is 'help'
-      if (input.toLowerCase().trim() === 'help') {
-        // Find all available QBs for the current team
-        const availableQBs = Object.entries(qbDatabase)
-          .filter(([qbName, data]) => {
-            const normalizedCurrentTeam = normalizeTeamName(currentTeam || '');
-            const normalizedQbTeams = data.teams.map(normalizeTeamName);
-            return normalizedQbTeams.includes(normalizedCurrentTeam) && !usedQBs.includes(qbName);
-          })
-          .map(([name, data]) => ({ name, wins: data.wins }));
+    if (isValidInput) {
+      const qb = Object.entries(qbDatabase).find(([name, data]) => 
+        name.toLowerCase() === input.toLowerCase() || 
+        formatQBDisplayName(input, name).toLowerCase() === input.toLowerCase()
+      );
+      
+      if (qb) {
+        const [name, data] = qb;
+        addPick(name, data.wins, formatQBDisplayName(input, name));
+        setInput('');
+        setError(null);
+        setIsValidInput(null);
+        setIsHelpCommand(false);
+        setUsedHelp([...usedHelp, isHelpCommand]);
 
-        // Randomize the order of QBs
-        for (let i = availableQBs.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [availableQBs[i], availableQBs[j]] = [availableQBs[j], availableQBs[i]];
-        }
-
-        if (availableQBs.length > 0) {
-          setAvailableQBs(availableQBs);
-          setShowHelpDropdown(true);
-          setIsLoading(false);
-          return;
-        } else {
-          setError('No more QBs available for this team');
-          setIsValidInput(false);
-          return;
-        }
-      }
-
-      // Since we're validating in real-time, we can assume the input is valid if we get here
-      const validationResult = validateQB(input, currentTeam || '');
-      if (!validationResult || usedQBs.includes(validationResult.name)) {
-        setIsValidInput(false);
-        setError('Invalid quarterback name');
-        return;
-      }
-
-      const { name, wins } = validationResult;
-      
-      // Format the display name properly
-      const displayName = formatQBDisplayName(input, name);
-      addPick(name, wins, displayName);
-      
-      // Add whether help was used to the usedHelp array
-      setUsedHelp(prev => [...prev, isHelpCommand]);
-      
-      // Clear input and validation states
-      setInput('');
-      setIsValidInput(null);
-      setIsHelpCommand(false);
-      
-      // TEMPORARY: End game after 1 pick for testing
-      setIsGameOver(true);
-      return;
-      
-      // Start shuffling animation
-      setIsShuffling(true);
-      
-      // Set a new random team after animation
-      setTimeout(() => {
+        // Set a new random team for the next round
         const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
         setCurrentTeam(randomTeam);
-      }, 1500);
-    } catch (err) {
-      console.error('Error in handleSubmit:', err);
-      setError('An error occurred. Please try again.');
-      setIsValidInput(false);
-    } finally {
-      setIsLoading(false);
+
+        // Check if this was the last round
+        if (currentRound === 20) {
+          setIsGameOver(true);
+        }
+      }
     }
   };
 

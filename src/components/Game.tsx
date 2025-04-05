@@ -5,7 +5,6 @@ import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
 import { ScoreHistory } from './ScoreHistory';
-import { qbDatabase } from '../data/qbData';
 
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",

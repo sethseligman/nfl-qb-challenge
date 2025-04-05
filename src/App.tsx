@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppLayout } from './components/AppLayout';
 import { LobbyPage } from './components/LobbyPage';
@@ -6,20 +6,8 @@ import { Game } from './components/Game';
 import './index.css';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('NFL');
-
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    // Navigate to the appropriate route based on the tab
-    if (tab === 'NFL') {
-      window.location.href = '/';
-    } else if (tab === 'NBA') {
-      window.location.href = '/nba';
-    } else if (tab === 'MLB') {
-      window.location.href = '/mlb';
-    } else if (tab === 'Soccer') {
-      window.location.href = '/soccer';
-    }
+    // Handle tab change if needed
   };
 
   return (

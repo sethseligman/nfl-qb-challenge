@@ -610,11 +610,11 @@ export const Game: React.FC = () => {
 
       {isGameOver && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 my-4">
-            <h2 className="text-2xl font-bold mb-4 text-center">Game Over!</h2>
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-4">
+            <h2 className="text-2xl font-bold mb-4 text-center text-white">Game Over!</h2>
             <div className="text-center mb-6">
-              <p className="text-xl">Your final score: <span className="font-bold">{totalScore}</span></p>
-              <p className="text-lg mt-2">Achievement Level:</p>
+              <p className="text-xl text-gray-300">Your final score: <span className="font-bold text-emerald-500">{totalScore}</span></p>
+              <p className="text-lg mt-2 text-gray-300">Achievement Level:</p>
               <div className="mt-4 space-y-2">
                 {ACHIEVEMENT_LEVELS.map((level, index) => {
                   const isAchieved = getAchievedTier(totalScore) === level;
@@ -623,17 +623,19 @@ export const Game: React.FC = () => {
                       key={index}
                       className={`p-2 rounded-lg ${
                         isAchieved
-                          ? 'bg-blue-100 border-2 border-blue-500 animate-pulse'
-                          : 'bg-gray-100'
+                          ? 'bg-blue-500 border-2 border-blue-400 animate-pulse'
+                          : 'bg-gray-700'
                       }`}
                     >
-                      <span className="text-lg">{level.emoji} {level.tier}</span>
+                      <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
+                        {level.emoji} {level.tier}
+                      </span>
                       {level.maxScore ? (
-                        <span className="text-sm text-gray-600 ml-2">
+                        <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
                           ({level.minScore}-{level.maxScore} wins)
                         </span>
                       ) : (
-                        <span className="text-sm text-gray-600 ml-2">
+                        <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
                           ({level.minScore}+ wins)
                         </span>
                       )}
@@ -654,9 +656,17 @@ export const Game: React.FC = () => {
                   resetGame();
                   toggleScore();
                 }}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
               >
                 Exit
+              </button>
+            </div>
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => toggleScore()}
+                className="text-blue-400 hover:text-blue-300 underline"
+              >
+                View My Picks
               </button>
             </div>
           </div>

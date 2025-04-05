@@ -52,7 +52,6 @@ export const Game: React.FC = () => {
     setCurrentTeam,
     totalScore,
     initializeGame,
-    resetGame,
     setIsGameOver
   } = useGameStore();
 

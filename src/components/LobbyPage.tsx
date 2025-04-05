@@ -119,10 +119,15 @@ const GameCard = ({ game, isActive, onClick, shouldShowRules }: {
         <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-xl p-6 shadow-xl z-50">
           <div className="text-gray-300 space-y-4">
             <p>
-              Test your NFL knowledge by predicting the winner of each game. 
-              Make your picks before kickoff and earn points for correct predictions. 
-              The more confident you are, the more points you can earn!
+              Welcome to the NFL QB Challenge! Here's how to play:
             </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Each round, you'll be given a random NFL team</li>
+              <li>Your task is to name a quarterback who played for that team</li>
+              <li>You can only use each quarterback once throughout the game</li>
+              <li>Type "help" to see available QBs for the current team</li>
+              <li>Your goal is to reach 2,500 total QB career wins</li>
+            </ul>
             <div>
               <h3 className="text-lg font-semibold text-blue-500 mb-2">Achievement Levels</h3>
               <ul className="space-y-2 text-sm">

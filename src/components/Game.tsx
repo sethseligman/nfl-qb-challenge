@@ -146,6 +146,7 @@ export const Game: React.FC = () => {
     setError(null);
     setIsValidInput(null);
     setIsHelpCommand(false);
+    setUsedHelp([]); // Reset usedHelp array
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -198,7 +199,7 @@ export const Game: React.FC = () => {
       addPick(name, wins, displayName);
       
       // Add whether help was used to the usedHelp array
-      setUsedHelp([...usedHelp, isHelpCommand]);
+      setUsedHelp(prev => [...prev, isHelpCommand]);
       
       // Clear input and validation states
       setInput('');
@@ -287,6 +288,7 @@ export const Game: React.FC = () => {
     setError(null);
     setIsValidInput(null);
     setIsHelpCommand(false);
+    setUsedHelp([]); // Reset usedHelp array
   };
 
   if (isGameOver) {

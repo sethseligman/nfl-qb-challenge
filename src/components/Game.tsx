@@ -419,7 +419,7 @@ export const Game: React.FC = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={toggleScore}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-blue-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             {showScore ? 'Hide Scores' : 'Show Scores'}
           </button>
@@ -532,7 +532,7 @@ export const Game: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column - Picks and Score History */}
+        {/* Right Column - Picks */}
         <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start">
           <div className="bg-gray-800 rounded-xl shadow-xl p-6">
             {/* Picks History */}
@@ -566,12 +566,14 @@ export const Game: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            {/* Score History */}
-            <div className="mt-6">
-              <ScoreHistory />
-            </div>
           </div>
+        </div>
+      </div>
+
+      {/* Score History Box */}
+      <div className="mt-8">
+        <div className="bg-gray-800 rounded-xl shadow-xl p-6">
+          <ScoreHistory />
         </div>
       </div>
     </div>

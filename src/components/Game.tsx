@@ -75,8 +75,7 @@ export const Game: React.FC = () => {
     totalScore,
     initializeGame,
     resetGame,
-    addScore,
-    setIsGameOver
+    addScore
   } = useGameStore();
 
   const [input, setInput] = useState('');

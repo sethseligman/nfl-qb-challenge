@@ -340,23 +340,25 @@ export const Game: React.FC = () => {
                             : 'bg-gray-700'
                         }`}
                       >
-                        <div className="flex items-center justify-between">
-                          <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
-                            {level.emoji} {level.tier}
-                          </span>
+                        <div className="flex items-center justify-between min-h-[32px]">
+                          <div className="flex items-center">
+                            <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
+                              {level.emoji} {level.tier}
+                            </span>
+                            {level.maxScore ? (
+                              <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
+                                ({level.minScore}-{level.maxScore} wins)
+                              </span>
+                            ) : (
+                              <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
+                                ({level.minScore}+ wins)
+                              </span>
+                            )}
+                          </div>
                           {isAchieved && usedHelpInGame && (
                             <span className="text-2xl ml-2">🆘</span>
                           )}
                         </div>
-                        {level.maxScore ? (
-                          <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
-                            ({level.minScore}-{level.maxScore} wins)
-                          </span>
-                        ) : (
-                          <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
-                            ({level.minScore}+ wins)
-                          </span>
-                        )}
                       </div>
                     );
                   })}

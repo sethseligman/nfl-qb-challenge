@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Layout } from './Layout';
 
 interface GameCard {
   title: string;
@@ -118,97 +119,34 @@ export const LobbyPage: React.FC = () => {
 
   const filteredGames = GAME_CARDS.filter(game => game.sport === activeTab);
 
+  const handleStartGame = () => {
+    navigate('/game');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Navbar */}
-      <nav className="bg-gray-800 p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-blue-500">StatStack</h1>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200">
-          Login
-        </button>
-      </nav>
-
-      {/* Tab Bar */}
-      <div className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex space-x-4 overflow-x-auto">
-            {SPORTS_TABS.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${
-                  activeTab === tab
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+    <Layout>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
+        <h1 className="text-4xl font-bold mb-8 text-center text-white">
+          NFL QB Challenge
+        </h1>
+        
+        <div className="max-w-2xl w-full bg-gray-800 rounded-xl shadow-xl p-8 mb-8">
+          <h2 className="text-2xl font-semibold mb-4 text-white">How to Play</h2>
+          <div className="space-y-4 text-gray-300">
+            <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
+            <p>Each quarterback can only be used once throughout the game.</p>
+            <p>Type "help" to see available QBs for the current team.</p>
+            <p>Your goal is to reach 2,500 total QB career wins.</p>
           </div>
         </div>
-      </div>
 
-      {/* Game Cards Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGames.map((game, index) => (
-            <div key={index}>
-              <GameCard
-                game={game}
-                isActive={activeTab === game.sport}
-                onClick={() => navigate(game.path)}
-                onRulesClick={() => setShowRules(true)}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Rules Modal */}
-      {showRules && (
-        <div 
-          className="fixed inset-0 z-50"
-          style={{ 
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'auto',
-            WebkitOverflowScrolling: 'touch'
-          }}
-          onClick={() => setShowRules(false)}
+        <button
+          onClick={handleStartGame}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors"
         >
-          <div 
-            className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-4"
-            style={{ 
-              maxHeight: '90vh',
-              overflow: 'auto',
-              WebkitOverflowScrolling: 'touch'
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <h2 className="text-2xl font-bold mb-4 text-white">How to Play</h2>
-            <div className="space-y-4 text-gray-300">
-              <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
-              <p>Each quarterback can only be used once throughout the game.</p>
-              <p>Type "help" to see available QBs for the current team.</p>
-              <p>Your goal is to reach 2,500 total QB career wins.</p>
-            </div>
-            <button
-              onClick={() => setShowRules(false)}
-              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Got it!
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+          Start Game
+        </button>
+      </div>
+    </Layout>
   );
 }; 

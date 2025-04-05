@@ -69,8 +69,14 @@ export const Game: React.FC = () => {
   const [showPicks, setShowPicks] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
 
-  // Calculate total score and current round
+  // Calculate current round
   const currentRound = picks.length + 1;
+
+  useEffect(() => {
+    if (currentRound > 20) {
+      setIsGameOver(true);
+    }
+  }, [currentRound, setIsGameOver]);
 
   useEffect(() => {
     // Initialize game state

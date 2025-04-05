@@ -68,6 +68,7 @@ export const Game: React.FC = () => {
   const [isHelpCommand, setIsHelpCommand] = useState(false);
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
+  const [isRulesOpen, setIsRulesOpen] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
 
   // Calculate total score and current round
@@ -430,7 +431,7 @@ export const Game: React.FC = () => {
       totalScore={totalScore}
       showScore={showScore}
       toggleScore={toggleScore}
-      setShowRules={setShowRules}
+      setShowRules={setIsRulesOpen}
     >
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
@@ -589,6 +590,31 @@ export const Game: React.FC = () => {
           </div>
         </div>
       </div>
+      {isRulesOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setIsRulesOpen(false)}
+        >
+          <div 
+            className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4"
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold mb-4 text-white">How to Play</h2>
+            <div className="space-y-4 text-gray-300">
+              <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
+              <p>Each quarterback can only be used once throughout the game.</p>
+              <p>Type "help" to see available QBs for the current team.</p>
+              <p>Your goal is to reach 2,500 total QB career wins.</p>
+            </div>
+            <button
+              onClick={() => setIsRulesOpen(false)}
+              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </GameContainer>
   );
 };

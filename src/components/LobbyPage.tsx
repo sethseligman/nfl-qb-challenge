@@ -116,37 +116,40 @@ const GameCard = ({ game, isActive, onClick, shouldShowRules }: {
 
       {/* Rules Overlay - Only for NFL QB game */}
       {showRules && game.title === 'NFL QB Wins Challenge' && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-xl p-6 shadow-xl z-50">
-          <div className="text-gray-300 space-y-4">
-            <p>
-              Welcome to the NFL QB Challenge! Here's how to play:
-            </p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Each round, you'll be given a random NFL team</li>
-              <li>Your task is to name a quarterback who played for that team</li>
-              <li>You can only use each quarterback once throughout the game</li>
-              <li>Type "help" to see available QBs for the current team</li>
-              <li>Your goal is to reach 2,500 total QB career wins</li>
-            </ul>
-            <div>
-              <h3 className="text-lg font-semibold text-blue-500 mb-2">Achievement Levels</h3>
-              <ul className="space-y-2 text-sm">
-                <li>• 🏆 THE GOAT: 2500+ wins</li>
-                <li>• 🏈 Hall of Famer: 2451-2499 wins</li>
-                <li>• 🏆 SuperBowl MVP: 2401-2450 wins</li>
-                <li>• 🏈 SuperBowl Winner: 2351-2400 wins</li>
-                <li>• 🏆 NFL MVP: 2301-2350 wins</li>
-                <li>• 🏆 Heisman Trophy Winner: 2251-2300 wins</li>
-                <li>• 🥇 First Round Pick: 2176-2250 wins</li>
-                <li>• 🥈 Draft Pick: 2101-2175 wins</li>
-                <li>• 🥉 High School All-American: 2001-2100 wins</li>
-                <li>• ⭐ Division 1 Scholarship: 1901-2000 wins</li>
-                <li>• ⭐ College Walk-on: 1851-1900 wins</li>
-                <li>• ⭐ High School Team Captain: 1801-1850 wins</li>
-                <li>• ⭐ JV: 1751-1800 wins</li>
-                <li>• ⭐ Pop Warner: 1500-1750 wins</li>
-              </ul>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">How to Play</h2>
+            <div className="space-y-4">
+              <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
+              <p>Each quarterback can only be used once throughout the game.</p>
+              <p>Type "help" to see available QBs for the current team.</p>
+              <p>Your goal is to reach 2,500 total QB career wins.</p>
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold mb-2">Achievement Levels:</h3>
+                <ul className="space-y-2">
+                  <li>🏆 THE GOAT: 2500+ wins</li>
+                  <li>🏈 Hall of Famer: 2451-2499 wins</li>
+                  <li>🏆 SuperBowl MVP: 2401-2450 wins</li>
+                  <li>🏈 SuperBowl Winner: 2351-2400 wins</li>
+                  <li>🏆 NFL MVP: 2301-2350 wins</li>
+                  <li>🏆 Heisman Trophy Winner: 2251-2300 wins</li>
+                  <li>🥇 First Round Pick: 2176-2250 wins</li>
+                  <li>🥈 Draft Pick: 2101-2175 wins</li>
+                  <li>🥉 High School All-American: 2001-2100 wins</li>
+                  <li>⭐ Division 1 Scholarship: 1901-2000 wins</li>
+                  <li>⭐ College Walk-on: 1851-1900 wins</li>
+                  <li>⭐ High School Team Captain: 1801-1850 wins</li>
+                  <li>⭐ JV: 1751-1800 wins</li>
+                  <li>⭐ Pop Warner: 1500-1750 wins</li>
+                </ul>
+              </div>
             </div>
+            <button
+              onClick={() => setShowRules(false)}
+              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Got it!
+            </button>
           </div>
         </div>
       )}

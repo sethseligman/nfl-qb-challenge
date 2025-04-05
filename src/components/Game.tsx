@@ -55,6 +55,7 @@ const Game: React.FC = () => {
   const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -75,6 +76,11 @@ const Game: React.FC = () => {
   const handleReset = () => {
     initializeGame();
     setShowPicks(false);
+    setIsShuffling(true);
+    setTimeout(() => {
+      const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+      setCurrentTeam(randomTeam);
+    }, 1500);
     setInput('');
     setError(null);
     setIsValidInput(null);

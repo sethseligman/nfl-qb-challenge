@@ -57,7 +57,6 @@ export const Game: React.FC = () => {
 
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [showRules, setShowRules] = useState(false);
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);

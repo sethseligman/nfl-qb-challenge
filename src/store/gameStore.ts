@@ -6,6 +6,7 @@ interface QB {
   wins: number;
   displayName: string;
   team: string;
+  usedHelp: boolean;
 }
 
 interface Score {
@@ -52,7 +53,7 @@ export const useGameStore = create<GameState & GameActions>()(
       setCurrentTeam: (team) => set({ currentTeam: team }),
       addPick: (qb, wins, displayName) =>
         set((state) => {
-          const newPicks = [...state.picks, { qb, wins, displayName, team: state.currentTeam || '' }];
+          const newPicks = [...state.picks, { qb, wins, displayName, team: state.currentTeam || '', usedHelp: false }];
           const newUsedQBs = [...state.usedQBs, qb];
           const isOver = newPicks.length >= 20;
           const newTotalScore = state.totalScore + wins;

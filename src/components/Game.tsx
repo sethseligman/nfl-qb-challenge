@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { formatQBDisplayName, qbDatabase, validateQB, normalizeTeamName } from '../data/qbData';
+import { formatQBDisplayName, qbDatabase, validateQB } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
@@ -175,7 +175,7 @@ export const Game: React.FC = () => {
     if (isValidInput === null) return;
 
     if (isValidInput) {
-      const qb = Object.entries(qbDatabase).find(([name, data]) => 
+      const qb = Object.entries(qbDatabase).find(([name]) => 
         name.toLowerCase() === input.toLowerCase() || 
         formatQBDisplayName(input, name).toLowerCase() === input.toLowerCase()
       );

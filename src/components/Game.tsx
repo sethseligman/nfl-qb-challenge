@@ -40,7 +40,7 @@ const getAchievedTier = (score: number) => {
   );
 };
 
-export const Game: React.FC = () => {
+const Game: React.FC = () => {
   const {
     currentTeam,
     picks,

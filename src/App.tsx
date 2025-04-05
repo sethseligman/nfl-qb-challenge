@@ -1,23 +1,28 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Game } from './components/Game';
-import { LobbyPage } from './components/LobbyPage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import AppLayout from './components/AppLayout';
+import HomePage from './components/HomePage';
+import Game from './components/Game';
+import LoginPage from './components/LoginPage';
 import './index.css';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-100">
-        <Routes>
-          <Route path="/" element={<LobbyPage />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />
-          <Route path="/mlb" element={<div className="text-center p-8">MLB Pitcher Challenge - Coming Soon!</div>} />
-          <Route path="/soccer" element={<div className="text-center p-8">Soccer Goals Challenge - Coming Soon!</div>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppLayout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/nfl-qb-challenge" element={<Game />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/nba" element={<div className="text-center p-8">NBA Scorer Challenge - Coming Soon!</div>} />
+            <Route path="/mlb" element={<div className="text-center p-8">MLB Pitcher Challenge - Coming Soon!</div>} />
+            <Route path="/soccer" element={<div className="text-center p-8">Soccer Goals Challenge - Coming Soon!</div>} />
+          </Routes>
+        </AppLayout>
+      </Router>
+    </AuthProvider>
   );
 };
 

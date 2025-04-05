@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
+import { formatQBDisplayName } from '../data/qbData';
 
 interface Score {
   id: string;
@@ -90,7 +91,7 @@ const ScoreEntry: React.FC<{ score: Score }> = ({ score }) => {
                 <div className="flex flex-col items-center gap-2">
                   <QBPhoto qb={pick.qb} size="lg" />
                   <div className="text-center">
-                    <div className="font-semibold text-white">{pick.displayName}</div>
+                    <div className="font-semibold text-white">{formatQBDisplayName(pick.qb, pick.qb)}</div>
                     <div className="text-sm text-emerald-500">{pick.wins} wins</div>
                   </div>
                 </div>

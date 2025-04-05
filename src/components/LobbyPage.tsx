@@ -47,6 +47,17 @@ export const LobbyPage: React.FC = () => {
     ? GAMES 
     : GAMES.filter(game => game.sport === activeSport);
 
+  if (activeSport === 'SOCCER') {
+    return (
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-3xl font-bold text-white mb-8">Soccer Games</h2>
+        <div className="text-white text-center">
+          <p className="text-xl">Soccer games coming soon!</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto">
       {!isHomePage && <h2 className="text-3xl font-bold text-white mb-8">{activeSport} Games</h2>}

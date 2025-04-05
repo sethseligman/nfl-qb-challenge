@@ -27,6 +27,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
     if (tab === 'More') {
       return location.pathname === '/more';
     }
+    if (tab === 'Soccer') {
+      return location.pathname === '/soccer';
+    }
     return currentSport === tab;
   };
 

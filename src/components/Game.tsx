@@ -5,7 +5,6 @@ import { getTeamLogo } from '../data/teamLogos';
 import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
 import { ScoreHistory } from './ScoreHistory';
-import { GameLayout } from './GameLayout';
 
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
@@ -59,6 +58,7 @@ export const Game: React.FC = () => {
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showRules, setShowRules] = useState(false);
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
@@ -416,175 +416,244 @@ export const Game: React.FC = () => {
   }
 
   return (
-    <GameLayout
-      title="NFL QB Challenge"
-      showScore={showScore}
-      onToggleScore={toggleScore}
-      onNewGame={handleReset}
-      currentRound={currentRound}
-      totalScore={totalScore}
-    >
-      {/* Main Game Area */}
-      <div className="flex-1">
-        <div className="bg-gray-800 rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
-          <div className="flex flex-col items-center gap-4">
-            {(currentTeam || shufflingTeam) ? (
-              <>
-                <img 
-                  src={getTeamLogo(shufflingTeam || currentTeam || '')} 
-                  alt={shufflingTeam || currentTeam || ''} 
-                  className={`w-32 h-32 object-contain transition-all duration-100 ${
-                    isShuffling 
-                      ? 'animate-pulse-fast scale-110' 
-                      : 'animate-pulse-slow'
+    <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold text-blue-500">NFL QB Challenge</h1>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                <button
+                  onClick={toggleScore}
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-colors font-medium text-sm sm:text-base ${
+                    showScore 
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                      : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                   }`}
-                />
-                <div className="h-[48px]">
-                  {!isShuffling && (
-                    <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam || ''] || 'text-emerald-500'}`}>
-                      {currentTeam}
-                    </h3>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="w-32 h-32 bg-gray-700 rounded-lg animate-pulse" />
-            )}
-          </div>
-        </div>
+                >
+                  {showScore ? 'Hide Score' : 'Show Score'}
+                </button>
+                <button
+                  onClick={() => setShowRules(!showRules)}
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors font-medium text-sm sm:text-base"
+                >
+                  Rules
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors font-medium text-white text-sm sm:text-base"
+                >
+                  New Game
+                </button>
+              </div>
+            </div>
 
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
-          <form onSubmit={handleSubmit} className="relative">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    setInput(newValue);
-                    if (newValue.toLowerCase().trim() === 'help') {
-                      setShowHelpDropdown(false);
-                      setAvailableQBs([]);
-                      setIsValidInput(null);
-                      setIsHelpCommand(true);
-                      return;
-                    }
-                    
-                    setIsHelpCommand(false);
-                    // Validate input in real-time
-                    if (newValue.trim() === '') {
-                      setIsValidInput(null);
-                    } else {
-                      const validationResult = validateQB(newValue, currentTeam || '');
-                      const isValid = validationResult && !usedQBs.includes(validationResult.name);
-                      setIsValidInput(isValid);
-                    }
-                    
-                    setShowHelpDropdown(false);
-                    setAvailableQBs([]);
+            {/* Rules Modal */}
+            {showRules && (
+              <div 
+                className="fixed inset-0 z-50"
+                style={{ 
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'auto',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+                onClick={() => setShowRules(false)}
+              >
+                <div 
+                  className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-4"
+                  style={{ 
+                    maxHeight: '90vh',
+                    overflow: 'auto',
+                    WebkitOverflowScrolling: 'touch'
                   }}
-                  placeholder="Enter a Quarterback's Name"
-                  className={`w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 ${
-                    isValidInput === null 
-                      ? 'focus:ring-blue-500' 
-                      : isValidInput 
-                        ? 'focus:ring-green-500 ring-2 ring-green-500' 
-                        : 'focus:ring-red-500 ring-2 ring-red-500'
-                  }`}
-                  disabled={isLoading}
-                />
-                {isValidInput && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
+                  onClick={e => e.stopPropagation()}
+                >
+                  <h2 className="text-2xl font-bold mb-4 text-white">How to Play</h2>
+                  <div className="space-y-4 text-gray-300">
+                    <p>Each round, you'll be given a random NFL team. Your goal is to name a quarterback who played for that team.</p>
+                    <p>Each quarterback can only be used once throughout the game.</p>
+                    <p>Type "help" to see available QBs for the current team.</p>
+                    <p>Your goal is to reach 2,500 total QB career wins.</p>
                   </div>
+                  <button
+                    onClick={() => setShowRules(false)}
+                    className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Got it!
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-gray-800 rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
+              <div className="flex flex-col items-center gap-4">
+                {(currentTeam || shufflingTeam) ? (
+                  <>
+                    <img 
+                      src={getTeamLogo(shufflingTeam || currentTeam || '')} 
+                      alt={shufflingTeam || currentTeam || ''} 
+                      className={`w-32 h-32 object-contain transition-all duration-100 ${
+                        isShuffling 
+                          ? 'animate-pulse-fast scale-110' 
+                          : 'animate-pulse-slow'
+                      }`}
+                    />
+                    <div className="h-[48px]"> {/* Placeholder with same height as team name */}
+                      {!isShuffling && (
+                        <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam || ''] || 'text-emerald-500'}`}>
+                          {currentTeam}
+                        </h3>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-32 h-32 bg-gray-700 rounded-lg animate-pulse" />
                 )}
               </div>
-              <button
-                type="submit"
-                disabled={isLoading || (!isValidInput && !isHelpCommand)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? '...' : 'Submit'}
-              </button>
             </div>
 
-            {showHelpDropdown && availableQBs.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                {availableQBs.map((qb) => (
-                  <button
-                    key={qb.name}
-                    onClick={() => handleQBSelect(qb.name)}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white flex justify-between items-center"
-                  >
-                    <span>{qb.name}</span>
-                    {showScore && (
-                      <span className="text-emerald-500">{qb.wins} wins</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {error && (
-              <p className="mt-2 text-sm text-red-400 animate-fade-in">
-                {error}
-              </p>
-            )}
-          </form>
-
-          <div className="mt-6 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="text-gray-400">Round {currentRound} of 20</div>
-            </div>
-            {showScore && (
-              <div className="text-emerald-500 font-medium">Score: {totalScore}</div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Panel */}
-      <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start">
-        <div className="bg-gray-800 rounded-xl shadow-xl p-6">
-          {/* Picks History */}
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h4 className="text-lg font-semibold text-gray-300">Your Picks</h4>
-              <div className="text-lg font-bold text-blue-500">{picks.length}/20</div>
-            </div>
-            <div className="space-y-3">
-              {picks.map((pick, index) => (
-                <div key={index} className="bg-gray-700/50 backdrop-blur-sm rounded-lg p-3 flex items-center gap-3">
-                  <div className="flex-shrink-0">
-                    <img
-                      src={getTeamLogo(pick.team)}
-                      alt={pick.team}
-                      className="w-8 h-8 object-contain"
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl p-6">
+              <form onSubmit={handleSubmit} className="relative">
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setInput(newValue);
+                        if (newValue.toLowerCase().trim() === 'help') {
+                          setShowHelpDropdown(false);
+                          setAvailableQBs([]);
+                          setIsValidInput(null);
+                          setIsHelpCommand(true);
+                          return;
+                        }
+                        
+                        setIsHelpCommand(false);
+                        // Validate input in real-time
+                        if (newValue.trim() === '') {
+                          setIsValidInput(null);
+                        } else {
+                          const validationResult = validateQB(newValue, currentTeam || '');
+                          const isValid = validationResult && !usedQBs.includes(validationResult.name);
+                          setIsValidInput(isValid);
+                        }
+                        
+                        setShowHelpDropdown(false);
+                        setAvailableQBs([]);
+                      }}
+                      placeholder="Enter a Quarterback's Name"
+                      className={`w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 ${
+                        isValidInput === null 
+                          ? 'focus:ring-blue-500' 
+                          : isValidInput 
+                            ? 'focus:ring-green-500 ring-2 ring-green-500' 
+                            : 'focus:ring-red-500 ring-2 ring-red-500'
+                      }`}
+                      disabled={isLoading}
                     />
+                    {isValidInput && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <QBPhoto qb={pick.qb} size="sm" />
-                      <div className="text-sm font-medium text-white truncate">{pick.displayName}</div>
-                    </div>
-                    <div className="text-xs text-gray-400 truncate">{pick.team}</div>
-                    <div className="flex items-center gap-2">
-                      {usedHelp[index] && <span className="text-2xl">🆘</span>}
-                      {showScore && <div className="text-xs text-emerald-500">{pick.wins} wins</div>}
-                    </div>
-                  </div>
+                  <button
+                    type="submit"
+                    disabled={isLoading || (!isValidInput && !isHelpCommand)}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? '...' : 'Submit'}
+                  </button>
                 </div>
-              ))}
+
+                {showHelpDropdown && availableQBs.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                    {availableQBs.map((qb) => (
+                      <button
+                        key={qb.name}
+                        onClick={() => handleQBSelect(qb.name)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white flex justify-between items-center"
+                      >
+                        <span>{qb.name}</span>
+                        {showScore && (
+                          <span className="text-emerald-500">{qb.wins} wins</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {error && (
+                  <p className="mt-2 text-sm text-red-400 animate-fade-in">
+                    {error}
+                  </p>
+                )}
+              </form>
+
+              <div className="mt-6 flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                  <div className="text-gray-400">Round {currentRound} of 20</div>
+                </div>
+                {showScore && (
+                  <div className="text-emerald-500 font-medium">Score: {totalScore}</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Panel */}
+          <div className="lg:w-80 lg:sticky lg:top-6 lg:self-start">
+            <div className="bg-gray-800 rounded-xl shadow-xl p-6">
+              {/* Picks History */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="text-lg font-semibold text-gray-300">Your Picks</h4>
+                  <div className="text-lg font-bold text-blue-500">{picks.length}/20</div>
+                </div>
+                <div className="space-y-3">
+                  {picks.map((pick, index) => (
+                    <div key={index} className="bg-gray-700/50 backdrop-blur-sm rounded-lg p-3 flex items-center gap-3">
+                      <div className="flex-shrink-0">
+                        <img
+                          src={getTeamLogo(pick.team)}
+                          alt={pick.team}
+                          className="w-8 h-8 object-contain"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <QBPhoto qb={pick.qb} size="sm" />
+                          <div className="text-sm font-medium text-white truncate">{pick.displayName}</div>
+                        </div>
+                        <div className="text-xs text-gray-400 truncate">{pick.team}</div>
+                        <div className="flex items-center gap-2">
+                          {usedHelp[index] && <span className="text-2xl">🆘</span>}
+                          {showScore && <div className="text-xs text-emerald-500">{pick.wins} wins</div>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="mt-8">
+              <ScoreHistory />
             </div>
           </div>
         </div>
-        <div className="mt-8">
-          <ScoreHistory />
-        </div>
       </div>
-    </GameLayout>
+    </div>
   );
 };

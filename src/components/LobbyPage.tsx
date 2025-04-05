@@ -42,11 +42,10 @@ const GAME_CARDS: GameCard[] = [
 
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
-const GameCard = ({ game, isActive, onClick, shouldShowRules, onRulesClick }: { 
+const GameCard = ({ game, isActive, onClick, onRulesClick }: { 
   game: GameCard, 
   isActive: boolean, 
   onClick: () => void,
-  shouldShowRules: boolean,
   onRulesClick: () => void
 }) => {
   return (
@@ -159,7 +158,6 @@ export const LobbyPage: React.FC = () => {
                 game={game}
                 isActive={activeTab === game.sport}
                 onClick={() => navigate(game.path)}
-                shouldShowRules={false}
                 onRulesClick={() => setShowRules(true)}
               />
             </div>

@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const SPORTS_TABS = [
-  { id: 'nfl', label: 'NFL' },
-  { id: 'nba', label: 'NBA' },
-  { id: 'mlb', label: 'MLB' },
-  { id: 'nhl', label: 'NHL' },
-  { id: 'soccer', label: 'Soccer' }
+  { id: 'nfl', name: 'NFL', path: '/nfl' },
+  { id: 'nba', name: 'NBA', path: '/nba' },
+  { id: 'mlb', name: 'MLB', path: '/mlb' },
+  { id: 'nhl', name: 'NHL', path: '/nhl' },
+  { id: 'soccer', name: 'Soccer', path: '/soccer' }
 ];
 
 interface LayoutProps {
@@ -15,14 +15,18 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
+      <header className="bg-gray-800 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center py-4">
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-blue-500">StatStack</span>
+              <img
+                src="/statstack-logo.png"
+                alt="StatStack"
+                className="h-8 w-auto"
+              />
             </Link>
 
             {/* Login Button */}
@@ -33,14 +37,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* Sports Tabs */}
           <div className="border-t border-gray-700">
-            <nav className="flex space-x-8 py-4">
+            <nav className="flex space-x-8 py-2">
               {SPORTS_TABS.map((tab) => (
                 <Link
                   key={tab.id}
-                  to={`/${tab.id}`}
+                  to={tab.path}
                   className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  {tab.label}
+                  {tab.name}
                 </Link>
               ))}
             </nav>

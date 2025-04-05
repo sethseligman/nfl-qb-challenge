@@ -29,27 +29,14 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
             <Link to="/" className="text-2xl font-bold text-blue-500 hover:text-blue-400 transition-colors">
               Statstack
             </Link>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-              {showScore !== undefined && onToggleScore && (
-                <button
-                  onClick={onToggleScore}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-colors font-medium text-sm sm:text-base ${
-                    showScore 
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                      : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                  }`}
-                >
-                  {showScore ? 'Hide Score' : 'Show Score'}
-                </button>
-              )}
-              {onNewGame && (
-                <button
-                  onClick={onNewGame}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors font-medium text-white text-sm sm:text-base"
-                >
-                  New Game
-                </button>
-              )}
+            <div className="flex items-center gap-6">
+              <Link to="/nfl" className="text-gray-300 hover:text-white transition-colors">NFL</Link>
+              <Link to="/nba" className="text-gray-300 hover:text-white transition-colors">NBA</Link>
+              <Link to="/mlb" className="text-gray-300 hover:text-white transition-colors">MLB</Link>
+              <Link to="/nhl" className="text-gray-300 hover:text-white transition-colors">NHL</Link>
+              <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors font-medium text-white">
+                Login
+              </button>
             </div>
           </div>
         </div>

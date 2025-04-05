@@ -25,7 +25,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ onClose }) => {
           <p>Your goal is to reach 2,500 total QB career wins.</p>
           <button
             onClick={onClose}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mt-4"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Got it!
           </button>

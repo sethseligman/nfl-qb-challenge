@@ -14,7 +14,7 @@ const GAME_CARDS: GameCard[] = [
     title: 'NFL QB Wins Challenge',
     subtitle: '20 QBs, One Epic Journey to Greatness',
     status: 'LIVE',
-    path: '/game',
+    path: '/nfl-qb-challenge/game',
     sport: 'NFL'
   },
   {

@@ -330,6 +330,7 @@ export const Game: React.FC = () => {
                 >
                   {ACHIEVEMENT_LEVELS.map((level, index) => {
                     const isAchieved = getAchievedTier(totalScore) === level;
+                    const usedHelpInGame = usedHelp.some(used => used);
                     return (
                       <div
                         key={index}
@@ -339,9 +340,14 @@ export const Game: React.FC = () => {
                             : 'bg-gray-700'
                         }`}
                       >
-                        <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
-                          {level.emoji} {level.tier}
-                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
+                            {level.emoji} {level.tier}
+                          </span>
+                          {isAchieved && usedHelpInGame && (
+                            <span className="text-2xl ml-2">🆘</span>
+                          )}
+                        </div>
                         {level.maxScore ? (
                           <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
                             ({level.minScore}-{level.maxScore} wins)

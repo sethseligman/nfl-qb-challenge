@@ -417,11 +417,6 @@ export const Game: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-blue-500">NFL QB Challenge</h1>
         <div className="flex items-center gap-4">
-          {showScore && (
-            <div className="text-2xl font-bold text-white">
-              Total Score: {totalScore}
-            </div>
-          )}
           <button
             onClick={toggleScore}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"

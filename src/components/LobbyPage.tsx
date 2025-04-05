@@ -40,13 +40,16 @@ const GAMES = [
 export const LobbyPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isHomePage = location.pathname === '/';
   const activeSport = location.pathname.split('/')[1]?.toUpperCase() || 'NFL';
 
-  const filteredGames = GAMES.filter(game => game.sport === activeSport);
+  const filteredGames = isHomePage 
+    ? GAMES 
+    : GAMES.filter(game => game.sport === activeSport);
 
   return (
     <div className="max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold text-white mb-8">{activeSport} Games</h2>
+      {!isHomePage && <h2 className="text-3xl font-bold text-white mb-8">{activeSport} Games</h2>}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredGames.map((game) => (
           <GameCard

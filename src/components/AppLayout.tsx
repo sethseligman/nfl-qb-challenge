@@ -13,11 +13,21 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
   const currentSport = location.pathname.split('/')[1]?.toUpperCase() || 'NFL';
 
   const handleTabClick = (tab: string) => {
-    if (tab === 'More') return; // Handle More tab separately if needed
+    if (tab === 'More') {
+      navigate('/more');
+      return;
+    }
     
     const sportPath = tab.toLowerCase();
     navigate(`/${sportPath}`);
     onTabChange?.(tab);
+  };
+
+  const isTabActive = (tab: string) => {
+    if (tab === 'More') {
+      return location.pathname === '/more';
+    }
+    return currentSport === tab;
   };
 
   return (
@@ -41,7 +51,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onTabChange }) => {
                 key={tab}
                 onClick={() => handleTabClick(tab)}
                 className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${
-                  currentSport === tab
+                  isTabActive(tab)
                     ? 'text-blue-500 border-b-2 border-blue-500'
                     : 'text-gray-400 hover:text-white'
                 }`}

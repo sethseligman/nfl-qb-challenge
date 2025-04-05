@@ -15,6 +15,7 @@ const App: React.FC = () => {
           <Route path="/nba" element={<LobbyPage />} />
           <Route path="/mlb" element={<LobbyPage />} />
           <Route path="/soccer" element={<LobbyPage />} />
+          <Route path="/more" element={<div className="text-white">More games coming soon!</div>} />
           <Route path="/nfl/qb-challenge" element={<Game />} />
           <Route path="/nba/scorer-challenge" element={<div className="text-white">NBA Scorer Challenge - Coming Soon!</div>} />
           <Route path="/mlb/hitter-challenge" element={<div className="text-white">MLB Hitter Challenge - Coming Soon!</div>} />

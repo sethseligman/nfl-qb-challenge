@@ -63,7 +63,6 @@ export const Game: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
-  const [showRules, setShowRules] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
   const [shufflingTeam, setShufflingTeam] = useState<string | null>(null);
@@ -171,84 +170,6 @@ export const Game: React.FC = () => {
     setIsValidInput(null);
     setIsHelpCommand(false);
     setUsedHelp([]); // Reset usedHelp array
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Check if input is 'help'
-      if (input.toLowerCase().trim() === 'help') {
-        // Find all available QBs for the current team
-        const availableQBs = Object.entries(qbDatabase)
-          .filter(([qbName, data]) => {
-            const normalizedCurrentTeam = normalizeTeamName(currentTeam || '');
-            const normalizedQbTeams = data.teams.map(normalizeTeamName);
-            return normalizedQbTeams.includes(normalizedCurrentTeam) && !usedQBs.includes(qbName);
-          })
-          .map(([name, data]) => ({ name, wins: data.wins }));
-
-        // Randomize the order of QBs
-        for (let i = availableQBs.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [availableQBs[i], availableQBs[j]] = [availableQBs[j], availableQBs[i]];
-        }
-
-        if (availableQBs.length > 0) {
-          setAvailableQBs(availableQBs);
-          setShowHelpDropdown(true);
-          setIsLoading(false);
-          return;
-        } else {
-          setError('No more QBs available for this team');
-          setIsValidInput(false);
-          return;
-        }
-      }
-
-      // Since we're validating in real-time, we can assume the input is valid if we get here
-      const validationResult = validateQB(input, currentTeam || '');
-      if (!validationResult || usedQBs.includes(validationResult.name)) {
-        setIsValidInput(false);
-        setError('Invalid quarterback name');
-        return;
-      }
-
-      const { name, wins } = validationResult;
-      
-      // Format the display name properly
-      const displayName = formatQBDisplayName(input, name);
-      addPick(name, wins, displayName);
-      
-      // Add whether help was used to the usedHelp array
-      setUsedHelp(prev => [...prev, isHelpCommand]);
-      
-      // Clear input and validation states
-      setInput('');
-      setIsValidInput(null);
-      setIsHelpCommand(false);
-      
-      // TEMPORARY: End game after 1 pick for testing
-      setIsGameOver(true);
-      return;
-      
-      // Start shuffling animation
-      setIsShuffling(true);
-      
-      // Set a new random team after animation
-      setTimeout(() => {
-        const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-        setCurrentTeam(randomTeam);
-      }, 1500);
-    } catch (err) {
-      console.error('Error in handleSubmit:', err);
-      setError('An error occurred. Please try again.');
-      setIsValidInput(false);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const handleQBSelect = (qbName: string) => {
@@ -456,12 +377,6 @@ export const Game: React.FC = () => {
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors font-medium text-white"
               >
                 New Game
-              </button>
-              <button
-                onClick={() => setShowRules(true)}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors font-medium text-gray-300"
-              >
-                Rules
               </button>
             </div>
           </div>

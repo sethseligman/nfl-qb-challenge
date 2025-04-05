@@ -172,24 +172,26 @@ export const Game: React.FC = () => {
     e.preventDefault();
     if (isValidInput === null) return;
 
-    if (isValidInput) {
-      const qb = Object.entries(qbDatabase).find(([name]) => 
-        name.toLowerCase() === input.toLowerCase() || 
-        formatQBDisplayName(input, name).toLowerCase() === input.toLowerCase()
-      );
-      
-      if (qb) {
-        const [name, data] = qb;
-        addPick(name, data.wins, formatQBDisplayName(input, name));
+    if (isValidInput || isHelpCommand) {
+      const validationResult = validateQB(input, currentTeam || '');
+      if (validationResult && !usedQBs.includes(validationResult.name)) {
+        const { name, wins } = validationResult;
+        const displayName = formatQBDisplayName(input, name);
+        addPick(name, wins, displayName);
         setInput('');
         setError(null);
         setIsValidInput(null);
         setIsHelpCommand(false);
         setUsedHelp([...usedHelp, isHelpCommand]);
 
-        // Set a new random team for the next round
-        const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-        setCurrentTeam(randomTeam);
+        // Start shuffling animation
+        setIsShuffling(true);
+        
+        // Set a new random team after animation
+        setTimeout(() => {
+          const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
+          setCurrentTeam(randomTeam);
+        }, 1500);
 
         // Check if this was the last round
         if (currentRound === 20) {

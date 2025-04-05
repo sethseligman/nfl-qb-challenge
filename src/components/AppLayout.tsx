@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 const SPORTS_TABS = ['NFL', 'NBA', 'MLB', 'Soccer', 'More'];
 
@@ -9,6 +9,9 @@ interface AppLayoutProps {
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ activeTab = 'NFL', onTabChange }) => {
+  const location = useLocation();
+  const isMainLobby = location.pathname === '/';
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Navbar */}
@@ -28,7 +31,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ activeTab = 'NFL', onTabCh
                 key={tab}
                 onClick={() => onTabChange?.(tab)}
                 className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${
-                  activeTab === tab
+                  !isMainLobby && activeTab === tab
                     ? 'text-blue-500 border-b-2 border-blue-500'
                     : 'text-gray-400 hover:text-white'
                 }`}

@@ -413,29 +413,32 @@ export const Game: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="max-w-4xl mx-auto">
+      {/* Score Display */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center">
+          <div className="text-2xl font-bold text-white">
+            Total Score: {totalScore}
+          </div>
+          <button
+            onClick={toggleScore}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {showScore ? 'Hide Scores' : 'Show Scores'}
+          </button>
+        </div>
+        <div className="mt-4">
+          <ScoreHistory />
+        </div>
+      </div>
+
+      {/* Game Content */}
+      <div className="bg-gray-800 rounded-xl shadow-xl p-6">
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1">
             <div className="flex justify-between items-center mb-8">
               <h1 className="text-3xl font-bold text-blue-500">NFL QB Challenge</h1>
               <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                <button
-                  onClick={toggleScore}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-colors font-medium text-sm sm:text-base ${
-                    showScore 
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                      : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                  }`}
-                >
-                  {showScore ? 'Hide Score' : 'Show Score'}
-                </button>
-                <button
-                  onClick={() => setShowRules(!showRules)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors font-medium text-sm sm:text-base"
-                >
-                  Rules
-                </button>
                 <button
                   onClick={handleReset}
                   className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors font-medium text-white text-sm sm:text-base"
@@ -620,9 +623,6 @@ export const Game: React.FC = () => {
                   ))}
                 </div>
               </div>
-            </div>
-            <div className="mt-8">
-              <ScoreHistory />
             </div>
           </div>
         </div>

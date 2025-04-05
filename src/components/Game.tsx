@@ -41,7 +41,17 @@ const getAchievedTier = (score: number) => {
   );
 };
 
-export const Game: React.FC = () => {
+const Game: React.FC = () => {
+  const [input, setInput] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
+  const [isHelpCommand, setIsHelpCommand] = useState(false);
+  const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
+  const [showPicks, setShowPicks] = useState(false);
+  const [isRulesOpen, setIsRulesOpen] = useState(false);
+  const achievementListRef = useRef<HTMLDivElement>(null);
+  const [isShuffling, setIsShuffling] = useState(false);
+
   const {
     currentTeam,
     picks,
@@ -55,21 +65,6 @@ export const Game: React.FC = () => {
     initializeGame,
     setIsGameOver
   } = useGameStore();
-
-  const [input, setInput] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showRules, setShowRules] = useState(false);
-  const [showHelpDropdown, setShowHelpDropdown] = useState(false);
-  const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
-  const [isShuffling, setIsShuffling] = useState(false);
-  const [shufflingTeam, setShufflingTeam] = useState<string | undefined>(undefined);
-  const [isValidInput, setIsValidInput] = useState<boolean | null>(null);
-  const [isHelpCommand, setIsHelpCommand] = useState(false);
-  const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
-  const [showPicks, setShowPicks] = useState(false);
-  const [isRulesOpen, setIsRulesOpen] = useState(false);
-  const achievementListRef = useRef<HTMLDivElement>(null);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -94,7 +89,7 @@ export const Game: React.FC = () => {
       // Start with a faster interval for more rapid changes
       const fastInterval = setInterval(() => {
         const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-        setShufflingTeam(randomTeam);
+        setCurrentTeam(randomTeam);
       }, 50); // Change every 50ms for rapid shuffling
 
       // After 1 second, slow down the changes
@@ -102,14 +97,13 @@ export const Game: React.FC = () => {
         clearInterval(fastInterval);
         const slowInterval = setInterval(() => {
           const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-          setShufflingTeam(randomTeam);
+          setCurrentTeam(randomTeam);
         }, 200); // Change every 200ms for slower shuffling
 
         // After 0.5 seconds, stop and show the final team
         const finalTimeout = setTimeout(() => {
           clearInterval(slowInterval);
           setIsShuffling(false);
-          setShufflingTeam(undefined);
         }, 500);
 
         return () => {
@@ -173,7 +167,6 @@ export const Game: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
 
     try {
@@ -195,9 +188,8 @@ export const Game: React.FC = () => {
         }
 
         if (availableQBs.length > 0) {
-          setAvailableQBs(availableQBs);
-          setShowHelpDropdown(true);
-          setIsLoading(false);
+          setCurrentTeam(availableQBs[0].name);
+          setShowPicks(true);
           return;
         } else {
           setError('No more QBs available for this team');
@@ -231,34 +223,11 @@ export const Game: React.FC = () => {
       // TEMPORARY: End game after 1 pick for testing
       setIsGameOver(true);
       return;
-      
-      // Start shuffling animation
-      setIsShuffling(true);
-      
-      // Set a new random team after animation
-      setTimeout(() => {
-        const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-        setCurrentTeam(randomTeam);
-      }, 1500);
     } catch (err) {
       console.error('Error in handleSubmit:', err);
       setError('An error occurred. Please try again.');
       setIsValidInput(false);
-    } finally {
-      setIsLoading(false);
     }
-  };
-
-  const handleQBSelect = (qbName: string) => {
-    setInput(qbName);
-    setShowHelpDropdown(false);
-    setAvailableQBs([]);
-    // Set isHelpCommand to true since this QB was selected from help
-    setIsHelpCommand(true);
-    // Validate the selected QB
-    const validationResult = validateQB(qbName, currentTeam || '');
-    const isValid = validationResult && !usedQBs.includes(validationResult.name);
-    setIsValidInput(isValid);
   };
 
   const QBPhoto: React.FC<{ qb: string; size?: 'sm' | 'lg' }> = ({ qb, size = 'sm' }) => {
@@ -296,7 +265,7 @@ export const Game: React.FC = () => {
         totalScore={totalScore}
         showScore={showScore}
         toggleScore={toggleScore}
-        setShowRules={setShowRules}
+        setShowRules={setIsRulesOpen}
       >
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -441,27 +410,23 @@ export const Game: React.FC = () => {
 
           <div className="bg-gray-800 rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
             <div className="flex flex-col items-center gap-4">
-              {(currentTeam || shufflingTeam) ? (
+              {currentTeam && (
                 <>
                   <img 
-                    src={getTeamLogo(shufflingTeam || currentTeam || '')} 
-                    alt={shufflingTeam || currentTeam || ''} 
+                    src={getTeamLogo(currentTeam)} 
+                    alt={currentTeam} 
                     className={`w-32 h-32 object-contain transition-all duration-100 ${
-                      isShuffling 
-                        ? 'animate-pulse-fast scale-110' 
-                        : 'animate-pulse-slow'
+                      isShuffling ? 'animate-pulse-fast scale-110' : 'animate-pulse-slow'
                     }`}
                   />
                   <div className="h-[48px]"> {/* Placeholder with same height as team name */}
                     {!isShuffling && (
-                      <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam || ''] || 'text-emerald-500'}`}>
+                      <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam] || 'text-emerald-500'}`}>
                         {currentTeam}
                       </h3>
                     )}
                   </div>
                 </>
-              ) : (
-                <div className="w-32 h-32 bg-gray-700 rounded-lg animate-pulse" />
               )}
             </div>
           </div>
@@ -477,8 +442,6 @@ export const Game: React.FC = () => {
                       const newValue = e.target.value;
                       setInput(newValue);
                       if (newValue.toLowerCase().trim() === 'help') {
-                        setShowHelpDropdown(false);
-                        setAvailableQBs([]);
                         setIsValidInput(null);
                         setIsHelpCommand(true);
                         return;
@@ -493,9 +456,6 @@ export const Game: React.FC = () => {
                         const isValid = validationResult && !usedQBs.includes(validationResult.name);
                         setIsValidInput(isValid);
                       }
-                      
-                      setShowHelpDropdown(false);
-                      setAvailableQBs([]);
                     }}
                     placeholder="Enter a Quarterback's Name"
                     className={`w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 ${
@@ -505,7 +465,6 @@ export const Game: React.FC = () => {
                           ? 'focus:ring-green-500 ring-2 ring-green-500' 
                           : 'focus:ring-red-500 ring-2 ring-red-500'
                     }`}
-                    disabled={isLoading}
                   />
                   {isValidInput && (
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -517,29 +476,12 @@ export const Game: React.FC = () => {
                 </div>
                 <button
                   type="submit"
-                  disabled={isLoading || (!isValidInput && !isHelpCommand)}
+                  disabled={!isValidInput && !isHelpCommand}
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? '...' : 'Submit'}
+                  {isHelpCommand ? 'Get Help' : 'Submit'}
                 </button>
               </div>
-
-              {showHelpDropdown && availableQBs.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                  {availableQBs.map((qb) => (
-                    <button
-                      key={qb.name}
-                      onClick={() => handleQBSelect(qb.name)}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white flex justify-between items-center"
-                    >
-                      <span>{qb.name}</span>
-                      {showScore && (
-                        <span className="text-emerald-500">{qb.wins} wins</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
 
               {error && (
                 <p className="mt-2 text-sm text-red-400 animate-fade-in">

@@ -321,52 +321,65 @@ export const Game: React.FC = () => {
 
   if (isGameOver) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white">
-        <div className="max-w-4xl mx-auto p-6">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-blue-500">NFL QB Challenge</h1>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowRules(!showRules)}
-                className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors font-medium"
-              >
-                Rules
-              </button>
-              <button
-                onClick={handleNewGame}
-                className="bg-emerald-500 text-white px-6 py-2 rounded-lg hover:bg-emerald-600 transition-colors font-medium"
-              >
-                New Game
-              </button>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-4">
+          <h2 className="text-2xl font-bold mb-4 text-center text-white">Game Over!</h2>
+          <div className="text-center mb-6">
+            <p className="text-xl text-gray-300">Your final score: <span className="font-bold text-emerald-500">{totalScore}</span></p>
+            <p className="text-lg mt-2 text-gray-300">Achievement Level:</p>
+            <div className="mt-4 space-y-2">
+              {ACHIEVEMENT_LEVELS.map((level, index) => {
+                const isAchieved = getAchievedTier(totalScore) === level;
+                return (
+                  <div
+                    key={index}
+                    className={`p-2 rounded-lg ${
+                      isAchieved
+                        ? 'bg-blue-500 border-2 border-blue-400 animate-pulse'
+                        : 'bg-gray-700'
+                    }`}
+                  >
+                    <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
+                      {level.emoji} {level.tier}
+                    </span>
+                    {level.maxScore ? (
+                      <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
+                        ({level.minScore}-{level.maxScore} wins)
+                      </span>
+                    ) : (
+                      <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
+                        ({level.minScore}+ wins)
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <div className="bg-gray-800 rounded-xl shadow-xl p-6">
-            <h2 className="text-4xl font-bold text-center mb-8 text-blue-500">Game Over!</h2>
-            <div className="text-center mb-8">
-              <div className="text-3xl font-bold text-emerald-500 mb-2">Final Score: {totalScore}</div>
-              <div className="text-xl text-gray-300">Your Tier: {getTier(totalScore)}</div>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {picks.map((pick, index) => (
-                <div key={index} className="bg-gray-700 rounded-lg p-3 flex flex-col items-center gap-2">
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={getTeamLogo(pick.team)}
-                      alt={pick.team}
-                      className="w-8 h-8 object-contain"
-                    />
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <QBPhoto qb={pick.qb} size="lg" />
-                    <div className="text-center">
-                      <div className="font-semibold text-white">{pick.displayName}</div>
-                      <div className="text-sm text-emerald-500">{pick.wins} wins</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="flex justify-center space-x-4">
+            <button
+              onClick={handleReset}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Play Again
+            </button>
+            <button
+              onClick={() => {
+                resetGame();
+                toggleScore();
+              }}
+              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+            >
+              Exit
+            </button>
+          </div>
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => toggleScore()}
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              View My Picks
+            </button>
           </div>
         </div>
       </div>
@@ -612,71 +625,6 @@ export const Game: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {isGameOver && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 my-4">
-            <h2 className="text-2xl font-bold mb-4 text-center text-white">Game Over!</h2>
-            <div className="text-center mb-6">
-              <p className="text-xl text-gray-300">Your final score: <span className="font-bold text-emerald-500">{totalScore}</span></p>
-              <p className="text-lg mt-2 text-gray-300">Achievement Level:</p>
-              <div className="mt-4 space-y-2">
-                {ACHIEVEMENT_LEVELS.map((level, index) => {
-                  const isAchieved = getAchievedTier(totalScore) === level;
-                  return (
-                    <div
-                      key={index}
-                      className={`p-2 rounded-lg ${
-                        isAchieved
-                          ? 'bg-blue-500 border-2 border-blue-400 animate-pulse'
-                          : 'bg-gray-700'
-                      }`}
-                    >
-                      <span className={`text-lg ${isAchieved ? 'text-white' : 'text-gray-300'}`}>
-                        {level.emoji} {level.tier}
-                      </span>
-                      {level.maxScore ? (
-                        <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
-                          ({level.minScore}-{level.maxScore} wins)
-                        </span>
-                      ) : (
-                        <span className={`text-sm ml-2 ${isAchieved ? 'text-white' : 'text-gray-400'}`}>
-                          ({level.minScore}+ wins)
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="flex justify-center space-x-4">
-              <button
-                onClick={handleReset}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Play Again
-              </button>
-              <button
-                onClick={() => {
-                  resetGame();
-                  toggleScore();
-                }}
-                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-              >
-                Exit
-              </button>
-            </div>
-            <div className="mt-4 text-center">
-              <button
-                onClick={() => toggleScore()}
-                className="text-blue-400 hover:text-blue-300 underline"
-              >
-                View My Picks
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

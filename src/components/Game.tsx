@@ -86,6 +86,9 @@ export const Game: React.FC = () => {
       const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
       setCurrentTeam(randomTeam);
     }, 1500);
+
+    // Show rules modal
+    setShowRules(true);
   }, []);
 
   // Add effect for shuffling animation

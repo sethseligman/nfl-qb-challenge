@@ -41,23 +41,6 @@ const NFL_TEAMS = [
   "Washington Commanders"
 ];
 
-const ACHIEVEMENT_LEVELS = [
-  { tier: "GOAT", minScore: 2500, emoji: "🏆" },
-  { tier: "Hall of Famer", minScore: 2451, maxScore: 2499, emoji: "🏈" },
-  { tier: "SuperBowl MVP", minScore: 2401, maxScore: 2450, emoji: "🏆" },
-  { tier: "SuperBowl Winner", minScore: 2351, maxScore: 2400, emoji: "🏈" },
-  { tier: "NFL MVP", minScore: 2301, maxScore: 2350, emoji: "🏆" },
-  { tier: "Heisman Trophy Winner", minScore: 2251, maxScore: 2300, emoji: "🏆" },
-  { tier: "First Round Pick", minScore: 2176, maxScore: 2250, emoji: "🥇" },
-  { tier: "Draft Pick", minScore: 2101, maxScore: 2175, emoji: "🥈" },
-  { tier: "High School All-American", minScore: 2001, maxScore: 2100, emoji: "🥉" },
-  { tier: "Division 1 Scholarship", minScore: 1901, maxScore: 2000, emoji: "⭐" },
-  { tier: "College Walk-on", minScore: 1851, maxScore: 1900, emoji: "⭐" },
-  { tier: "High School Team Captain", minScore: 1801, maxScore: 1850, emoji: "⭐" },
-  { tier: "JV", minScore: 1751, maxScore: 1800, emoji: "⭐" },
-  { tier: "Pop Warner", minScore: 0, maxScore: 1750, emoji: "⭐" }
-];
-
 export const Game: React.FC = () => {
   const { currentTeam, picks, isGameOver, showScore, totalScore, setCurrentTeam, addPick, resetGame, setShowScore, initializeGame } = useGameStore();
   const [input, setInput] = useState('');

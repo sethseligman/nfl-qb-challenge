@@ -67,7 +67,9 @@ export const Game: React.FC = () => {
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
-  const [showRules, setShowRules] = useState(false);
+  const [showRules, setShowRules] = useState(true);
+  const [showScoreHistory, setShowScoreHistory] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;
@@ -285,6 +287,14 @@ export const Game: React.FC = () => {
     );
   };
 
+  const handleGotIt = () => {
+    if (!gameStarted) {
+      setGameStarted(true);
+      initializeGame();
+    }
+    setShowRules(false);
+  };
+
   if (isGameOver) {
     return (
       <div 
@@ -442,7 +452,51 @@ export const Game: React.FC = () => {
 
       {/* Rules Modal */}
       {showRules && (
-        <RulesModal onClose={() => setShowRules(false)} />
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-t from-black/60 to-transparent backdrop-blur-sm rounded-xl shadow-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-3xl font-bold text-white mb-6">How to Play</h2>
+            <div className="space-y-4 text-gray-300">
+              <p>
+                Welcome to the NFL QB Challenge! Test your knowledge of NFL quarterbacks and their teams.
+              </p>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-white">Game Rules:</h3>
+                <ul className="list-disc list-inside space-y-2">
+                  <li>You'll be shown an NFL team logo</li>
+                  <li>Type the name of the quarterback who started the most games for that team in the 2023 season</li>
+                  <li>You have 20 teams to guess</li>
+                  <li>Each correct answer earns you points based on the QB's 2023 win total</li>
+                  <li>Use the "Help" button if you need a hint (limited to 3 uses)</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-white">Scoring:</h3>
+                <ul className="list-disc list-inside space-y-2">
+                  <li>Correct answer: Points equal to the QB's 2023 win total</li>
+                  <li>Using help: Half points (rounded down)</li>
+                  <li>Maximum possible score: 200 points (if all QBs had 10 wins)</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-white">Achievements:</h3>
+                <ul className="list-disc list-inside space-y-2">
+                  <li>Bronze: 50+ points</li>
+                  <li>Silver: 100+ points</li>
+                  <li>Gold: 150+ points</li>
+                  <li>Platinum: 200 points (perfect score)</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={handleGotIt}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                {gameStarted ? "Got it!" : "Play Now"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Game Content */}

@@ -1,5 +1,5 @@
-export const getQBPhoto = (qb: string): string | null => {
-  // This is a placeholder. In a real app, you would have a mapping of QB names to photo URLs
-  // For now, we'll return null to show the initials fallback
-  return null;
+export const getQBPhoto = (qb: string): string => {
+  // This would return the URL of the QB's photo
+  // For now, return a placeholder
+  return '';
 }; 

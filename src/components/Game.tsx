@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { QBPhoto } from './QBPhoto';
 import { ScoreHistory } from './ScoreHistory';
 import { getTeamLogo } from '../utils/teamLogos';
 import { teamColors } from '../utils/teamColors';
-import { qbDatabase } from '../data/qbData';
 import { startGame } from '../utils/gameLogic';
 
 const NFL_TEAMS = [
@@ -66,19 +65,13 @@ const getAchievedTier = (score: number) => {
 };
 
 export const Game: React.FC = () => {
-  const { currentTeam, picks, isGameOver, showScore, usedQBs, totalScore, scores, toggleScore, addScore, clearScores, setIsGameOver, setCurrentTeam, addPick, resetGame, setShowScore, initializeGame } = useGameStore();
+  const { currentTeam, picks, isGameOver, showScore, totalScore, setCurrentTeam, addPick, resetGame, setShowScore, initializeGame } = useGameStore();
   const [input, setInput] = useState('');
   const [isValidInput, setIsValidInput] = useState(false);
-  const [shufflingTeam, setShufflingTeam] = useState<string | null>(null);
-  const [isShuffling, setIsShuffling] = useState(false);
-  const [showPicks, setShowPicks] = useState(false);
-  const achievementListRef = useRef<HTMLDivElement>(null);
+  const [shufflingTeam] = useState<string | null>(null);
+  const [isShuffling] = useState(false);
   const [showRules, setShowRules] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
-
-  // Calculate total score and current round
-  const currentRound = picks.length + 1;
-  const maxRounds = 20;
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

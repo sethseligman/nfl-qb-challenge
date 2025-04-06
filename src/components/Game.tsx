@@ -46,8 +46,6 @@ export const Game: React.FC = () => {
   const { currentTeam, picks, isGameOver, showScore, totalScore, setCurrentTeam, addPick, resetGame, setShowScore, initializeGame } = useGameStore();
   const [input, setInput] = useState('');
   const [isValidInput, setIsValidInput] = useState(false);
-  const [shufflingTeam, setShufflingTeam] = useState<string | null>(null);
-  const [isShuffling, setIsShuffling] = useState(false);
   const [showRules, setShowRules] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
 
@@ -165,23 +163,17 @@ export const Game: React.FC = () => {
           <div className="flex-1">
             <div className="bg-gradient-to-t from-black/60 to-transparent backdrop-blur-sm rounded-xl shadow-xl p-6 mb-6 transform transition-all duration-300 ease-in-out hover:scale-[1.02]">
               <div className="flex flex-col items-center gap-4">
-                {(currentTeam || shufflingTeam) ? (
+                {currentTeam ? (
                   <>
                     <img 
-                      src={getTeamLogo(shufflingTeam || currentTeam || '')} 
-                      alt={shufflingTeam || currentTeam || ''} 
-                      className={`w-32 h-32 object-contain transition-all duration-100 ${
-                        isShuffling 
-                          ? 'animate-pulse-fast scale-110' 
-                          : 'animate-pulse-slow'
-                      }`}
+                      src={getTeamLogo(currentTeam)} 
+                      alt={currentTeam} 
+                      className="w-32 h-32 object-contain transition-all duration-100 animate-pulse-slow"
                     />
                     <div className="h-[48px]">
-                      {!isShuffling && (
-                        <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam || ''] || 'text-emerald-500'} text-center whitespace-nowrap`}>
-                          {currentTeam}
-                        </h3>
-                      )}
+                      <h3 className={`text-4xl font-bold animate-slide-up ${teamColors[currentTeam] || 'text-emerald-500'} text-center whitespace-nowrap`}>
+                        {currentTeam}
+                      </h3>
                     </div>
                   </>
                 ) : (

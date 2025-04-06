@@ -67,7 +67,9 @@ export const Game: React.FC = () => {
   const [usedHelp, setUsedHelp] = useState<boolean[]>([]);
   const [showPicks, setShowPicks] = useState(false);
   const achievementListRef = useRef<HTMLDivElement>(null);
-  const [showRules, setShowRules] = useState(false);
+  const [showRules, setShowRules] = useState(true);
+  const [showScoreHistory, setShowScoreHistory] = useState(false);
+  const [showScores, setShowScores] = useState(false);
 
   // Calculate total score and current round
   const currentRound = picks.length + 1;

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { QBPhoto } from './QBPhoto';
 import { ScoreHistory } from './ScoreHistory';
@@ -57,12 +57,6 @@ const ACHIEVEMENT_LEVELS = [
   { tier: "JV", minScore: 1751, maxScore: 1800, emoji: "⭐" },
   { tier: "Pop Warner", minScore: 0, maxScore: 1750, emoji: "⭐" }
 ];
-
-const getAchievedTier = (score: number) => {
-  return ACHIEVEMENT_LEVELS.find(level => 
-    score >= level.minScore && (!level.maxScore || score <= level.maxScore)
-  );
-};
 
 export const Game: React.FC = () => {
   const { currentTeam, picks, isGameOver, showScore, totalScore, setCurrentTeam, addPick, resetGame, setShowScore, initializeGame } = useGameStore();

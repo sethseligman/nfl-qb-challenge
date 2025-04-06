@@ -9,6 +9,11 @@ export const initializeGame = () => {
 export const startGame = () => {
   const store = useGameStore.getState();
   const teams = Object.keys(qbDatabase);
-  const randomTeam = teams[Math.floor(Math.random() * teams.length)];
+  
+  // Shuffle teams array
+  const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+  
+  // Select first team from shuffled array
+  const randomTeam = shuffledTeams[0];
   store.setCurrentTeam(randomTeam);
 }; 

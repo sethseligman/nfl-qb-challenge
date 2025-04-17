@@ -4,9 +4,27 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'media',
+  darkMode: 'class',
   theme: {
     extend: {
+      colors: {
+        'chalk-green': '#3B7D2E',
+        'stadium-gray': '#1F2937',
+        'playoff-blue': '#1D4ED8',
+        'neutral-white': '#F9F9F9',
+        main: {
+          DEFAULT: '#1a1a1a',
+          dark: '#ffffff'
+        },
+        muted: {
+          DEFAULT: '#666666',
+          dark: '#a3a3a3'
+        },
+        default: {
+          DEFAULT: '#ffffff',
+          dark: '#1a1a1a'
+        }
+      },
       keyframes: {
         'fade-in': {
           '0%': { opacity: '0' },

@@ -3,6 +3,7 @@ export interface QBData {
   wins: number;
   teams: string[];
   nicknames?: string[];
+  ties?: number;
 }
 
 // Nickname mappings for QBs
@@ -25,6 +26,7 @@ const QB_NICKNAMES: Record<string, string> = {
   "Fitz": "Ryan Fitzpatrick",
   "Fitzmagic": "Ryan Fitzpatrick",
   "Tyrod": "Tyrod Taylor",
+  "Boomer": "Boomer Esiason",
   "Eli": "Eli Manning"
 };
 
@@ -248,7 +250,7 @@ export const qbDatabase: Record<string, QBData> = {
   "Kirk Cousins": {
     name: "Kirk Cousins",
     wins: 78,
-    teams: ["Washington Commanders", "Minnesota Vikings", "Atlanta Falcons"]
+    teams: ["Washington Commanders", "Minnesota Vikings"]
   },
   "Derek Carr": {
     name: "Derek Carr",
@@ -883,8 +885,9 @@ export const qbDatabase: Record<string, QBData> = {
   },
   "Joe Namath": {
     name: "Joe Namath",
-    wins: 53,
-    teams: ["New York Jets", "Los Angeles Rams"]
+    wins: 62,
+    teams: ["New York Jets", "Los Angeles Rams"],
+    ties: 4
   },
   "Danny White": {
     name: "Danny White",
@@ -932,23 +935,470 @@ export const qbDatabase: Record<string, QBData> = {
     name: "Baker Mayfield",
     wins: 50,
     teams: ["Cleveland Browns", "Carolina Panthers", "Los Angeles Rams", "Tampa Bay Buccaneers"]
+  },
+
+  // Adding verified QBs
+  "Brandon Allen": {
+    name: "Brandon Allen",
+    wins: 2,
+    teams: ["Denver Broncos", "Cincinnati Bengals", "Tennessee Titans"]
+  },
+  "Tyson Bagent": {
+    name: "Tyson Bagent",
+    wins: 2,
+    teams: ["Chicago Bears"]
+  },
+  "Stetson Bennett": {
+    name: "Stetson Bennett",
+    wins: 0,
+    teams: ["Los Angeles Rams"]
+  },
+  "Jacoby Brissett": {
+    name: "Jacoby Brissett",
+    wins: 19,
+    teams: ["New England Patriots", "Indianapolis Colts", "Miami Dolphins", "Cleveland Browns", "Washington Commanders", "Arizona Cardinals"]
+  },
+  "Jake Browning": {
+    name: "Jake Browning",
+    wins: 4,
+    teams: ["Cincinnati Bengals"]
+  },
+  "Shane Buechele": {
+    name: "Shane Buechele",
+    wins: 0,
+    teams: ["Kansas City Chiefs", "Buffalo Bills"]
+  },
+  "Sean Clifford": {
+    name: "Sean Clifford",
+    wins: 0,
+    teams: ["Green Bay Packers"]
+  },
+  "Sam Darnold": {
+    name: "Sam Darnold",
+    wins: 35,
+    teams: ["New York Jets", "Carolina Panthers", "San Francisco 49ers", "Minnesota Vikings", "Seattle Seahawks"]
+  },
+  "Tommy DeVito": {
+    name: "Tommy DeVito",
+    wins: 3,
+    teams: ["New York Giants"]
+  },
+  "Ben DiNucci": {
+    name: "Ben DiNucci",
+    wins: 0,
+    teams: ["Dallas Cowboys", "Denver Broncos", "New Orleans Saints"]
+  },
+  "Joshua Dobbs": {
+    name: "Joshua Dobbs",
+    wins: 3,
+    teams: ["Pittsburgh Steelers", "Jacksonville Jaguars", "Cleveland Browns", "Tennessee Titans", "Arizona Cardinals", "Minnesota Vikings", "New England Patriots"]
+  },
+  "Sam Ehlinger": {
+    name: "Sam Ehlinger",
+    wins: 0,
+    teams: ["Indianapolis Colts", "Denver Broncos"]
+  },
+  "Jayden Daniels": {
+    name: "Jayden Daniels",
+    wins: 12,
+    teams: ["Washington Commanders"]
+  },
+  
+  // Adding next set of verified QBs
+  "Justin Fields": {
+    name: "Justin Fields",
+    wins: 14,
+    teams: ["Chicago Bears", "New York Jets"]
+  },
+  "Jake Fromm": {
+    name: "Jake Fromm",
+    wins: 0,
+    teams: ["Buffalo Bills", "New York Giants", "Washington Commanders", "Detroit Lions"]
+  },
+  "Jimmy Garoppolo": {
+    name: "Jimmy Garoppolo",
+    wins: 43,
+    teams: ["New England Patriots", "San Francisco 49ers", "Las Vegas Raiders", "Los Angeles Rams"]
+  },
+  "Will Grier": {
+    name: "Will Grier",
+    wins: 0,
+    teams: ["Carolina Panthers", "Dallas Cowboys", "New England Patriots"]
+  },
+  "Jake Haener": {
+    name: "Jake Haener",
+    wins: 0,
+    teams: ["New Orleans Saints"]
+  },
+  "Jaren Hall": {
+    name: "Jaren Hall",
+    wins: 0,
+    teams: ["Minnesota Vikings", "Seattle Seahawks"]
+  },
+  "Sam Hartman": {
+    name: "Sam Hartman",
+    wins: 0,
+    teams: ["Washington Commanders"]
+  },
+  "Taylor Heinicke": {
+    name: "Taylor Heinicke",
+    wins: 13,
+    teams: ["Minnesota Vikings", "Carolina Panthers", "Washington Commanders", "Atlanta Falcons", "Los Angeles Chargers"]
+  },
+  "Hendon Hooker": {
+    name: "Hendon Hooker",
+    wins: 0,
+    teams: ["Detroit Lions"]
+  },
+  "Sam Howell": {
+    name: "Sam Howell",
+    wins: 4,
+    teams: ["Washington Commanders", "Seattle Seahawks"]
+  },
+  "Jalen Hurts": {
+    name: "Jalen Hurts",
+    wins: 46,
+    teams: ["Philadelphia Eagles"]
+  },
+  "Daniel Jones": {
+    name: "Daniel Jones",
+    wins: 24,
+    teams: ["New York Giants", "Indianapolis Colts"]
+  },
+  "Emory Jones": {
+    name: "Emory Jones",
+    wins: 0,
+    teams: ["Atlanta Falcons"]
+  },
+  "Mac Jones": {
+    name: "Mac Jones",
+    wins: 20,
+    teams: ["New England Patriots", "San Francisco 49ers"]
+  },
+  "Trey Lance": {
+    name: "Trey Lance",
+    wins: 2,
+    teams: ["San Francisco 49ers", "Dallas Cowboys", "Los Angeles Chargers"]
+  },
+  
+  // Adding next set of verified QBs
+  "Devin Leary": {
+    name: "Devin Leary",
+    wins: 0,
+    teams: ["Baltimore Ravens"]
+  },
+  "Will Levis": {
+    name: "Will Levis",
+    wins: 5,
+    teams: ["Tennessee Titans"]
+  },
+  "Drew Lock": {
+    name: "Drew Lock",
+    wins: 10,
+    teams: ["Denver Broncos", "Seattle Seahawks"]
+  },
+  "Adrian Martinez": {
+    name: "Adrian Martinez",
+    wins: 0,
+    teams: ["New York Jets"]
+  },
+  "Drake Maye": {
+    name: "Drake Maye",
+    wins: 3,
+    teams: ["New England Patriots"]
+  },
+  "J.J. McCarthy": {
+    name: "J.J. McCarthy",
+    wins: 0,
+    teams: ["Minnesota Vikings"]
+  },
+  "Tanner McKee": {
+    name: "Tanner McKee",
+    wins: 0,
+    teams: ["Philadelphia Eagles"]
+  },
+  "Joe Milton III": {
+    name: "Joe Milton III",
+    wins: 0,
+    teams: ["Dallas Cowboys"]
+  },
+  "Tanner Mordecai": {
+    name: "Tanner Mordecai",
+    wins: 0,
+    teams: ["San Francisco 49ers"]
+  },
+  "Nick Mullens": {
+    name: "Nick Mullens",
+    wins: 5,
+    teams: ["San Francisco 49ers", "Cleveland Browns", "Minnesota Vikings", "Jacksonville Jaguars"]
+  },
+  "Kyler Murray": {
+    name: "Kyler Murray",
+    wins: 36,
+    teams: ["Arizona Cardinals"]
+  },
+  "Bo Nix": {
+    name: "Bo Nix",
+    wins: 10,
+    teams: ["Denver Broncos"]
+  },
+  "Aidan O'Connell": {
+    name: "Aidan O'Connell",
+    wins: 3,
+    teams: ["Las Vegas Raiders"]
+  },
+  "Chris Oladokun": {
+    name: "Chris Oladokun",
+    wins: 0,
+    teams: ["Pittsburgh Steelers", "Kansas City Chiefs"]
+  },
+  "Michael Penix Jr.": {
+    name: "Michael Penix Jr.",
+    wins: 0,
+    teams: ["Atlanta Falcons"]
+  },
+  
+  // Adding next set of verified QBs
+  "Kenny Pickett": {
+    name: "Kenny Pickett",
+    wins: 15,
+    teams: ["Pittsburgh Steelers", "Cleveland Browns"]
+  },
+  "Jack Plummer": {
+    name: "Jack Plummer",
+    wins: 0,
+    teams: ["Carolina Panthers"]
+  },
+  "Michael Pratt": {
+    name: "Michael Pratt",
+    wins: 0,
+    teams: ["Tampa Bay Buccaneers"]
+  },
+  "Brock Purdy": {
+    name: "Brock Purdy",
+    wins: 23,
+    teams: ["San Francisco 49ers"]
+  },
+  "Spencer Rattler": {
+    name: "Spencer Rattler",
+    wins: 0,
+    teams: ["New Orleans Saints"]
+  },
+  "Austin Reed": {
+    name: "Austin Reed",
+    wins: 0,
+    teams: ["Chicago Bears"]
+  },
+  "Anthony Richardson": {
+    name: "Anthony Richardson",
+    wins: 8,
+    teams: ["Indianapolis Colts"]
+  },
+  "Mason Rudolph": {
+    name: "Mason Rudolph",
+    wins: 8,
+    teams: ["Pittsburgh Steelers"]
+  },
+  "Cooper Rush": {
+    name: "Cooper Rush",
+    wins: 9,
+    teams: ["Dallas Cowboys", "Baltimore Ravens"]
+  },
+  "Brett Rypien": {
+    name: "Brett Rypien",
+    wins: 2,
+    teams: ["Denver Broncos", "Los Angeles Rams", "Seattle Seahawks", "Minnesota Vikings"]
+  },
+  "Kedon Slovis": {
+    name: "Kedon Slovis",
+    wins: 0,
+    teams: ["Houston Texans"]
+  },
+  "Geno Smith": {
+    name: "Geno Smith",
+    wins: 40,
+    teams: ["New York Jets", "New York Giants", "Los Angeles Chargers", "Seattle Seahawks", "Las Vegas Raiders"]
+  },
+  "Jarrett Stidham": {
+    name: "Jarrett Stidham",
+    wins: 0,
+    teams: ["New England Patriots", "Las Vegas Raiders", "Denver Broncos"]
+  },
+  "Skylar Thompson": {
+    name: "Skylar Thompson",
+    wins: 1,
+    teams: ["Miami Dolphins", "Pittsburgh Steelers"]
+  },
+  "Dorian Thompson-Robinson": {
+    name: "Dorian Thompson-Robinson",
+    wins: 1,
+    teams: ["Cleveland Browns", "Philadelphia Eagles"]
+  },
+  
+  // Adding final set of verified QBs
+  "Kyle Trask": {
+    name: "Kyle Trask",
+    wins: 0,
+    teams: ["Tampa Bay Buccaneers"]
+  },
+  "Jordan Travis": {
+    name: "Jordan Travis",
+    wins: 0,
+    teams: ["New York Jets"]
+  },
+  "Mitchell Trubisky": {
+    name: "Mitchell Trubisky",
+    wins: 31,
+    teams: ["Chicago Bears", "Buffalo Bills", "Pittsburgh Steelers", "Buffalo Bills"]
+  },
+  "Clayton Tune": {
+    name: "Clayton Tune",
+    wins: 0,
+    teams: ["Arizona Cardinals"]
+  },
+  "Mike White": {
+    name: "Mike White",
+    wins: 2,
+    teams: ["New York Jets", "Miami Dolphins", "Buffalo Bills"]
+  },
+  "Caleb Williams": {
+    name: "Caleb Williams",
+    wins: 5,
+    teams: ["Chicago Bears"]
+  },
+  "Malik Willis": {
+    name: "Malik Willis",
+    wins: 3,
+    teams: ["Tennessee Titans", "Green Bay Packers"]
+  },
+  "Zach Wilson": {
+    name: "Zach Wilson",
+    wins: 12,
+    teams: ["New York Jets", "Miami Dolphins"]
+  },
+  "Jameis Winston": {
+    name: "Jameis Winston",
+    wins: 36,
+    teams: ["Tampa Bay Buccaneers", "New Orleans Saints", "New York Giants"]
+  },
+  "John Wolford": {
+    name: "John Wolford",
+    wins: 1,
+    teams: ["Los Angeles Rams", "Jacksonville Jaguars"]
+  },
+  "Logan Woodside": {
+    name: "Logan Woodside",
+    wins: 0,
+    teams: ["Tennessee Titans", "Atlanta Falcons", "Cincinnati Bengals"]
+  },
+  "Bryce Young": {
+    name: "Bryce Young",
+    wins: 6,
+    teams: ["Carolina Panthers"]
+  },
+  "Bailey Zappe": {
+    name: "Bailey Zappe",
+    wins: 4,
+    teams: ["New England Patriots", "Kansas City Chiefs"]
+  },
+  "Ken O'Brien": {
+    name: "Ken O'Brien",
+    wins: 50,
+    teams: ["Jets", "Eagles"],
+    ties: 1
+  },
+  "Chad Pennington": {
+    name: "Chad Pennington",
+    wins: 44,
+    teams: ["Jets", "Dolphins"],
+    ties: 0
+  },
+  "Richard Todd": {
+    name: "Richard Todd",
+    wins: 48,
+    teams: ["Jets", "Saints"],
+    ties: 1
   }
 };
 
 // Function to normalize team names
 export const normalizeTeamName = (team: string): string => {
   const teamChanges: { [key: string]: string } = {
+    // Historical changes
     'San Diego Chargers': 'Los Angeles Chargers',
     'Oakland Raiders': 'Las Vegas Raiders',
     'St. Louis Rams': 'Los Angeles Rams',
-    'San Francisco 49ers': 'San Francisco 49ers',
+    'Houston Oilers': 'Tennessee Titans',
+    'Baltimore Colts': 'Indianapolis Colts',
+    'St. Louis Cardinals': 'Arizona Cardinals',
+    
+    // Current teams (for standardization)
     'Arizona Cardinals': 'Arizona Cardinals',
-    'Seattle Seahawks': 'Seattle Seahawks',
+    'Atlanta Falcons': 'Atlanta Falcons',
+    'Baltimore Ravens': 'Baltimore Ravens',
+    'Buffalo Bills': 'Buffalo Bills',
+    'Carolina Panthers': 'Carolina Panthers',
+    'Chicago Bears': 'Chicago Bears',
+    'Cincinnati Bengals': 'Cincinnati Bengals',
+    'Cleveland Browns': 'Cleveland Browns',
+    'Dallas Cowboys': 'Dallas Cowboys',
     'Denver Broncos': 'Denver Broncos',
+    'Detroit Lions': 'Detroit Lions',
+    'Green Bay Packers': 'Green Bay Packers',
+    'Houston Texans': 'Houston Texans',
+    'Indianapolis Colts': 'Indianapolis Colts',
+    'Jacksonville Jaguars': 'Jacksonville Jaguars',
     'Kansas City Chiefs': 'Kansas City Chiefs',
-    'Los Angeles Chargers': 'Los Angeles Chargers',
     'Las Vegas Raiders': 'Las Vegas Raiders',
+    'Los Angeles Chargers': 'Los Angeles Chargers',
     'Los Angeles Rams': 'Los Angeles Rams',
+    'Miami Dolphins': 'Miami Dolphins',
+    'Minnesota Vikings': 'Minnesota Vikings',
+    'New England Patriots': 'New England Patriots',
+    'New Orleans Saints': 'New Orleans Saints',
+    'New York Giants': 'New York Giants',
+    'New York Jets': 'New York Jets',
+    'Philadelphia Eagles': 'Philadelphia Eagles',
+    'Pittsburgh Steelers': 'Pittsburgh Steelers',
+    'San Francisco 49ers': 'San Francisco 49ers',
+    'Seattle Seahawks': 'Seattle Seahawks',
+    'Tampa Bay Buccaneers': 'Tampa Bay Buccaneers',
+    'Tennessee Titans': 'Tennessee Titans',
+    'Washington Commanders': 'Washington Commanders',
+    
+    // Short forms to full names
+    'Cardinals': 'Arizona Cardinals',
+    'Falcons': 'Atlanta Falcons',
+    'Ravens': 'Baltimore Ravens',
+    'Bills': 'Buffalo Bills',
+    'Panthers': 'Carolina Panthers',
+    'Bears': 'Chicago Bears',
+    'Bengals': 'Cincinnati Bengals',
+    'Browns': 'Cleveland Browns',
+    'Cowboys': 'Dallas Cowboys',
+    'Broncos': 'Denver Broncos',
+    'Lions': 'Detroit Lions',
+    'Packers': 'Green Bay Packers',
+    'Texans': 'Houston Texans',
+    'Colts': 'Indianapolis Colts',
+    'Jaguars': 'Jacksonville Jaguars',
+    'Chiefs': 'Kansas City Chiefs',
+    'Raiders': 'Las Vegas Raiders',
+    'Chargers': 'Los Angeles Chargers',
+    'Rams': 'Los Angeles Rams',
+    'Dolphins': 'Miami Dolphins',
+    'Vikings': 'Minnesota Vikings',
+    'Patriots': 'New England Patriots',
+    'Saints': 'New Orleans Saints',
+    'Giants': 'New York Giants',
+    'Jets': 'New York Jets',
+    'Eagles': 'Philadelphia Eagles',
+    'Steelers': 'Pittsburgh Steelers',
+    '49ers': 'San Francisco 49ers',
+    'Seahawks': 'Seattle Seahawks',
+    'Buccaneers': 'Tampa Bay Buccaneers',
+    'Titans': 'Tennessee Titans',
+    'Commanders': 'Washington Commanders'
   };
   return teamChanges[team] || team;
 };

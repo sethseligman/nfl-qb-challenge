@@ -37,27 +37,31 @@ export const SpecialEffects: React.FC<SpecialEffectsProps> = ({ isVisible }) => 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
-      <div className={`absolute inset-0 bg-black/30 ${isVisible ? 'animate-fade-in' : ''}`} />
+    <div className="fixed inset-0 z-50 pointer-events-none">
+      {/* Semi-transparent background overlay */}
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
       
-      {/* Flame Effect */}
-      <div className={`absolute inset-0 ${isVisible ? 'animate-flame' : ''}`}>
-        <div className="flame-wrapper">
-          <div className="flame red"></div>
-          <div className="flame orange"></div>
-          <div className="flame gold"></div>
+      {/* Content container */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        {/* Flame Effect */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flame-wrapper">
+            <div className="flame red"></div>
+            <div className="flame orange"></div>
+            <div className="flame gold"></div>
+          </div>
         </div>
-      </div>
 
-      {/* Text Overlays */}
-      <div className="relative text-center">
-        <div className={`transition-opacity duration-500 text-4xl font-bold text-yellow-400 
-          ${showText1 ? 'opacity-100' : 'opacity-0'}`}>
-          YOU GOT THE GOAT
-        </div>
-        <div className={`transition-opacity duration-500 text-4xl font-bold text-red-500 
-          ${showText2 ? 'opacity-100' : 'opacity-0'}`}>
-          LET'S F#%KING GO
+        {/* Text Overlays */}
+        <div className="relative text-center z-10">
+          <div className={`transition-opacity duration-500 text-4xl md:text-5xl lg:text-6xl font-bold text-yellow-400 
+            ${showText1 ? 'opacity-100' : 'opacity-0'}`}>
+            YOU GOT THE GOAT
+          </div>
+          <div className={`transition-opacity duration-500 text-4xl md:text-5xl lg:text-6xl font-bold text-red-500 
+            ${showText2 ? 'opacity-100' : 'opacity-0'}`}>
+            LET'S F#%KING GO
+          </div>
         </div>
       </div>
     </div>

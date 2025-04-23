@@ -1,18 +1,22 @@
-import React, { useState, useEffect, useRef, FormEvent } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { formatQBDisplayName, validateQB, qbDatabase, QBData, normalizeTeamName } from '../data/qbData';
+import { formatQBDisplayName, validateQB, qbDatabase, QBData, normalizeTeamName, findClosestMatch } from '../data/qbData';
 import { getTeamLogo } from '../data/teamLogos';
-import { getQBPhoto } from '../data/qbPhotos';
 import { teamColors } from '../data/teamColors';
 import { RulesModal } from '../components/RulesModal';
 import { useLeaderboardStore } from '../store/leaderboardStore';
 import { LeaderboardModal } from '../components/LeaderboardModal';
 import { useNavigate } from 'react-router-dom';
-import type { QB } from '../store/gameStore';
 import { QwertyKeyboard } from '../components/QwertyKeyboard';
+import { ROUNDS_PER_GAME } from '../constants';
+import { CORRECT_FEEDBACK_MESSAGES, INCORRECT_FEEDBACK_MESSAGES, ALREADY_USED_FEEDBACK_MESSAGES, ASSISTED_FEEDBACK_MESSAGES } from '../constants/feedbackMessages';
+import { getRandomFeedbackMessage } from '../utils/feedback';
 import { SpecialEffects } from '../components/SpecialEffects';
-
-const ROUNDS_PER_GAME = 20;
+import { HalftimeEffect } from '../components/HalftimeEffect';
+import { HelpMenu } from '../components/HelpMenu';
+import { AnimatedInfoButton } from '../components/AnimatedInfoButton';
+import { GameOver } from '../components/GameOver';
+import { selectWeightedTeam, updateRecentTeams } from '../utils/teamSelection';
 
 const NFL_TEAMS = [
   "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
@@ -25,340 +29,63 @@ const NFL_TEAMS = [
   "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"
 ];
 
+// Helper function to capitalize first letter of each word
+const capitalizeWords = (str: string) => {
+  return str.replace(/(?:^|\s)\S/g, (letter) => letter.toUpperCase());
+};
+
 const TeamDisplay: React.FC<{ 
   team: string | null; 
   isShuffling: boolean; 
   shufflingTeam: string | undefined;
   picks: { qb: string; team: string }[];
   startNextRound: () => void;
-  setShowBradyEffect: (show: boolean) => void;
-  showBradyEffect: boolean;
+  showScore: boolean;
+  totalScore: number;
+  getTeamColorClass: (teamName: string) => string;
 }> = ({ 
   team, 
   isShuffling, 
   shufflingTeam,
   picks,
   startNextRound,
-  setShowBradyEffect,
-  showBradyEffect
+  showScore,
+  totalScore,
+  getTeamColorClass
 }) => {
-  const [activeTooltipIndex, setActiveTooltipIndex] = useState<number | null>(null);
-  const [animatingLogo, setAnimatingLogo] = useState<{
-    team: string;
-    startRect: DOMRect | null;
-    endRect: DOMRect | null;
-    targetIndex: number;
-  } | null>(null);
   const centerLogoRef = useRef<HTMLDivElement>(null);
-  const gridCellRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [shouldAnimate, setShouldAnimate] = useState(false);
-
-  // Get team color for border
-  const getTeamColorClass = (teamName: string) => {
-    const colorClass = teamColors[teamName];
-    if (!colorClass) return 'border-neutral-200 dark:border-neutral-700';
-    return colorClass.replace('text-', 'border-');
-  };
-
-  const handleLogoClick = (index: number) => {
-    setActiveTooltipIndex(prev => prev === index ? null : index);
-  };
-
-  // Handle new pick animation
-  useEffect(() => {
-    if (shouldAnimate && picks.length > 0 && !isShuffling && team) {
-      const lastPick = picks[picks.length - 1];
-      const targetIndex = picks.length - 1;
-      const isBradyPick = lastPick.qb.toLowerCase().includes('brady');
-      
-      // Get the center logo position - using the image element
-      const centerLogoImg = centerLogoRef.current?.querySelector('img');
-      
-      if (centerLogoImg) {
-        const imgRect = centerLogoImg.getBoundingClientRect();
-        
-        // Use the image's actual position and dimensions
-        const startRect = new DOMRect(
-          imgRect.left,
-          imgRect.top,
-          imgRect.width,
-          imgRect.height
-        );
-        
-        // Get the target grid cell position
-        const endRect = gridCellRefs.current[targetIndex]?.getBoundingClientRect() || null;
-
-        if (startRect && endRect) {
-          // For Brady picks, wait for the effect to complete (2000ms) before starting animation
-          const startAnimation = () => {
-            setAnimatingLogo({
-              team: lastPick.team,
-              startRect,
-              endRect,
-              targetIndex
-            });
-
-            // Remove the animating logo and start shuffling after animation completes
-            setTimeout(() => {
-              setAnimatingLogo(null);
-              setShouldAnimate(false);
-              startNextRound();
-            }, 300);
-          };
-
-          if (isBradyPick) {
-            // Don't start animation yet, it will be triggered after Brady effect
-            return;
-          } else {
-            startAnimation();
-          }
-        }
-      }
-    }
-  }, [shouldAnimate, picks.length, team, isShuffling, startNextRound, setShowBradyEffect]);
-
-  // Handle Brady effect and subsequent animation
-  useEffect(() => {
-    if (showBradyEffect && picks.length > 0 && !isShuffling && team) {
-      const lastPick = picks[picks.length - 1];
-      const targetIndex = picks.length - 1;
-      
-      // Wait for Brady effect to complete
-      setTimeout(() => {
-        // Get positions after Brady effect
-        const centerLogoImg = centerLogoRef.current?.querySelector('img');
-        
-        if (centerLogoImg) {
-          const imgRect = centerLogoImg.getBoundingClientRect();
-          const startRect = new DOMRect(
-            imgRect.left,
-            imgRect.top,
-            imgRect.width,
-            imgRect.height
-          );
-          
-          const endRect = gridCellRefs.current[targetIndex]?.getBoundingClientRect() || null;
-
-          if (startRect && endRect) {
-            setShowBradyEffect(false);
-            setAnimatingLogo({
-              team: lastPick.team,
-              startRect,
-              endRect,
-              targetIndex
-            });
-
-            // Remove the animating logo and start shuffling after animation completes
-            setTimeout(() => {
-              setAnimatingLogo(null);
-              setShouldAnimate(false);
-              startNextRound();
-            }, 300);
-          }
-        }
-      }, 2000);
-    }
-  }, [showBradyEffect, picks.length, team, isShuffling, startNextRound, setShowBradyEffect]);
-
-  // Trigger animation when a new pick is added
-  useEffect(() => {
-    if (picks.length > 0 && !isShuffling) {
-      setShouldAnimate(true);
-    }
-  }, [picks.length]);
-
-  // Create the mirrored grid layout
-  const createMirroredLayout = () => {
-    // Create arrays for both sides, each with 10 slots (total 20 slots)
-    const leftSide = Array(10).fill(null).map((_, idx) => {
-      // First 10 picks go on the left side
-      if (idx < picks.length && idx < 10) {
-        // Only hide the specific logo being animated to its position
-        if (animatingLogo && animatingLogo.targetIndex === idx) {
-          return null;
-        }
-        return picks[idx];
-      }
-      return null;
-    });
-    
-    const rightSide = Array(10).fill(null).map((_, idx) => {
-      // Next 10 picks go on the right side
-      const pickIndex = idx + 10;
-      if (pickIndex < picks.length) {
-        // Only hide the specific logo being animated to its position
-        if (animatingLogo && animatingLogo.targetIndex === pickIndex) {
-          return null;
-        }
-        return picks[pickIndex];
-      }
-      return null;
-    });
-
-    return { leftSide, rightSide };
-  };
-
-  const { leftSide, rightSide } = createMirroredLayout();
-
-  const TeamLogo: React.FC<{ pick: { qb: string; team: string } | null, index: number }> = ({ pick, index }) => (
-    <div 
-      className="relative group flex justify-center items-center w-8 h-8 sm:w-12 sm:h-12"
-      ref={el => gridCellRefs.current[index] = el}
-    >
-      {pick ? (
-        <>
-          <img
-            src={getTeamLogo(pick.team)}
-            alt={pick.team}
-            className="w-8 h-8 sm:w-12 sm:h-12 object-contain hover:scale-110 transition-transform duration-150 ease-in-out"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleLogoClick(index);
-            }}
-          />
-          <div 
-            className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 transition whitespace-nowrap z-10
-              sm:opacity-0 sm:group-hover:opacity-100
-              ${activeTooltipIndex === index ? 'opacity-100' : 'opacity-0'}`}
-          >
-            {pick.qb}
-          </div>
-        </>
-      ) : (
-        <div className="w-full h-full rounded-full border-2 border-neutral-200 dark:border-neutral-700 opacity-25 flex items-center justify-center">
-          <span className="text-xs sm:text-sm font-medium text-neutral-400 dark:text-neutral-500">
-            {index + 1}
-          </span>
-        </div>
-      )}
-    </div>
-  );
 
   return (
-    <div 
-      className="relative w-full py-4 sm:py-6"
-      onClick={(e) => {
-        if ((e.target as HTMLElement).tagName !== 'IMG') {
-          setActiveTooltipIndex(null);
-        }
-      }}
-    >
-      {/* Animated Logo Clone */}
-      {animatingLogo && animatingLogo.startRect && animatingLogo.endRect && (
-        <div
-          className="fixed pointer-events-none z-50"
-          style={{
-            position: 'fixed',
-            width: `${animatingLogo.startRect.width}px`,
-            height: `${animatingLogo.startRect.height}px`,
-            left: 0,
-            top: 0,
-            transform: `translate3d(${animatingLogo.startRect.left}px, ${animatingLogo.startRect.top}px, 0)`,
-            animation: 'move-to-grid 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
-          }}
-        >
-          <style>{`
-            @keyframes move-to-grid {
-              0% {
-                width: ${animatingLogo.startRect.width}px;
-                height: ${animatingLogo.startRect.height}px;
-                transform: translate3d(${animatingLogo.startRect.left}px, ${animatingLogo.startRect.top}px, 0);
-              }
-              to {
-                width: ${animatingLogo.endRect.width}px;
-                height: ${animatingLogo.endRect.height}px;
-                transform: translate3d(${animatingLogo.endRect.left}px, ${animatingLogo.endRect.top}px, 0);
-              }
-            }
-          `}</style>
-          <img 
-            src={getTeamLogo(animatingLogo.team)}
-            alt={animatingLogo.team}
-            className="w-full h-full object-contain"
-          />
-        </div>
-      )}
-
-      <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
-        {/* Left Side */}
-        <div className="grid grid-cols-2 gap-4 sm:gap-6">
-          {leftSide.map((pick, idx) => (
-            <TeamLogo key={`left-${idx}`} pick={pick} index={idx} />
-          ))}
-        </div>
-
-        {/* Center Team */}
-        <div 
-          ref={centerLogoRef}
-          className={`relative z-10 flex flex-col items-center justify-center bg-white/80 dark:bg-black/40 backdrop-blur-sm rounded-2xl border-2 transition-all duration-300 mx-auto lg:max-w-[400px] ${
-            isShuffling ? 'scale-105 rotate-3' : ''
-          } ${getTeamColorClass(shufflingTeam || team || '')}`}
-          style={{ width: window.innerWidth < 640 ? 120 : 200, height: window.innerWidth < 640 ? 160 : 240 }}
-        >
-          <img 
-            src={getTeamLogo(shufflingTeam || team || '')} 
-            alt={shufflingTeam || team || ''} 
-            className={`w-20 h-20 sm:w-32 sm:h-32 lg:w-40 lg:h-40 object-contain transition-all duration-300 ${
-              isShuffling ? 'animate-pulse-fast scale-110 rotate-6' : 'animate-pulse-slow'
+    <div className="flex flex-col h-[260px] bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+      {/* Team logo and name */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="relative w-24 h-24 flex items-center justify-center">
+          <img
+            src={getTeamLogo(team || '')}
+            alt={team || ''}
+            className={`w-full h-full object-contain transition-opacity duration-300 ${
+              isShuffling ? 'opacity-0' : 'opacity-100'
             }`}
           />
-          <div className={`flex items-center justify-center w-full px-1 sm:px-3 transition-all duration-300 ${
-            isShuffling ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-          }`}>
-            {!isShuffling && team && (() => {
-              const lastSpace = team.lastIndexOf(' ');
-              const location = team.slice(0, lastSpace);
-              const nickname = team.slice(lastSpace + 1);
-              
-              // Determine text size classes based on name length
-              const getTextSizeClass = (text: string) => {
-                if (text.length > 12) return 'text-xs sm:text-base lg:text-xl';
-                if (text.length > 10) return 'text-sm sm:text-lg lg:text-2xl';
-                return 'text-lg sm:text-2xl lg:text-3xl';
-              };
-
-              const getNicknameTextSizeClass = (text: string) => {
-                if (text.length > 10) return 'text-sm sm:text-xl lg:text-2xl';
-                if (text.length > 8) return 'text-base sm:text-2xl lg:text-3xl';
-                return 'text-xl sm:text-3xl lg:text-4xl';
-              };
-
-              // Special handling for teams with long names
-              const shouldSplitLocation = location.length > 12;
-              const locationParts = shouldSplitLocation ? location.split(' ') : [location];
-
-              return (
-                <div className="w-full text-center px-0.5">
-                  {shouldSplitLocation ? (
-                    locationParts.map((part, index) => (
-                      <div 
-                        key={index}
-                        className={`${getTextSizeClass(part)} leading-tight font-sans ${teamColors[team] || 'text-main dark:text-main-dark'}`}
-                      >
-                        {part}
-                      </div>
-                    ))
-                  ) : (
-                    <div className={`${getTextSizeClass(location)} font-sans ${teamColors[team] || 'text-main dark:text-main-dark'}`}>
-                      {location}
-                    </div>
-                  )}
-                  <div className={`${getNicknameTextSizeClass(nickname)} font-bold font-sans leading-tight ${teamColors[team] || 'text-main dark:text-main-dark'}`}>
-                    {nickname}
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
+          {shufflingTeam && (
+            <img
+              src={getTeamLogo(shufflingTeam)}
+              alt={shufflingTeam}
+              className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                isShuffling ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          )}
         </div>
-
-        {/* Right Side */}
-        <div className="grid grid-cols-2 gap-4 sm:gap-6">
-          {rightSide.map((pick, idx) => (
-            <TeamLogo key={`right-${idx}`} pick={pick} index={idx + 10} />
-          ))}
-        </div>
+        <h2 className="text-xl font-bold text-center">{team}</h2>
       </div>
+
+      {/* Score display */}
+      {showScore && (
+        <div className="text-4xl font-bold text-center">
+          {totalScore}
+        </div>
+      )}
     </div>
   );
 };
@@ -373,8 +100,13 @@ const InputField: React.FC<{
   handleSubmit: (e: React.FormEvent) => void;
   handleQBSelect: (qbName: string) => void;
   showScore: boolean;
-  setInput: React.Dispatch<React.SetStateAction<string>>;
   isGameOver: boolean;
+  feedback: string | null;
+  usedQBs: string[];
+  currentTeam: string | null;
+  setShowHelpDropdown: (show: boolean) => void;
+  setAvailableQBs: (qbs: { name: string; wins: number }[]) => void;
+  setCurrentPickUsedHelp: () => void;
 }> = ({
   input,
   error,
@@ -385,218 +117,201 @@ const InputField: React.FC<{
   handleSubmit,
   handleQBSelect,
   showScore,
-  setInput,
-  isGameOver
+  isGameOver,
+  feedback,
+  usedQBs,
+  currentTeam,
+  setShowHelpDropdown,
+  setAvailableQBs,
+  setCurrentPickUsedHelp
 }) => {
-  // Helper function to capitalize first letter of each word
-  const capitalizeWords = (str: string) => {
-    return str.replace(/(?:^|\s)\S/g, (letter) => letter.toUpperCase());
-  };
+  const [isMobile, setIsMobile] = useState(false);
+  const [showHelpHint, setShowHelpHint] = useState(false);
+  const [wrongAnswerCount, setWrongAnswerCount] = useState(0);
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const wrongAnswerTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Function to handle keyboard button clicks
-  const handleKeyPress = (key: string) => {
-    if (isGameOver) return;
-    setInput(prev => prev + key);
-  };
+  // Reset inactivity timer when input changes
+  useEffect(() => {
+    // Clear existing timer
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+    }
 
-  const handleBackspace = () => {
-    if (isGameOver) return;
-    setInput(prev => prev.slice(0, -1));
-  };
+    // Don't set timer if there's already input, game is over, or help dropdown is open
+    if (input.trim() || isGameOver || showHelpDropdown) {
+      setShowHelpHint(false);
+      return;
+    }
 
-  const handleKeyboardSubmit = () => {
-    if (isGameOver) return;
-    handleSubmit();
-  };
+    // Set new timer
+    inactivityTimerRef.current = setTimeout(() => {
+      setShowHelpHint(true);
+      // Hide hint after 5 seconds if not clicked
+      setTimeout(() => setShowHelpHint(false), 5000);
+    }, 10000); // 10 seconds of inactivity
+
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, [input, isGameOver, showHelpDropdown]);
+
+  // Track wrong answers
+  useEffect(() => {
+    if (error) {
+      setWrongAnswerCount(prev => {
+        const newCount = prev + 1;
+        console.log('Wrong answer count:', newCount);
+        if (newCount >= 2) {
+          console.log('Scheduling help hint after feedback clears');
+          // Wait for feedback to clear before showing help hint
+          setTimeout(() => {
+            console.log('Showing help hint after feedback cleared');
+            setShowHelpHint(true);
+            if (wrongAnswerTimerRef.current) {
+              clearTimeout(wrongAnswerTimerRef.current);
+            }
+            wrongAnswerTimerRef.current = setTimeout(() => {
+              setShowHelpHint(false);
+              // Reset wrong answer count after help hint is shown
+              setWrongAnswerCount(0);
+            }, 5000);
+          }, 2100); // Wait slightly longer than feedback duration (2000ms)
+          return 0; // Reset count immediately after scheduling the hint
+        }
+        return newCount;
+      });
+    } else if (feedback && !error) {
+      console.log('Resetting wrong answer count after correct answer');
+      setWrongAnswerCount(0);
+    }
+
+    return () => {
+      if (wrongAnswerTimerRef.current) {
+        clearTimeout(wrongAnswerTimerRef.current);
+      }
+    };
+  }, [error, feedback]);
+
+  // Reset help hint when help is used
+  useEffect(() => {
+    if (showHelpDropdown) {
+      setShowHelpHint(false);
+      setWrongAnswerCount(0);
+    }
+  }, [showHelpDropdown]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
-    <div className="space-y-2 sm:space-y-4">
-      <div className="bg-white/50 dark:bg-neutral-800/50 rounded-xl p-3 sm:p-4 space-y-2 shadow-[0_-1px_0_rgba(0,0,0,0.1)_inset] dark:shadow-[0_-1px_0_rgba(255,255,255,0.1)_inset]">
-        <form onSubmit={handleSubmit} className="relative">
-          <div className="flex gap-1 sm:gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Enter QB name or type 'help'"
-              className={`flex-1 px-2 sm:px-4 py-2 sm:py-3 bg-white dark:bg-neutral-800 border ${
-                isValidInput === true
-                  ? 'border-green-500 dark:border-green-500/50'
-                  : isValidInput === false
-                  ? 'border-red-500 dark:border-red-500/50'
-                  : 'border-neutral-200 dark:border-neutral-700'
-              } rounded-lg text-main dark:text-main-dark focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              autoComplete="off"
-              spellCheck={false}
-              disabled={isGameOver}
-              onKeyDown={(e) => {
-                // Prevent any key input when Command/Meta key is pressed
-                if (e.metaKey || e.ctrlKey) return;
-                
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleSubmit(e);
-                } else if (e.key === ' ') {
-                  e.preventDefault();
-                  handleKeyPress(' ');
-                }
-              }}
+    <div className="w-full max-w-lg mx-auto">
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+        <input
+          type="text"
+          value={input}
+          onChange={handleInputChange}
+              disabled={isGameOver || showHelpDropdown}
+              readOnly={isMobile}
+              placeholder={feedback || "Guess a Quarterback"}
+              className={`w-full h-10 px-4 bg-white dark:bg-neutral-800 border rounded-lg text-black dark:text-white 
+                ${error || (feedback && ALREADY_USED_FEEDBACK_MESSAGES.includes(feedback)) ? 'animate-shake ' : ''}
+                ${error ? 'border-red-500 dark:border-red-500' : 
+                  feedback && ALREADY_USED_FEEDBACK_MESSAGES.includes(feedback) ? 'border-red-500 dark:border-red-500' :
+                  feedback && !error ? 'border-emerald-500 dark:border-emerald-500' : 
+                  isValidInput ? 'border-emerald-500 dark:border-emerald-500' : 
+                  'border-neutral-200 dark:border-neutral-700'} 
+                ${error ? 'placeholder:text-red-500 dark:placeholder:text-red-400' : 
+                  feedback && ALREADY_USED_FEEDBACK_MESSAGES.includes(feedback) ? 'placeholder:text-red-500 dark:placeholder:text-red-400' :
+                  feedback && !error ? 'placeholder:text-green-500 dark:placeholder:text-green-400' : 
+                  'placeholder:text-black/60 dark:placeholder:text-white/60'}
+                ${isMobile ? 'cursor-default' : showHelpDropdown ? 'cursor-not-allowed' : 'cursor-text'}
+                focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-100`}
             />
+        {showHelpDropdown && availableQBs.length > 0 && (
+          <div className="relative">
+            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg max-h-[252px] overflow-y-scroll [&::-webkit-scrollbar]:block [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-thumb]:bg-neutral-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600 [&::-webkit-scrollbar-track]:bg-neutral-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800">
+            {availableQBs.map((qb) => (
+              <button
+                key={qb.name}
+                onClick={() => handleQBSelect(qb.name)}
+                  className="w-full text-left px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-main dark:text-main-dark flex justify-between items-center"
+              >
+                <span>{qb.name}</span>
+                {showScore && (
+                  <span className="text-muted dark:text-muted-dark">{qb.wins} wins</span>
+                )}
+              </button>
+            ))}
+          </div>
+      </div>
+      )}
+    </div>
+          <div className="flex gap-2">
             <button
               type="submit"
-              className="px-3 sm:px-4 py-2 text-sm border rounded-md text-main hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-neutral-700 transition-colors whitespace-nowrap"
-              aria-label="Submit quarterback name"
-              disabled={isGameOver}
+              disabled={isGameOver || !isValidInput || feedback !== null}
+              title={!isValidInput ? "Enter a valid QB name" : undefined}
+              className={`h-10 px-3 border rounded-lg text-sm text-main dark:text-main-dark hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-colors whitespace-nowrap 
+                ${isValidInput && feedback === null ? 'border-emerald-500 dark:border-emerald-500' : 'border-neutral-200 dark:border-neutral-700'}
+                disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:border-neutral-200 dark:disabled:border-neutral-700`}
             >
               Submit
             </button>
-          </div>
-
-          {/* Feedback Messages */}
-          <div className="h-6 mt-2">
-            {error ? (
-              <p className="text-sm font-semibold text-red-500 dark:text-red-400 animate-fade-in-down">
-                Nope! Try again or type "help" for assistance
-              </p>
-            ) : isValidInput === true && input.length > 0 ? (
-              <p className="text-sm font-semibold text-green-500 dark:text-green-400 animate-fade-in-down">
-                Correct! Press Enter or Submit
-              </p>
-            ) : null}
-          </div>
-
-          {showHelpDropdown && availableQBs.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-              {availableQBs.map((qb) => (
-                <button
-                  key={qb.name}
-                  onClick={() => handleQBSelect(qb.name)}
-                  className="w-full text-left px-4 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-main dark:text-main-dark flex justify-between items-center"
-                >
-                  <span>{qb.name}</span>
-                  {showScore && (
-                    <span className="text-muted dark:text-muted-dark">{qb.wins} wins</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </form>
-
-        {/* QWERTY Keyboard */}
-        <div className="fixed bottom-0 left-0 right-0 pb-safe pt-2 bg-gradient-to-t from-white via-white to-transparent dark:from-black dark:via-black xl:relative xl:pb-0">
-          <div className="max-w-[600px] mx-auto">
-            <QwertyKeyboard
-              onKeyPress={handleKeyPress}
-              onBackspace={handleBackspace}
-              onEnter={handleKeyboardSubmit}
-              isDisabled={isGameOver}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const GameStats: React.FC<{ currentRound: number; totalScore: number; showScore: boolean }> = ({
-  currentRound,
-  totalScore,
-  showScore
-}) => {
-  return (
-    <div className="fixed lg:absolute top-0 right-0 m-4 bg-slate-100 dark:bg-neutral-800/90 backdrop-blur-sm border border-slate-200 dark:border-neutral-700 rounded-full px-4 py-1.5 text-sm font-medium flex items-center gap-2">
-      <span className="text-slate-700 dark:text-slate-200">
-        Round {currentRound} of {ROUNDS_PER_GAME}
-      </span>
-      {showScore && (
-        <>
-          <span className="text-slate-400 dark:text-slate-500">·</span>
-          <span className="text-slate-700 dark:text-slate-200">
-            Wins: {totalScore.toLocaleString()}
+            <button
+              type="button"
+              onClick={() => {
+                setShowHelpHint(false);
+                setShowHelpDropdown(true);
+                const availableQBsForTeam = Object.entries(qbDatabase)
+                  .filter(([name, data]: [string, QBData]) => {
+                    const normalizedCurrentTeam = normalizeTeamName(currentTeam || '');
+                    const normalizedQbTeams = data.teams.map(normalizeTeamName);
+                    return normalizedQbTeams.includes(normalizedCurrentTeam) && !usedQBs.includes(name);
+                  })
+                  .map(([name, data]: [string, QBData]) => ({ name, wins: data.wins }))
+                  .sort(() => Math.random() - 0.5);
+                setAvailableQBs(availableQBsForTeam);
+                setCurrentPickUsedHelp();
+              }}
+              disabled={showHelpDropdown}
+              className={`h-10 w-10 flex items-center justify-center border border-neutral-200 dark:border-neutral-700 rounded-lg text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-colors group relative
+                ${showHelpHint && !showHelpDropdown ? 'animate-wiggle' : ''}
+                ${showHelpDropdown ? 'opacity-50 cursor-not-allowed hover:bg-transparent dark:hover:bg-transparent' : ''}`}
+              aria-label="Need help?"
+              data-wrong-answers={wrongAnswerCount}
+            >
+              <span className="text-base">💡</span>
+              {/* Desktop hover tooltip */}
+              <span className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-black rounded whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 hidden sm:block ${!showHelpDropdown && 'group-hover:opacity-100'}`}>
+                Need help?
           </span>
-        </>
-      )}
-    </div>
-  );
-};
-
-const QBPhoto: React.FC<{ qb: string; size?: 'sm' | 'lg' }> = ({ qb, size = 'sm' }) => {
-  const [showImage, setShowImage] = useState(true);
-  const photoUrl = getQBPhoto(qb);
-
-  if (!showImage || !photoUrl) {
-    return (
-      <div className={`flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-full ${
-        size === 'sm' ? 'w-6 h-6' : 'w-16 h-16'
-      }`}>
-        <span className={`text-muted dark:text-muted-dark ${size === 'sm' ? 'text-xs' : 'text-lg'}`}>
-          {qb.split(' ').map(n => n[0]).join('')}
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={photoUrl}
-      alt={qb}
-      className={`object-contain rounded-full ${
-        size === 'sm' ? 'w-6 h-6' : 'w-16 h-16'
-      }`}
-      onError={() => setShowImage(false)}
-    />
-  );
-};
-
-const PicksList: React.FC<{ picks: QB[]; showScore: boolean }> = ({
-  picks,
-  showScore
-}) => {
-  return (
-    <div className="space-y-2">
-      <h3 className="text-lg font-medium text-main dark:text-main-dark">Your Picks</h3>
-      <div className="bg-white dark:bg-black rounded-lg border border-neutral-200 dark:border-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-800">
-        {picks.map((pick, idx) => (
-          <div key={idx} className="p-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <QBPhoto qb={pick.qb} />
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-main dark:text-main-dark">
-                    {pick.displayName}
-                  </span>
-                  {pick.usedHelp && (
-                    <span className="text-xs bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded">
-                      SOS
-                    </span>
-                  )}
-                </div>
-                <div className="text-sm text-muted dark:text-muted-dark flex items-center gap-1">
-                  <img src={getTeamLogo(pick.team)} alt={pick.team} className="w-4 h-4" />
-                  <span>{pick.team}</span>
-                </div>
-              </div>
-            </div>
-            {showScore && (
-              <div className="text-lg font-medium text-main dark:text-main-dark">
-                {pick.wins}
+              {/* Animated hint tooltip */}
+              {showHelpHint && !showHelpDropdown && (
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 animate-fade-in">
+                  <div className="relative bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    Need some help?
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-blue-500"></div>
+        </div>
               </div>
             )}
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+    </form>
     </div>
   );
 };
-
-interface GameProps {
-  // ... existing props
-}
-
-interface FormSubmitEvent extends FormEvent {
-  preventDefault: () => void;
-}
 
 export const Game: React.FC = () => {
   const {
@@ -611,13 +326,13 @@ export const Game: React.FC = () => {
     totalScore,
     initializeGame,
     setIsGameOver,
-    setCurrentPickUsedHelp,
-    setShowHelp
+    setCurrentPickUsedHelp
   } = useGameStore();
 
   const { addGameRecord } = useLeaderboardStore();
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const [showHelpDropdown, setShowHelpDropdown] = useState(false);
   const [availableQBs, setAvailableQBs] = useState<{ name: string; wins: number }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
@@ -626,11 +341,13 @@ export const Game: React.FC = () => {
   const [showRules, setShowRules] = useState(true);
   const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
   const [isInitialStart, setIsInitialStart] = useState(true);
-  const [showBradyEffect, setShowBradyEffect] = useState(false);
   const navigate = useNavigate();
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const inputContainerRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
+  const [isBradyEffectActive, setIsBradyEffectActive] = useState(false);
+  const [showHalftimeEffect, setShowHalftimeEffect] = useState(false);
+  const [showHelpMenu, setShowHelpMenu] = useState(false);
+  const [helpMenuPosition, setHelpMenuPosition] = useState({ top: 0, right: 0 });
+  const helpButtonRef = useRef<HTMLButtonElement>(null);
+  const [recentTeams, setRecentTeams] = useState<string[]>([]);
 
   useEffect(() => {
     initializeGame();
@@ -640,11 +357,20 @@ export const Game: React.FC = () => {
 
   const startGame = () => {
     setShowRules(false);
+    setIsInitialStart(false);
+    
+    // Start shuffling animation
     setIsShuffling(true);
+    const newTeam = selectWeightedTeam(recentTeams, NFL_TEAMS);
+    setShufflingTeam(newTeam);
+    
+    // After animation, set the actual team
     setTimeout(() => {
-      const randomTeam = NFL_TEAMS[Math.floor(Math.random() * NFL_TEAMS.length)];
-      setCurrentTeam(randomTeam);
-    }, 1500);
+      setIsShuffling(false);
+      setShufflingTeam(undefined);
+      setCurrentTeam(newTeam);
+      setRecentTeams([newTeam]);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -702,74 +428,45 @@ export const Game: React.FC = () => {
   }, [isGameOver]);
 
   const handleReset = () => {
+    setShowRules(false);
+    setIsInitialStart(false);
     initializeGame();
-    setShowRules(true);
-    setIsInitialStart(true);
     setInput('');
     setError(null);
+    setFeedback(null);
     setIsValidInput(null);
     setShowHelpDropdown(false);
     setAvailableQBs([]);
-  };
-
-  const handleShowRules = () => {
-    setShowRules(true);
-    setIsInitialStart(false);
-  };
-
-  const handleSubmit = async (e?: FormEvent) => {
-    e?.preventDefault();
-    if (isGameOver || !input.trim()) return;
-    
-    if (input.toLowerCase().trim() === 'help') {
-      setShowHelp(true);
-      setInput('');
-      return;
-    }
-
-    const validationResult = validateQB(input, currentTeam || '');
-    if (validationResult && !usedQBs.includes(validationResult.name)) {
-      const { name, wins } = validationResult;
-      const displayName = formatQBDisplayName(input, name);
-      addPick(name, wins, displayName);
-      setInput('');
-      setError(null);
-      setIsValidInput(null);
-      setShowHelpDropdown(false);
-      setAvailableQBs([]);
-
-      // Check if this was the last round
-      if (picks.length >= ROUNDS_PER_GAME - 1) {
-        setIsGameOver(true);
-        return;
-      }
-
-      // If it's Brady, show effect first
-      if (name.toLowerCase().includes('brady')) {
-        setShowBradyEffect(true);
-      }
-      // Animation and shuffling will be handled by the useEffect
-    } else {
-      setError('Invalid quarterback name or already used');
-      setIsValidInput(false);
-    }
+    setCurrentPickUsedHelp();
+    setIsGameOver(false);
+    setShowLeaderboardModal(false);
+    toggleScore(); // This will set showScore back to false
+    setRecentTeams([]); // Reset recent teams history
+    const newTeam = selectWeightedTeam([], NFL_TEAMS);
+    setCurrentTeam(newTeam);
+    setRecentTeams([newTeam]);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setInput(newValue);
+    console.log('Input changed:', newValue);
+    
+    // Apply the same capitalization as the on-screen keyboard
+    const capitalized = capitalizeWords(newValue);
+    setInput(capitalized);
+    
+    // Reset both error and feedback when user starts typing
     setError(null);
+    setFeedback(null);
     
-    if (newValue.toLowerCase().trim() === 'help') {
-      setIsValidInput(true);
-      return;
-    }
-    
-    if (newValue.trim() === '') {
+    if (capitalized.trim() === '') {
       setIsValidInput(null);
     } else {
-      const validationResult = validateQB(newValue, currentTeam || '');
-      const isValid = validationResult && !usedQBs.includes(validationResult.name);
+      // First-level validation: Only check if QB exists using findClosestMatch
+      const matchedName = findClosestMatch(capitalized);
+      // Enable submit button for any valid QB name, even if already used
+      const isValid = matchedName !== null;
+      console.log('Desktop validation:', { input: capitalized, matchedName, isValid });
       setIsValidInput(isValid);
     }
     
@@ -777,13 +474,207 @@ export const Game: React.FC = () => {
     setAvailableQBs([]);
   };
 
+  // Keyboard handlers
+  const handleKeyPress = (key: string) => {
+    const newValue = input + key.toLowerCase();
+    const capitalized = capitalizeWords(newValue);
+    setInput(capitalized);
+    
+    // Reset both error and feedback when user types
+    setError(null);
+    setFeedback(null);
+    
+    if (capitalized.trim() === '') {
+      setIsValidInput(null);
+    } else {
+      // First-level validation: Only check if QB exists using findClosestMatch
+      const matchedName = findClosestMatch(capitalized);
+      // Enable submit button for any valid QB name, even if already used
+      const isValid = matchedName !== null;
+      console.log('Desktop validation:', { input: capitalized, matchedName, isValid });
+      setIsValidInput(isValid);
+    }
+  };
+
+  const handleBackspace = () => {
+    const newValue = capitalizeWords(input.slice(0, -1));
+    setInput(newValue);
+    
+    // Reset both error and feedback when user types
+    setError(null);
+    setFeedback(null);
+    
+    if (newValue.trim() === '') {
+      setIsValidInput(null);
+    } else {
+      // First-level validation: Only check if QB exists using findClosestMatch
+      const matchedName = findClosestMatch(newValue);
+      // Enable submit button for any valid QB name, even if already used
+      const isValid = matchedName !== null;
+      console.log('Desktop validation:', { input: newValue, matchedName, isValid });
+      setIsValidInput(isValid);
+    }
+  };
+
+  const handleKeyboardEnter = () => {
+    if (isValidInput) {
+      handleSubmit(new Event('submit') as any);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Submit triggered with input:', input);
+    
+    // Prevent submission during any effect
+    if (isBradyEffectActive || showHalftimeEffect) {
+      console.log('Effect active, preventing submission');
+      return;
+    }
+
+    // Get the matched QB name from first validation
+    const matchedName = findClosestMatch(input);
+    if (!matchedName) {
+      // This shouldn't happen since submit button should be disabled
+      console.log('No QB match found for:', input);
+      return;
+    }
+
+    // Check if QB is already used first
+    if (usedQBs.includes(matchedName)) {
+      // QB already used - show custom feedback but don't increment round
+      console.log('QB already used, showing already-used feedback');
+      const feedbackMsg = getRandomFeedbackMessage(ALREADY_USED_FEEDBACK_MESSAGES);
+      setFeedback(feedbackMsg);
+      // Clear input and validation state
+      setInput('');
+      setIsValidInput(null);
+      // Reset feedback after duration
+      setTimeout(() => {
+        setFeedback(null);
+      }, 2000);
+      return;
+    }
+
+    // If QB not used, then check team validation
+    const validationResult = validateQB(matchedName, currentTeam || '');
+    console.log('Validation result:', validationResult);
+
+    if (!validationResult) {
+      // QB exists but didn't play for this team
+      const feedbackMsg = getRandomFeedbackMessage(INCORRECT_FEEDBACK_MESSAGES);
+      setError('Wrong team');
+      setFeedback(feedbackMsg);
+      // Clear input and validation state
+      setInput('');
+      setIsValidInput(null);
+      // Reset error state after feedback duration
+      setTimeout(() => {
+        setError(null);
+        setFeedback(null);
+      }, 2000);
+      return;
+    }
+
+    // Correct guess - right team and not used
+      const { name, wins } = validationResult;
+      const displayName = formatQBDisplayName(input, name);
+    completePick(name, wins, displayName, false);
+  };
+
+  // Function to complete pick (used for both Brady and normal submissions)
+  const completePick = (name: string, wins: number, displayName: string, usedHelp: boolean = false) => {
+    // Use assisted feedback messages if this pick used help
+    const feedbackMsg = getRandomFeedbackMessage(
+      usedHelp ? ASSISTED_FEEDBACK_MESSAGES : CORRECT_FEEDBACK_MESSAGES
+    );
+    setFeedback(feedbackMsg);
+    
+    // Clear input and validation state
+      setInput('');
+      setIsValidInput(null);
+    setShowHelpDropdown(false);
+    setAvailableQBs([]);
+    setIsValidInput(true);
+
+    // Reset validation state after feedback duration
+      setTimeout(() => {
+      setIsValidInput(null);
+    }, 2000);
+
+    const isBradyPick = name.toLowerCase().includes('brady');
+    const isHalftimePick = picks.length === Math.floor(ROUNDS_PER_GAME / 2) - 1;
+
+    // For Brady picks, delay adding the pick until after the effect
+    if (isBradyPick) {
+      setIsBradyEffectActive(true);
+      setTimeout(() => {
+        setIsBradyEffectActive(false);
+        // Add the pick after the Brady effect
+        addPick(name, wins, displayName);
+      }, 2000);
+    } else {
+      // For non-Brady picks, add immediately
+      addPick(name, wins, displayName);
+    }
+    
+    // Check if this was the last round
+    if (picks.length >= ROUNDS_PER_GAME - 1) {
+        setIsGameOver(true);
+      return;
+    }
+
+    // Handle halftime effect
+    if (isHalftimePick) {
+      if (isBradyPick) {
+        // Brady at halftime - wait for Brady effect then show halftime
+        setTimeout(() => {
+          setShowHalftimeEffect(true);
+          setTimeout(() => {
+            setShowHalftimeEffect(false);
+          }, 2500);
+        }, 2000);
+    } else {
+        // Just halftime
+        setShowHalftimeEffect(true);
+        setTimeout(() => {
+          setShowHalftimeEffect(false);
+        }, 2500);
+      }
+    }
+  };
+
   const handleQBSelect = (qbName: string) => {
     setInput(qbName);
     setShowHelpDropdown(false);
     setAvailableQBs([]);
-    const validationResult = validateQB(qbName, currentTeam || '');
-    const isValid = validationResult && !usedQBs.includes(validationResult.name);
-    setIsValidInput(isValid);
+    setCurrentPickUsedHelp(); // Mark that help was used for this pick
+    
+    // Get the QB data and validate
+    const matchedName = findClosestMatch(qbName);
+    if (!matchedName) return;
+    
+    const qbData = qbDatabase[matchedName];
+    if (!qbData) return;
+    
+    // Check if QB is valid for current team
+    const isValidForTeam = validateQB(matchedName, currentTeam || '');
+    if (!isValidForTeam) {
+      setError('This QB never played for this team');
+      setIsValidInput(false);
+      return;
+    }
+    
+    // Check if QB was already used
+    if (usedQBs.includes(matchedName)) {
+      setError(null);
+      setFeedback(getRandomFeedbackMessage(ALREADY_USED_FEEDBACK_MESSAGES));
+      setIsValidInput(false);
+      return;
+    }
+    
+    // Complete the pick with formatted display name
+    completePick(matchedName, qbData.wins, formatQBDisplayName(qbName, matchedName), true);
   };
 
   const handleLeaderboardSubmit = (playerName: string) => {
@@ -807,10 +698,54 @@ export const Game: React.FC = () => {
     setShowLeaderboardModal(false);
   };
 
+  const startNextRound = () => {
+    if (isShuffling) return;
+    
+    setIsShuffling(true);
+    const newTeam = selectWeightedTeam(recentTeams, NFL_TEAMS);
+    setShufflingTeam(newTeam);
+    
+    setTimeout(() => {
+      setIsShuffling(false);
+      setShufflingTeam(undefined);
+      setCurrentTeam(newTeam);
+      setRecentTeams(prevTeams => updateRecentTeams(prevTeams, newTeam));
+      setInput('');
+      setError(null);
+      setFeedback(null);
+      setIsValidInput(null);
+    setShowHelpDropdown(false);
+    setAvailableQBs([]);
+    }, 1000);
+  };
+
   // Remove the global keyboard event listener since we're handling it in the input field
   useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = `
+      @keyframes score-pop {
+        0% {
+          opacity: 0;
+          transform: scale(0.5) translateY(0);
+        }
+        20% {
+          opacity: 1;
+          transform: scale(1.2) translateY(0);
+        }
+        60% {
+          opacity: 1;
+          transform: scale(1) translateY(-20px);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(1) translateY(-40px);
+        }
+      }
+      
+      .animate-score-pop {
+        animation: score-pop 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+      
       .football-pill {
         width: 60px;
         height: 30px;
@@ -823,203 +758,149 @@ export const Game: React.FC = () => {
         justify-content: center;
         overflow: hidden;
       }
+      
+      @keyframes wiggle {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(-5deg); }
+        75% { transform: rotate(5deg); }
+      }
+      
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10% { transform: translateX(-6px); }
+        30% { transform: translateX(6px); }
+        50% { transform: translateX(-4px); }
+        70% { transform: translateX(4px); }
+        90% { transform: translateX(-2px); }
+      }
+      
+      .animate-wiggle {
+        animation: wiggle 0.5s ease-in-out infinite;
+      }
+      
+      .animate-shake {
+        animation: shake 0.25s cubic-bezier(.36,.07,.19,.97) both;
+      }
+      
+      @keyframes fade-in {
+        from { opacity: 0; transform: translate(-50%, 10px); }
+        to { opacity: 1; transform: translate(-50%, 0); }
+      }
+      
+      .animate-fade-in {
+        animation: fade-in 0.3s ease-out forwards;
+      }
     `;
     document.head.appendChild(style);
     return () => { document.head.removeChild(style); };
   }, []);
 
-  useEffect(() => {
-    // Scroll input into view when keyboard appears
-    if (inputContainerRef.current && keyboardHeight > 0) {
-      inputContainerRef.current.scrollIntoView({ 
-        behavior: "smooth", 
-        block: "center" 
+  const handleHelpButtonClick = () => {
+    if (helpButtonRef.current) {
+      const rect = helpButtonRef.current.getBoundingClientRect();
+      setHelpMenuPosition({
+        top: rect.bottom,
+        right: window.innerWidth - rect.right
       });
+      setShowHelpMenu(true);
     }
-  }, [keyboardHeight]);
+  };
+
+  // Get team color for border
+  const getTeamColorClass = (teamName: string) => {
+    const colorClass = teamColors[teamName];
+    if (!colorClass) return 'border-neutral-200 dark:border-neutral-700';
+    return colorClass.replace('text-', 'border-');
+  };
 
   if (isGameOver) {
-    return (
-      <>
-        <div className="max-w-4xl mx-auto px-6 py-12">
-          <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-6 text-center">
-            <h2 className="text-2xl font-sans text-main dark:text-main-dark mb-4">Game Over!</h2>
-            <p className="text-muted dark:text-muted-dark mb-6">
-              Your final score: {totalScore}
-              {picks.some(pick => pick.usedHelp) && (
-                <span className="inline-flex items-center gap-2 ml-2">
-                  <span className="text-xs bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded">
-                    SOS
-                  </span>
-                  <span className="text-sm">Used help during game</span>
-                </span>
-              )}
-            </p>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Play Again
-              </button>
-              <button
-                onClick={() => {
-                  handleReset();
-                  navigate('/leaderboard');
-                }}
-                className="px-4 py-2 border rounded-lg text-main dark:text-main-dark hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              >
-                View Leaderboard
-              </button>
-            </div>
-          </div>
-        </div>
+    const bestPick = picks.reduce((best, current) => {
+      if (!best || current.wins > best.wins) {
+        return { name: current.displayName, wins: current.wins };
+      }
+      return best;
+    }, null as { name: string; wins: number } | null);
 
-        {showLeaderboardModal && (
-          <LeaderboardModal
-            onSubmit={handleLeaderboardSubmit}
-            onCancel={handleLeaderboardSkip}
-          />
-        )}
-      </>
+    return (
+      <GameOver
+        totalScore={totalScore}
+        bestPick={bestPick}
+        usedHelp={picks.some(pick => pick.usedHelp)}
+        isTopTen={showLeaderboardModal}
+        topTenThreshold={2321} // TODO: Make this dynamic based on actual leaderboard
+        onPlayAgain={handleReset}
+        onSubmitScore={handleLeaderboardSubmit}
+        onSkipLeaderboard={handleLeaderboardSkip}
+      />
     );
   }
 
   return (
-    <div 
-      className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-slate-100"
-      style={{ paddingBottom: `${keyboardHeight + 16}px` }}
-    >
-      <SpecialEffects isVisible={showBradyEffect} />
-      {/* Main game content and pick history container */}
-      <div className="flex flex-col xl:flex-row xl:justify-between xl:gap-x-8 xl:items-start relative">
-        {/* Main game content */}
-        <div className="flex-1 relative">
-          <GameStats
-            currentRound={picks.length + 1}
-            totalScore={totalScore}
-            showScore={showScore}
-          />
-          <TeamDisplay
-            team={currentTeam}
-            isShuffling={isShuffling}
-            shufflingTeam={shufflingTeam}
-            picks={picks.map(pick => ({ qb: pick.displayName, team: pick.team }))}
-            startNextRound={startNextRound}
-            setShowBradyEffect={setShowBradyEffect}
-            showBradyEffect={showBradyEffect}
-          />
-          <div className="max-w-4xl mx-auto px-2 sm:px-6 py-2 sm:py-6 lg:py-8 mb-keyboard">
-            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-              {/* Header */}
-              <div className="flex justify-between items-center">
-                <div className="flex flex-col">
-                  <h1 className="text-lg sm:text-2xl font-bold font-sans bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">
-                    Quarterback
-                  </h1>
-                  <h2 className="text-base sm:text-xl font-medium text-main dark:text-main-dark -mt-1">
-                    Career Wins Challenge
-                  </h2>
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    onClick={handleShowRules}
-                    className="text-sm text-muted dark:text-muted-dark hover:text-main dark:hover:text-main-dark"
-                  >
-                    Rules
-                  </button>
-                  <button
-                    onClick={toggleScore}
-                    className="text-sm text-muted dark:text-muted-dark hover:text-main dark:hover:text-main-dark"
-                  >
-                    {showScore ? 'Hide Score' : 'Show Score'}
-                  </button>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+      <div className="max-w-md mx-auto">
+        {/* Top row with team display and QB roster */}
+        <div className="flex gap-4 mb-4">
+          {/* Left column - Team shuffler */}
+          <div className="w-1/2">
+            <TeamDisplay
+              team={currentTeam}
+              isShuffling={isShuffling}
+              shufflingTeam={shufflingTeam}
+              picks={picks}
+              startNextRound={startNextRound}
+              showScore={showScore}
+              totalScore={totalScore}
+              getTeamColorClass={getTeamColorClass}
+            />
+          </div>
 
-              {/* Game Stats & Input Section */}
-              {!showRules && (
-                <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2 sm:p-4 space-y-2 sm:space-y-3">
-                  <InputField
-                    input={input}
-                    error={error}
-                    isValidInput={isValidInput}
-                    showHelpDropdown={showHelpDropdown}
-                    availableQBs={availableQBs}
-                    handleInputChange={handleInputChange}
-                    handleSubmit={handleSubmit}
-                    handleQBSelect={handleQBSelect}
-                    showScore={showScore}
-                    setInput={setInput}
-                    isGameOver={isGameOver}
+          {/* Right column - QB roster list */}
+          <div className="w-1/2 h-[260px] overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div className="space-y-2">
+              {picks.map((pick, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center gap-2 p-2 rounded-lg border-2 ${getTeamColorClass(pick.team)}`}
+                >
+                  <img
+                    src={getTeamLogo(pick.team)}
+                    alt={pick.team}
+                    className="w-8 h-8 object-contain"
                   />
+                  <span className="text-sm font-medium">{pick.qb}</span>
                 </div>
-              )}
-
-              {/* Footer Actions */}
-              {!showRules && (
-                <div className="flex justify-end mt-1">
-                  <button
-                    onClick={handleReset}
-                    className="text-sm text-muted dark:text-muted-dark hover:text-main dark:hover:text-main-dark"
-                  >
-                    New Game
-                  </button>
-                </div>
-              )}
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Pick History Grid */}
-        {!showRules && picks.length > 0 && (
-          <div className="xl:w-[320px] xl:sticky xl:top-4 xl:pt-4 xl:border-l xl:border-neutral-200 dark:xl:border-neutral-800 xl:pl-8">
-            <h3 className="text-sm font-medium text-muted dark:text-muted-dark mb-3 hidden xl:block">
-              Pick History
-            </h3>
-            <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-3 sm:p-4">
-              <PicksList picks={picks} showScore={showScore} />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {showRules && (
-        <RulesModal 
-          onClose={isInitialStart ? startGame : () => setShowRules(false)} 
-          isInitialStart={isInitialStart}
-        />
-      )}
-
-      {showLeaderboardModal && (
-        <LeaderboardModal
-          onSubmit={handleLeaderboardSubmit}
-          onCancel={handleLeaderboardSkip}
-        />
-      )}
-
-      <div 
-        ref={inputContainerRef}
-        className="w-full max-w-[600px] mx-auto px-4 mt-4"
-      >
-        <form ref={formRef} onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a QB name..."
-            className="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        {/* Bottom section - Input field and keyboard */}
+        <div className="space-y-4">
+          <InputField
+            input={input}
+            error={error}
+            isValidInput={isValidInput}
+            showHelpDropdown={showHelpDropdown}
+            availableQBs={availableQBs}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+            handleQBSelect={handleQBSelect}
+            showScore={showScore}
+            isGameOver={isGameOver}
+            feedback={feedback}
+            usedQBs={usedQBs}
+            currentTeam={currentTeam}
+            setShowHelpDropdown={setShowHelpDropdown}
+            setAvailableQBs={setAvailableQBs}
+            setCurrentPickUsedHelp={setCurrentPickUsedHelp}
           />
-        </form>
+          <QwertyKeyboard
+            onKeyPress={handleKeyPress}
+            onBackspace={handleBackspace}
+            onEnter={handleKeyboardEnter}
+          />
+        </div>
       </div>
-
-      <QwertyKeyboard
-        onKeyPress={handleKeyPress}
-        onBackspace={handleBackspace}
-        onEnter={handleKeyboardSubmit}
-        isDisabled={isGameOver}
-        onHeightChange={setKeyboardHeight}
-      />
     </div>
   );
 };

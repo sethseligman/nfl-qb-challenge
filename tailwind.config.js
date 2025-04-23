@@ -38,11 +38,16 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.8' },
         },
+        'info-pulse': {
+          '0%, 33%, 66%, 100%': { transform: 'scale(1)', opacity: '0.6' },
+          '16.5%, 49.5%, 82.5%': { transform: 'scale(1.15)', opacity: '1' }
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.5s ease-out',
         'slide-up': 'slide-up 0.5s ease-out',
         'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+        'info-pulse': 'info-pulse 4.5s ease-in-out',
       },
     },
   },
